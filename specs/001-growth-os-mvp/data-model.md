@@ -33,15 +33,21 @@ Fields:
 - `child_nickname`
 - `child_birth_date`
 - `focus_directions`
+- `current_challenge`
+- `child_traits`
 - `today_suggestion`
+- `accepted_at`
+- `added_to_weekly_plan_task_id`
 - `converted_family_id`
 - `created_at`
 
 Rules:
 
-- Must generate a useful today's companionship suggestion from child nickname, birth date, and 2-3 focus directions.
+- Must generate a useful today's companionship suggestion from child nickname, birth date, 2-3 focus directions, one current challenge, and 1-3 child traits.
+- Suggestion should reference child age, current challenge, selected focus direction, and at least one trait when available.
 - Must not require full annual goals or second-parent invitation.
 - Can be converted into the full family workspace during onboarding.
+- Accepted suggestions can become weekly plan tasks or later growth record drafts.
 - v0.1 guidance is optimized for the 3-8 beachhead; suggestions outside that range must be conservative and age-aware.
 
 ### Family
@@ -241,6 +247,9 @@ Fields:
 - `text`
 - `tags`
 - `parent_notes`
+- `draft_source_type`: nullable `weekly_task`, `ai_suggestion`, `parent_note`, `manual`
+- `draft_source_id`
+- `draft_status`: nullable `draft`, `saved`, `discarded`
 - `deleted_at`
 - `restore_until`
 - `created_by_user_id`
@@ -250,6 +259,7 @@ Fields:
 Rules:
 
 - Text-only records must be supported.
+- Editable drafts can be generated from completed weekly tasks, accepted AI suggestions, or short parent notes.
 - AI context uses text, date, tags, and notes only.
 - Deleted rows are excluded from AI context unless restored.
 

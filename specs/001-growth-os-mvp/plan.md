@@ -9,7 +9,7 @@
 
 Build Growth OS v0.1 as the first beachhead of a broader family companionship system. The long-term product can support early childhood, school-age, and adolescent companionship; v0.1 focuses on parents of 3-8 year-old children with one family, one child, two parent accounts, weekly growth planning, interest participation records, growth archive, and an AI growth coach. The implementation will use a Next.js TypeScript app backed by Supabase Auth, Postgres, Row Level Security, Supabase Storage, and server-side OpenAI Responses API calls with structured outputs for AI coach modes and weekly plan drafts.
 
-The core architecture keeps family data private by default, enforces father/mother access through family membership rows, stores photos/videos for display only, excludes deleted records and media contents from AI context, and requires parent confirmation before AI-generated weekly plan drafts become official plans. The product experience prioritizes getting parents to a useful "what should I do today?" answer before full setup is complete, then measures whether families complete at least one high-quality companionship action per week.
+The core architecture keeps family data private by default, enforces father/mother access through family membership rows, stores photos/videos for display only, excludes deleted records and media contents from AI context, and requires parent confirmation before AI-generated weekly plan drafts become official plans. The product experience prioritizes getting parents to a useful "what should I do today?" answer before full setup is complete, uses current challenge and child traits to create an Aha moment, then measures whether families complete at least one high-quality companionship action per week.
 
 ## Technical Context
 
@@ -19,7 +19,7 @@ The core architecture keeps family data private by default, enforces father/moth
 **Testing**: Vitest for unit tests, React Testing Library for component tests, Playwright for primary user journeys, Supabase local CLI for database/RLS integration tests  
 **Target Platform**: Responsive web app, deployed as a server-rendered Next.js application with Supabase managed backend  
 **Project Type**: Web application with integrated frontend, route handlers, server actions, and Supabase backend  
-**Performance Goals**: First today's companionship suggestion generated within 3 minutes of first use; dashboard primary guidance identifiable within 10 seconds; dashboard and weekly plan p95 under 1.5s after auth; AI non-streaming first useful response target under 8s; non-AI mutations visible after refresh or navigation within 1s  
+**Performance Goals**: First today's companionship suggestion generated within 3 minutes of first use; first suggestion references child age, current challenge, focus direction, and child trait in at least 90% of acceptance tests; dashboard primary guidance identifiable within 10 seconds; dashboard and weekly plan p95 under 1.5s after auth; AI non-streaming first useful response target under 8s; non-AI mutations visible after refresh or navigation within 1s  
 **Constraints**: v0.1 beachhead is ages 3-8; one family and one child in v0.1; two parent accounts; no child account; AI context limited to 4 weeks of weekly plans and 90 days of interest/growth records; AI does not analyze media; deleted records excluded from AI context; 30-day restore window; progress language must be supportive and non-punitive; product metrics must avoid child ranking or comparative scoring  
 **Scale/Scope**: v0.1 private household MVP for high-engagement early-childhood parents, roughly 20-30 app screens/states, low concurrency, designed to support later school-age, adolescent, and multi-family generalization without adding those workflows now
 
@@ -114,8 +114,10 @@ Key decisions:
 - Use Next.js App Router with server-side Supabase access for authenticated data reads/mutations.
 - Use Supabase RLS on every exposed table and private Storage policies for growth media.
 - Use OpenAI Responses API with structured JSON schemas for AI coach outputs.
+- Use structured first-guidance and AI coach outputs that make child-specific context, interpretation, action, and fallback reviewable.
 - Store AI conversations and generated insights, but assemble AI context server-side from canonical child/family data.
 - Use soft deletion with `deleted_at` and `restore_until` for restorable records.
+- Generate editable growth record drafts from completed tasks, accepted AI suggestions, and short parent notes to lower recording cost.
 
 ## Phase 1: Design & Contracts
 

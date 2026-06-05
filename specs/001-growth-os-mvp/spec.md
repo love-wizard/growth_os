@@ -35,6 +35,12 @@ v0.1 scope:
 - Keep the product language broad enough for future school-age and adolescent companionship.
 - Do not build school-age or adolescent-specific workflows in v0.1.
 
+Market-facing positioning:
+
+- External product message should lead with "AI family companionship coach" or "today's companionship suggestion"; "Growth OS" remains the long-term system name.
+- Avoid leading cold-start messaging with "family growth management system" or "OS", because that frames the product as heavy before users experience the Aha moment.
+- The first market promise is: "Tell us a little about your child and today's challenge; get one practical companionship action for tonight."
+
 Core target families:
 
 - Parents in high-engagement households who are willing to accompany the child but lack a weekly structure
@@ -44,6 +50,12 @@ Core target families:
 Core product promise:
 
 - A parent opens Growth OS and knows what to do with the child today within 30 seconds.
+
+Aha moment definition:
+
+- The parent feels "this understands my child" because the suggestion references the child's age, current challenge, selected focus direction, and at least one child trait or recent context.
+- The parent receives a suggestion that can be tried today without buying materials, changing schedule, or reading long theory.
+- The parent sees a path to save the suggestion into this week's plan or turn the result into a growth record.
 
 North star metric:
 
@@ -78,15 +90,40 @@ Default first-use focus directions:
 - Family relationship
 - School readiness
 
+Default first-use current challenges:
+
+- Child does not want to practice piano or another interest
+- Reading has been hard to maintain
+- English exposure feels unclear
+- Parent only has 30 minutes tonight
+- Need a weekend activity idea
+- Child has been emotionally sensitive recently
+- Recent physical activity has decreased
+- Parent wants to understand recent growth
+
+Default child trait options:
+
+- Active
+- Sensitive
+- Slow to warm up
+- Likes praise
+- Likes competition
+- Strong-willed
+- Easily frustrated
+- Curious
+- Prefers routines
+
 ## Product Design Constraints
 
 - The home dashboard's primary question is "How should I accompany my child today?"
 - AI coach must be reachable from the dashboard and bottom navigation.
+- AI coach should be treated as the primary market-facing feature; weekly plans, records, and participation history support the coach rather than competing with it in first-use hierarchy.
 - Every AI coach answer must include at least one concrete action for today or this week when the topic allows it.
 - AI coach answers should follow a consistent quality pattern: child-specific context, likely interpretation, concrete action, gentle fallback, and evidence boundary when data is limited.
 - Progress language must be supportive and non-punitive; avoid failure framing, rankings, streak pressure, and red warning-heavy states.
 - Weekly completion rate is a secondary operational signal, not the main emotional center of the experience.
 - The user-facing label for interest history should emphasize participation or practice records, not course administration.
+- Growth records should be created as a low-friction byproduct of real activity whenever possible, such as after task completion, accepted AI suggestions, or short parent notes.
 
 ## Clarifications
 
@@ -111,13 +148,15 @@ A first parent enters only the minimum child context needed and receives an imme
 
 **Why this priority**: The fastest path to product value is answering "What should I do with my child today?" before asking the parent to complete a full planning system.
 
-**Independent Test**: A tester can start from an empty account, enter nickname, birth date, and 2-3 focus directions, then receive today's companionship suggestion within 3 minutes.
+**Independent Test**: A tester can start from an empty account, enter nickname, birth date, 2-3 focus directions, one current challenge, and 1-3 child traits, then receive today's companionship suggestion within 3 minutes.
 
 **Acceptance Scenarios**:
 
-1. **Given** a new parent has no existing family workspace, **When** they enter the child's nickname, birth date, and 2-3 focus directions, **Then** the system generates a today's companionship suggestion without requiring complete annual goals first.
-2. **Given** today's companionship suggestion is generated, **When** the parent opens the home dashboard, **Then** the suggestion is the most prominent action on the page.
-3. **Given** the parent wants to continue setup, **When** they proceed after the first suggestion, **Then** the system lets them complete interests, annual goals, and second-parent invitation.
+1. **Given** a new parent has no existing family workspace, **When** they enter the child's nickname, birth date, 2-3 focus directions, one current challenge, and 1-3 child traits, **Then** the system generates a today's companionship suggestion without requiring complete annual goals first.
+2. **Given** today's companionship suggestion is generated, **When** the parent reviews it, **Then** the suggestion references the child's age, current challenge, selected focus direction, and at least one child trait.
+3. **Given** today's companionship suggestion is generated, **When** the parent opens the home dashboard, **Then** the suggestion is the most prominent action on the page.
+4. **Given** the parent likes the suggestion, **When** they accept it, **Then** the system can add it to this week's plan or keep it as an accepted AI suggestion for later record creation.
+5. **Given** the parent wants to continue setup, **When** they proceed after the first suggestion, **Then** the system lets them complete interests, annual goals, and second-parent invitation.
 
 ---
 
@@ -185,6 +224,7 @@ Parents use the AI coach to ask parenting questions, generate activities, analyz
 3. **Given** at least one month of growth data exists, **When** a parent asks about recent growth, **Then** the coach summarizes physical development, reading habits, English exposure, piano interest, and emotional expression using available evidence.
 4. **Given** annual goals and recent completion data exist, **When** a parent asks the coach to generate this week's plan, **Then** the coach returns a weekly plan draft with theme, father tasks, mother tasks, child tasks, reading recommendation, English recommendation, and weekend activity.
 5. **Given** the AI coach has generated a weekly plan draft, **When** a parent confirms the draft, **Then** the system creates or replaces the official weekly plan; if the parent does not confirm, the official plan remains unchanged.
+6. **Given** an AI coach suggestion leads to a completed activity, **When** a parent chooses to record it, **Then** the system generates an editable growth record draft using the activity and parent note.
 
 ---
 
@@ -218,6 +258,7 @@ Parents capture meaningful growth moments with date, text, tags, notes, photos, 
 2. **Given** multiple records exist across different dates, **When** a parent opens the growth timeline, **Then** records are ordered by date and can be reviewed in month and year views.
 3. **Given** a record contains media, **When** a parent opens that record, **Then** the system displays the text and available photos or videos together.
 4. **Given** a growth record includes photos or videos, **When** AI coach context is assembled, **Then** the AI uses only the record's text, date, tags, and parent notes, not the media contents.
+5. **Given** a parent has completed a weekly task or accepted AI suggestion, **When** they choose to record the moment, **Then** the system offers an editable growth record draft instead of requiring the parent to start from a blank form.
 
 ---
 
@@ -288,6 +329,7 @@ Parents capture meaningful growth moments with date, text, tags, notes, photos, 
 - **FR-045**: Parents MUST be able to delete and restore growth records, interest participation records, and AI coach conversations within a 30-day restore window.
 - **FR-046**: Deleted growth records, interest participation records, and AI coach conversations MUST be excluded from AI coach context unless restored.
 - **FR-047**: The system MUST support a lightweight first-use flow that generates today's companionship suggestion from child nickname, birth date, and 2-3 focus directions before full annual goal setup.
+- **FR-047**: The system MUST support a lightweight first-use flow that generates today's companionship suggestion from child nickname, birth date, 2-3 focus directions, one current challenge, and 1-3 child traits before full annual goal setup.
 - **FR-048**: The dashboard MUST make today's recommended companionship action more visually prominent than weekly completion rate.
 - **FR-049**: The dashboard MUST provide a direct AI coach entry for asking "What should I do with my child today?" or an equivalent context-aware prompt.
 - **FR-050**: AI coach responses MUST include at least one concrete today-or-this-week action when the parent's question allows actionable guidance.
@@ -296,6 +338,12 @@ Parents capture meaningful growth moments with date, text, tags, notes, photos, 
 - **FR-053**: The system MUST allow measurement of first guidance generation, AI suggestion adoption, weekly plan confirmation, high-quality companionship action completion, growth record creation, next-week return, and parent-reported anxiety reduction.
 - **FR-054**: First-use focus directions MUST include reading habit, English exposure, physical activity, outdoor exploration, music or piano interest, swimming or sports, emotional expression, family relationship, and school readiness.
 - **FR-055**: AI coach responses MUST follow a reviewable quality pattern: child-specific context, likely interpretation, concrete action, gentle fallback, and evidence boundary when data is limited.
+- **FR-056**: First-use current challenge options MUST include interest resistance, reading difficulty, unclear English exposure, limited time tonight, weekend activity need, recent emotional sensitivity, decreased physical activity, and recent growth review.
+- **FR-057**: First-use child trait options MUST include active, sensitive, slow to warm up, likes praise, likes competition, strong-willed, easily frustrated, curious, and prefers routines.
+- **FR-058**: Today's companionship suggestions MUST reference child age, current challenge, selected focus direction, and at least one child trait when provided.
+- **FR-059**: Parents MUST be able to accept an AI suggestion and add it to the current weekly plan when it is action-oriented.
+- **FR-060**: The system MUST offer editable growth record drafts after completed weekly tasks, accepted AI suggestions, or short parent notes.
+- **FR-061**: Market-facing and first-use copy MUST present the product as an AI family companionship coach or today's companionship suggestion before presenting it as an operating system.
 
 ### Key Entities
 
@@ -337,13 +385,16 @@ Parents capture meaningful growth moments with date, text, tags, notes, photos, 
 - **SC-019**: AI coach context assembly excludes photo and video content in 100% of acceptance tests while still preserving media for timeline display.
 - **SC-020**: The MVP can be accepted without any standalone monthly or annual report module, report export, AI media analysis, medical diagnosis, mental health crisis intervention, AI proactive reminder, multi-child, social, or commercial workflow.
 - **SC-021**: Deleted growth records, interest participation records, and AI coach conversations can be restored within 30 days and are excluded from AI coach context while deleted in 100% of acceptance tests.
-- **SC-022**: A new parent can receive the first today's companionship suggestion within 3 minutes after entering child nickname, birth date, and 2-3 focus directions.
+- **SC-022**: A new parent can receive the first today's companionship suggestion within 3 minutes after entering child nickname, birth date, 2-3 focus directions, one current challenge, and 1-3 child traits.
 - **SC-023**: Parents can identify the primary answer to "how should I accompany my child today?" within 10 seconds on the dashboard.
 - **SC-024**: At least 90% of AI coach responses in acceptance tests include one concrete today-or-this-week action when the prompt is actionable.
 - **SC-025**: In usability review, parents describe progress language as supportive rather than pressure-inducing in at least 80% of sessions.
 - **SC-026**: At least 40% of weekly active families complete one high-quality family companionship action per week during the initial private MVP pilot.
 - **SC-027**: At least 90% of reviewed AI coach responses follow the quality pattern of child-specific context, likely interpretation, concrete action, gentle fallback, and evidence boundary when data is limited.
 - **SC-028**: Product metric review can report first guidance generation, AI suggestion adoption, weekly plan confirmation, high-quality companionship action completion, growth record creation, next-week return, and parent anxiety pulse for the private MVP pilot.
+- **SC-029**: At least 90% of first-guidance suggestions in acceptance testing reference child age, current challenge, selected focus direction, and at least one child trait.
+- **SC-030**: Parents can accept a first-guidance or AI coach suggestion and add it to the current weekly plan in under 30 seconds.
+- **SC-031**: Parents can create an editable growth record draft from a completed task, accepted AI suggestion, or short parent note in under 30 seconds.
 
 ## Assumptions
 

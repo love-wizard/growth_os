@@ -52,9 +52,14 @@ components:
           items:
             type: string
           minItems: 1
+        annualGoals:
+          type: array
+          items:
+            $ref: "#/components/schemas/AnnualGoalInput"
+          minItems: 1
     FirstGuidanceRequest:
       type: object
-      required: [childNickname, childBirthDate, focusDirections]
+      required: [childNickname, childBirthDate, focusDirections, currentChallenge, childTraits]
       properties:
         childNickname:
           type: string
@@ -67,6 +72,33 @@ components:
             type: string
           minItems: 2
           maxItems: 3
+        currentChallenge:
+          type: string
+          enum:
+            - interest_resistance
+            - reading_difficulty
+            - unclear_english_exposure
+            - limited_time_tonight
+            - weekend_activity_need
+            - emotional_sensitivity
+            - decreased_physical_activity
+            - recent_growth_review
+        childTraits:
+          type: array
+          items:
+            type: string
+            enum:
+              - active
+              - sensitive
+              - slow_to_warm_up
+              - likes_praise
+              - likes_competition
+              - strong_willed
+              - easily_frustrated
+              - curious
+              - prefers_routines
+          minItems: 1
+          maxItems: 3
     FirstGuidanceResponse:
       type: object
       required: [sessionId, todaySuggestion]
@@ -76,9 +108,13 @@ components:
           format: uuid
         todaySuggestion:
           type: object
-          required: [title, action, estimatedMinutes, whyItHelps]
+          required: [title, childSpecificContext, likelyInterpretation, action, estimatedMinutes, whyItHelps, gentleFallback]
           properties:
             title:
+              type: string
+            childSpecificContext:
+              type: string
+            likelyInterpretation:
               type: string
             action:
               type: string
@@ -87,11 +123,27 @@ components:
               minimum: 1
             whyItHelps:
               type: string
-        annualGoals:
-          type: array
-          items:
-            $ref: "#/components/schemas/AnnualGoalInput"
-          minItems: 1
+            gentleFallback:
+              type: string
+    AcceptSuggestionRequest:
+      type: object
+      properties:
+        addToWeeklyPlan:
+          type: boolean
+        taskAssigneeType:
+          type: string
+          enum: [father, mother, child, family]
+    GrowthRecordDraftRequest:
+      type: object
+      required: [sourceType, sourceId]
+      properties:
+        sourceType:
+          type: string
+          enum: [weekly_task, ai_suggestion, parent_note]
+        sourceId:
+          type: string
+        parentNote:
+          type: string
     InviteParentRequest:
       type: object
       required: [email, role]
@@ -256,6 +308,26 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/FirstGuidanceResponse"
+  /first-guidance/{sessionId}/accept:
+    post:
+      summary: Accept first-guidance suggestion
+      description: Marks a suggestion as accepted and optionally adds it to the current weekly plan.
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AcceptSuggestionRequest"
+      responses:
+        "200":
+          description: Suggestion accepted
   /onboarding:
     post:
       summary: Create family, child profile, interests, goals, and initial growth system
@@ -403,6 +475,18 @@ paths:
       responses:
         "201":
           description: Growth record created
+  /growth-record-drafts:
+    post:
+      summary: Create editable growth record draft from a completed task, accepted AI suggestion, or parent note
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GrowthRecordDraftRequest"
+      responses:
+        "201":
+          description: Growth record draft created
   /growth-records/{recordId}:
     delete:
       summary: Delete growth record with 30-day restore window

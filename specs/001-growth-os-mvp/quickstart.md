@@ -53,24 +53,26 @@ Open the app at `http://localhost:3000`.
 ## Primary Manual Verification Flow
 
 1. Sign in as first parent.
-2. Enter child nickname, birth date, and 2-3 focus directions.
-3. Verify today's companionship suggestion is generated within 3 minutes.
+2. Enter child nickname, birth date, 2-3 focus directions, one current challenge, and 1-3 child traits.
+3. Verify today's companionship suggestion is generated within 3 minutes and references child age, current challenge, focus direction, and at least one trait.
 4. Open dashboard and verify today's companionship suggestion is the primary visible action.
-5. Complete full child profile, interests, and annual goals.
-6. Generate initial growth system.
-7. Invite second parent and verify the same family workspace is used.
-8. Verify dashboard annual goals, weekly theme, supportive progress signal, AI coach entry, and today tasks.
-9. Open weekly plan and update completed counts.
-10. Create interest participation records for actual completed/missed/cancelled activity.
-11. Create growth records with text, tags, notes, and optional media.
-12. Ask AI coach each mode:
+5. Accept the suggestion and verify it can be added to the current weekly plan.
+6. Complete full child profile, interests, and annual goals.
+7. Generate initial growth system.
+8. Invite second parent and verify the same family workspace is used.
+9. Verify dashboard annual goals, weekly theme, supportive progress signal, AI coach entry, and today tasks.
+10. Open weekly plan and update completed counts.
+11. Create an editable growth record draft from a completed task or accepted AI suggestion.
+12. Create interest participation records for actual completed/missed/cancelled activity.
+13. Create growth records with text, tags, notes, and optional media.
+14. Ask AI coach each mode:
     - Parenting Q&A
     - Activity generation
     - On-demand growth analysis
     - Weekly plan draft generation
-13. Confirm an AI weekly plan draft and verify it becomes official only after confirmation.
-14. Delete and restore a growth record, interest participation record, and AI conversation.
-15. Verify deleted items are excluded from AI context while deleted.
+15. Confirm an AI weekly plan draft and verify it becomes official only after confirmation.
+16. Delete and restore a growth record, interest participation record, and AI conversation.
+17. Verify deleted items are excluded from AI context while deleted.
 
 ## Test Commands
 
@@ -83,6 +85,9 @@ Expected test coverage:
 
 - Weekly completion calculation
 - First guidance generation within 3 minutes
+- First guidance child-specific context and trait reference
+- Suggestion acceptance and add-to-plan flow
+- Growth record draft creation from task or accepted AI suggestion
 - Dashboard primary guidance hierarchy
 - Non-punitive progress language review
 - AI context window and deletion filtering

@@ -28,6 +28,24 @@
 - Require full annual goals before any useful output: rejected because it delays perceived value.
 - Let users browse an empty dashboard first: rejected because it fails the "what should I do today?" promise.
 
+## Decision: Optimize first-use flow for Aha moment, not just setup completion
+
+**Rationale**: Market pull depends on the parent feeling the product understands their child. First-use input should include current challenge and child traits, not only static profile fields, so the first suggestion can reference the child's age, challenge, focus direction, and personality pattern.
+
+**Alternatives considered**:
+
+- Static profile-only first guidance: rejected because it risks generic advice.
+- Full diagnostic assessment: rejected because it delays the first useful suggestion.
+
+## Decision: Let AI suggestions become plan actions or growth record drafts
+
+**Rationale**: The system should not rely on parents manually copying AI advice into plans or records. Accepted suggestions can become weekly plan tasks, and completed tasks or suggestions can generate editable growth record drafts, lowering recording friction and turning AI value into long-term memory.
+
+**Alternatives considered**:
+
+- AI chat only: rejected because it creates insight without follow-through.
+- Manual records only: rejected because recording effort is a major retention risk.
+
 ## Decision: Use Supabase Auth, Postgres, RLS, and private Storage
 
 **Rationale**: The data model is relational and centered on one family, parent membership, child records, weekly plans, and AI history. Supabase Row Level Security can enforce family membership at the database boundary, and Supabase Storage uses RLS-backed policies for media access. Supabase documentation recommends enabling RLS on exposed tables and notes that rows are inaccessible through public clients until policies exist.
