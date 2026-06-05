@@ -33,5 +33,6 @@
 
 - Validation passed after initial authoring.
 - Validation passed after adding AI Growth Coach to MVP scope on 2026-06-05.
+- Validation passed after locking Growth OS v0.1 MVP core modules and adding interest class management acceptance coverage on 2026-06-05.
 - The provided technical stack was intentionally excluded from this product specification because `/speckit.specify` requires technology-agnostic requirements. It should be carried into `/speckit.plan`.
-- Current workspace was empty and not a Git repository, so no actual Git branch was created. The spec uses the speckit-compatible identifier `001-growth-os-mvp`.
+- The spec uses the speckit-compatible identifier `001-growth-os-mvp`.
