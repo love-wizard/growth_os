@@ -221,6 +221,23 @@ components:
         draftId:
           type: string
           format: uuid
+    ProductMetricEventRequest:
+      type: object
+      required: [eventName]
+      properties:
+        eventName:
+          type: string
+          enum:
+            - first_guidance_generated
+            - ai_suggestion_adopted
+            - weekly_plan_confirmed
+            - companionship_action_completed
+            - growth_record_created
+            - next_week_returned
+            - parent_anxiety_pulse_recorded
+        eventProperties:
+          type: object
+          additionalProperties: true
 paths:
   /first-guidance:
     post:
@@ -412,3 +429,16 @@ paths:
       responses:
         "200":
           description: Record restored
+  /product-events:
+    post:
+      summary: Record privacy-conscious product metric event
+      description: Records family-scoped MVP learning events without child ranking or comparative scoring.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductMetricEventRequest"
+      responses:
+        "202":
+          description: Event accepted

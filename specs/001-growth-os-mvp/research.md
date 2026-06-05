@@ -9,14 +9,15 @@
 - Separate frontend/backend services: rejected for v0.1 because Supabase already provides auth, database, storage, and generated APIs.
 - Mobile-first native app: rejected for v0.1 because the product needs fast iteration and can work well as a responsive web app.
 
-## Decision: Focus v0.1 on parents of children aged 3-8
+## Decision: Treat ages 3-8 as the v0.1 beachhead, not the long-term product boundary
 
-**Rationale**: The core use cases in the spec, including reading habits, English exposure, piano interest, swimming, emotional expression, and school readiness, are most coherent for families with children aged 3-8. This age focus reduces AI advice ambiguity and keeps activity recommendations developmentally appropriate.
+**Rationale**: The long-term product opportunity includes early childhood companionship, school-age companionship, and adolescent companionship. v0.1 focuses on ages 3-8 because parent involvement is high, daily companionship decisions are frequent, and the current use cases, including reading habits, English exposure, piano interest, swimming, emotional expression, family relationship, and school readiness, are most coherent in this first segment. This beachhead reduces AI advice ambiguity while preserving room to expand.
 
 **Alternatives considered**:
 
-- All child ages: rejected because weekly plan intensity, parent involvement, and AI advice would become too broad.
+- All child ages in v0.1: rejected because weekly plan intensity, parent involvement, and AI advice would become too broad.
 - Infants/toddlers only: rejected because interest participation, reading habit, and early English/piano goals would be less central.
+- Adolescents first: rejected for v0.1 because adolescent companionship involves different privacy, autonomy, identity, and parent-control boundaries.
 
 ## Decision: Deliver today's companionship suggestion before full setup
 

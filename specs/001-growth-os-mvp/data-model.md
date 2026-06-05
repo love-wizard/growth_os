@@ -42,7 +42,7 @@ Rules:
 - Must generate a useful today's companionship suggestion from child nickname, birth date, and 2-3 focus directions.
 - Must not require full annual goals or second-parent invitation.
 - Can be converted into the full family workspace during onboarding.
-- Default child age segment is 3-8; suggestions outside that range must be conservative and age-aware.
+- v0.1 guidance is optimized for the 3-8 beachhead; suggestions outside that range must be conservative and age-aware.
 
 ### Family
 
@@ -342,6 +342,35 @@ Rules:
 - Insights do not trigger proactive reminders in v0.1.
 - Insights must be grounded in available records and plans.
 
+### ProductMetricEvent
+
+Privacy-conscious product learning event used to evaluate the private MVP pilot.
+
+Fields:
+
+- `id`
+- `family_id`
+- `user_id`
+- `event_name`
+- `event_properties`
+- `occurred_at`
+
+Recommended event names:
+
+- `first_guidance_generated`
+- `ai_suggestion_adopted`
+- `weekly_plan_confirmed`
+- `companionship_action_completed`
+- `growth_record_created`
+- `next_week_returned`
+- `parent_anxiety_pulse_recorded`
+
+Rules:
+
+- Events are used for product learning, not child ranking or social comparison.
+- `companionship_action_completed` should map to at least one concrete parent-child action, such as a completed weekly task, interest participation record, growth record, or accepted AI suggestion.
+- Parent anxiety pulse should be optional and lightweight.
+
 ## Relationships
 
 - `Family` has many `FamilyMember`
@@ -350,6 +379,7 @@ Rules:
 - `WeeklyPlan` has many `WeeklyTask`
 - `GrowthRecord` has many `GrowthRecordMedia`
 - `AIConversation` can have one `AIWeeklyPlanDraft`
+- `Family` has many `ProductMetricEvent`
 
 ## RLS Policy Shape
 

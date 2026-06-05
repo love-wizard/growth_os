@@ -7,9 +7,9 @@
 
 ## Summary
 
-Build Growth OS v0.1 as a private family web application for parents of 3-8 year-old children: one family, one child, two parent accounts, weekly growth planning, interest participation records, growth archive, and an AI growth coach. The implementation will use a Next.js TypeScript app backed by Supabase Auth, Postgres, Row Level Security, Supabase Storage, and server-side OpenAI Responses API calls with structured outputs for AI coach modes and weekly plan drafts.
+Build Growth OS v0.1 as the first beachhead of a broader family companionship system. The long-term product can support early childhood, school-age, and adolescent companionship; v0.1 focuses on parents of 3-8 year-old children with one family, one child, two parent accounts, weekly growth planning, interest participation records, growth archive, and an AI growth coach. The implementation will use a Next.js TypeScript app backed by Supabase Auth, Postgres, Row Level Security, Supabase Storage, and server-side OpenAI Responses API calls with structured outputs for AI coach modes and weekly plan drafts.
 
-The core architecture keeps family data private by default, enforces father/mother access through family membership rows, stores photos/videos for display only, excludes deleted records and media contents from AI context, and requires parent confirmation before AI-generated weekly plan drafts become official plans. The product experience prioritizes getting parents to a useful "what should I do today?" answer before full setup is complete.
+The core architecture keeps family data private by default, enforces father/mother access through family membership rows, stores photos/videos for display only, excludes deleted records and media contents from AI context, and requires parent confirmation before AI-generated weekly plan drafts become official plans. The product experience prioritizes getting parents to a useful "what should I do today?" answer before full setup is complete, then measures whether families complete at least one high-quality companionship action per week.
 
 ## Technical Context
 
@@ -20,8 +20,8 @@ The core architecture keeps family data private by default, enforces father/moth
 **Target Platform**: Responsive web app, deployed as a server-rendered Next.js application with Supabase managed backend  
 **Project Type**: Web application with integrated frontend, route handlers, server actions, and Supabase backend  
 **Performance Goals**: First today's companionship suggestion generated within 3 minutes of first use; dashboard primary guidance identifiable within 10 seconds; dashboard and weekly plan p95 under 1.5s after auth; AI non-streaming first useful response target under 8s; non-AI mutations visible after refresh or navigation within 1s  
-**Constraints**: Default child age segment 3-8; one family and one child in v0.1; two parent accounts; no child account; AI context limited to 4 weeks of weekly plans and 90 days of interest/growth records; AI does not analyze media; deleted records excluded from AI context; 30-day restore window; progress language must be supportive and non-punitive  
-**Scale/Scope**: v0.1 private household MVP for high-engagement parents, roughly 20-30 app screens/states, low concurrency, designed to support later multi-family generalization without adding it now
+**Constraints**: v0.1 beachhead is ages 3-8; one family and one child in v0.1; two parent accounts; no child account; AI context limited to 4 weeks of weekly plans and 90 days of interest/growth records; AI does not analyze media; deleted records excluded from AI context; 30-day restore window; progress language must be supportive and non-punitive; product metrics must avoid child ranking or comparative scoring  
+**Scale/Scope**: v0.1 private household MVP for high-engagement early-childhood parents, roughly 20-30 app screens/states, low concurrency, designed to support later school-age, adolescent, and multi-family generalization without adding those workflows now
 
 ## Constitution Check
 
@@ -34,6 +34,7 @@ The core architecture keeps family data private by default, enforces father/moth
 | Record growth, do not manufacture anxiety | PASS | Growth archive and AI analyses summarize evidence and state gaps instead of inventing milestones. |
 | Less check-in, more companionship | PASS | Tasks use simple count progress; no gamified streaks, rankings, or social comparison. |
 | First value before full setup | PASS | First-guidance flow generates today's companionship suggestion from minimal child context before full annual planning. |
+| Measurable product learning without pressure | PASS | Product events measure adoption and companionship actions without exposing child rankings or competitive analytics. |
 | Child privacy and family control | PASS | Supabase Auth + RLS + private Storage; AI excludes deleted data and media contents. |
 
 **Post-Design Recheck**: PASS. Phase 1 artifacts preserve the same constraints through data model deletion states, RLS policies, private media bucket, and AI context assembly rules.
@@ -86,6 +87,7 @@ components/
 lib/
 ├── ai/
 ├── auth/
+├── metrics/
 ├── supabase/
 ├── validation/
 └── dates/

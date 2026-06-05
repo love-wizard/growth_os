@@ -19,7 +19,21 @@ Growth OS v0.1 MVP includes these core modules:
 
 ## Product Positioning
 
-Growth OS v0.1 serves parents of children aged 3-8, especially families who already care about long-term growth but do not want a high-pressure education product. The primary user is a parent who wants concrete guidance for companionship, not a child using a learning app.
+Growth OS is a long-term family companionship system for parents across a child's growth stages. The long-term product can support early childhood companionship, school-age companionship, and adolescent companionship. Growth OS v0.1 uses families with children aged 3-8 as the first beachhead because this stage has strong parent involvement, frequent companionship decisions, and concrete daily routines around reading, movement, expression, and early interests.
+
+The primary user is a parent who wants concrete guidance for companionship, not a child using a learning app.
+
+Long-term stage strategy:
+
+- Early childhood companionship: roughly ages 3-8, focused on routines, reading, physical activity, emotional expression, interests, family relationship, and school readiness
+- School-age companionship: roughly ages 9-12, focused on autonomy, study habits, friendships, interests, responsibility, and parent-child communication
+- Adolescent companionship: roughly ages 13-18, focused on identity, emotional resilience, long-term goals, family trust, peer relationships, and parent support without over-control
+
+v0.1 scope:
+
+- Start with early childhood companionship for ages 3-8.
+- Keep the product language broad enough for future school-age and adolescent companionship.
+- Do not build school-age or adolescent-specific workflows in v0.1.
 
 Core target families:
 
@@ -35,6 +49,14 @@ North star metric:
 
 - Percentage of families that complete at least one high-quality family companionship action per week.
 
+A high-quality family companionship action means:
+
+- A parent and child intentionally participate together, not only the child completing a task alone
+- The action is age-appropriate for the current child stage; v0.1 guidance is optimized for the 3-8 beachhead
+- The action connects to a current focus direction, annual goal, weekly theme, or real family relationship need
+- The action produces a concrete moment such as a completed weekly task, interest participation record, growth record, or accepted AI suggestion
+- The product describes the action in supportive language rather than as a pass/fail performance score
+
 Supporting product metrics:
 
 - First useful guidance generated within 3 minutes of first use
@@ -44,11 +66,24 @@ Supporting product metrics:
 - Next-week return rate
 - Parent-reported anxiety reduction after using the product
 
+Default first-use focus directions:
+
+- Reading habit
+- English exposure
+- Physical activity
+- Outdoor exploration
+- Music or piano interest
+- Swimming or sports
+- Emotional expression
+- Family relationship
+- School readiness
+
 ## Product Design Constraints
 
 - The home dashboard's primary question is "How should I accompany my child today?"
 - AI coach must be reachable from the dashboard and bottom navigation.
 - Every AI coach answer must include at least one concrete action for today or this week when the topic allows it.
+- AI coach answers should follow a consistent quality pattern: child-specific context, likely interpretation, concrete action, gentle fallback, and evidence boundary when data is limited.
 - Progress language must be supportive and non-punitive; avoid failure framing, rankings, streak pressure, and red warning-heavy states.
 - Weekly completion rate is a secondary operational signal, not the main emotional center of the experience.
 - The user-facing label for interest history should emphasize participation or practice records, not course administration.
@@ -258,6 +293,9 @@ Parents capture meaningful growth moments with date, text, tags, notes, photos, 
 - **FR-050**: AI coach responses MUST include at least one concrete today-or-this-week action when the parent's question allows actionable guidance.
 - **FR-051**: System copy and progress states MUST avoid ranking, streak pressure, punitive failure wording, and high-pressure academic framing.
 - **FR-052**: The product MUST use user-facing language such as "interest participation" or "practice records" for interest history; "class management" MUST be treated as an internal planning term only.
+- **FR-053**: The system MUST allow measurement of first guidance generation, AI suggestion adoption, weekly plan confirmation, high-quality companionship action completion, growth record creation, next-week return, and parent-reported anxiety reduction.
+- **FR-054**: First-use focus directions MUST include reading habit, English exposure, physical activity, outdoor exploration, music or piano interest, swimming or sports, emotional expression, family relationship, and school readiness.
+- **FR-055**: AI coach responses MUST follow a reviewable quality pattern: child-specific context, likely interpretation, concrete action, gentle fallback, and evidence boundary when data is limited.
 
 ### Key Entities
 
@@ -304,11 +342,14 @@ Parents capture meaningful growth moments with date, text, tags, notes, photos, 
 - **SC-024**: At least 90% of AI coach responses in acceptance tests include one concrete today-or-this-week action when the prompt is actionable.
 - **SC-025**: In usability review, parents describe progress language as supportive rather than pressure-inducing in at least 80% of sessions.
 - **SC-026**: At least 40% of weekly active families complete one high-quality family companionship action per week during the initial private MVP pilot.
+- **SC-027**: At least 90% of reviewed AI coach responses follow the quality pattern of child-specific context, likely interpretation, concrete action, gentle fallback, and evidence boundary when data is limited.
+- **SC-028**: Product metric review can report first guidance generation, AI suggestion adoption, weekly plan confirmation, high-quality companionship action completion, growth record creation, next-week return, and parent anxiety pulse for the private MVP pilot.
 
 ## Assumptions
 
 - The MVP serves one private household and is not designed for classrooms, tutors, relatives, or social sharing.
-- The default child age segment is 3-8 years old; guidance for children outside that range should be conservative and age-aware until future versions expand support.
+- Growth OS's long-term vision can cover early childhood, school-age, and adolescent companionship; v0.1 is optimized for the 3-8 beachhead.
+- Guidance for children outside the v0.1 beachhead should be conservative and age-aware until future versions explicitly expand support.
 - The strongest early user segment is high-engagement parents who want structured companionship without training-institution pressure.
 - Either parent can view and manage all child growth data, AI conversations, and insights unless a future permission model explicitly separates responsibilities.
 - Father and mother role labels are used because they are part of the MVP scope; the product copy should remain respectful and family-centered.
