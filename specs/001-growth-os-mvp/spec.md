@@ -17,6 +17,16 @@ Growth OS v0.1 MVP includes these core modules:
 - Growth archive
 - AI growth coach
 
+## Clarifications
+
+### Session 2026-06-05
+
+- Q: In v0.1, can father and mother see and manage all family data including AI conversations? -> A: Father and mother can view and manage all child growth data, AI conversations, and insights.
+- Q: What is the v0.1 scope of interest class management? -> A: Record only actual classes or practices that already happened.
+- Q: How should the AI coach handle medical, mental health crisis, or personal safety questions? -> A: Provide general companionship guidance and direct parents to professional or emergency help for risk scenarios.
+- Q: When the AI coach generates a weekly plan, does it become the official plan automatically? -> A: AI generates a draft, and a parent must confirm before it becomes the official weekly plan.
+- Q: Are standalone monthly and annual growth reports part of v0.1? -> A: No standalone report module in v0.1; AI coach can generate on-demand growth analysis.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Configure a Child Growth System (Priority: P1)
@@ -80,13 +90,14 @@ Parents use the AI coach to ask parenting questions, generate activities, analyz
 1. **Given** child profile, annual goals, recent weekly plans, interest class records, and growth records exist, **When** a parent asks "What should we do if the child does not want to practice piano?", **Then** the coach analyzes likely causes using available history and suggests concrete next actions.
 2. **Given** a parent says they only have 30 minutes tonight, **When** they ask for a parent-child activity, **Then** the coach returns an activity name, needed materials, activity steps, and growth purpose suited to the child's age and goals.
 3. **Given** at least one month of growth data exists, **When** a parent asks about recent growth, **Then** the coach summarizes physical development, reading habits, English exposure, piano interest, and emotional expression using available evidence.
-4. **Given** annual goals and recent completion data exist, **When** a parent asks the coach to generate this week's plan, **Then** the coach returns a weekly theme, father tasks, mother tasks, child tasks, reading recommendation, English recommendation, and weekend activity.
+4. **Given** annual goals and recent completion data exist, **When** a parent asks the coach to generate this week's plan, **Then** the coach returns a weekly plan draft with theme, father tasks, mother tasks, child tasks, reading recommendation, English recommendation, and weekend activity.
+5. **Given** the AI coach has generated a weekly plan draft, **When** a parent confirms the draft, **Then** the system creates or replaces the official weekly plan; if the parent does not confirm, the official plan remains unchanged.
 
 ---
 
 ### User Story 5 - Manage Interest Classes (Priority: P2)
 
-Parents record and review the child's interest class activity so Growth OS can understand real participation patterns and use them in weekly planning, growth records, and AI coaching.
+Parents record and review the child's actual interest class and practice activity so Growth OS can understand real participation patterns and use them in weekly planning, growth records, and AI coaching.
 
 **Why this priority**: Interest cultivation is a core v0.1 module, and class history is important context for understanding whether an interest is stable, overloaded, or declining.
 
@@ -94,7 +105,7 @@ Parents record and review the child's interest class activity so Growth OS can u
 
 **Acceptance Scenarios**:
 
-1. **Given** a child has selected interests, **When** a parent adds a class or practice record, **Then** the system saves the interest, date, duration or count, attendance status, and optional notes.
+1. **Given** a child has selected interests, **When** a parent adds a class or practice record that already happened, **Then** the system saves the interest, date, participation outcome, duration or count, and optional notes.
 2. **Given** multiple class records exist for an interest, **When** a parent reviews that interest, **Then** the system shows recent participation history in chronological order.
 3. **Given** interest class data exists, **When** the system generates weekly plans or AI coach answers, **Then** it can use recent class participation as context.
 
@@ -104,7 +115,7 @@ Parents record and review the child's interest class activity so Growth OS can u
 
 Parents capture meaningful growth moments with date, text, photos, and videos so the child's long-term growth trajectory is preserved.
 
-**Why this priority**: Growth records are the most important long-term module and provide source material for reports.
+**Why this priority**: Growth records are the most important long-term module and provide source material for AI growth analyses and insights.
 
 **Independent Test**: A tester can create growth records with text and media, then verify that the records appear correctly on the timeline.
 
@@ -116,20 +127,6 @@ Parents capture meaningful growth moments with date, text, photos, and videos so
 
 ---
 
-### User Story 7 - Review Monthly and Annual Growth Reports (Priority: P3)
-
-Parents receive monthly and annual summaries that transform accumulated records and plan progress into a warm, non-anxious view of the child's development.
-
-**Why this priority**: Reports reinforce long-termism and help parents reflect without turning the product into a scorekeeping tool.
-
-**Independent Test**: A tester can generate a monthly report from existing records and weekly progress, then verify it covers the required growth dimensions.
-
-**Acceptance Scenarios**:
-
-1. **Given** a month has ended and growth data exists, **When** the monthly report is generated, **Then** it summarizes physical development, reading habits, interest cultivation, English exposure, and emotional development.
-2. **Given** a year has ended and records exist, **When** the annual report is generated, **Then** it includes key growth moments, media collections, ability changes, and parent messages.
-3. **Given** an annual report exists, **When** a parent chooses to export it, **Then** the system provides a shareable document preserving report content and selected media references.
-
 ### Edge Cases
 
 - If the child is too young for a selected goal, the system should generate age-appropriate actions rather than reject the goal.
@@ -137,18 +134,19 @@ Parents receive monthly and annual summaries that transform accumulated records 
 - If media upload fails or is unavailable, the parent should still be able to save the text portion of a growth record.
 - If both parents update the same task near the same time, the final task progress should remain internally consistent and not exceed the planned count.
 - If the annual goal list is empty during onboarding, the system should require at least one goal before generating the growth system.
-- If historical records are sparse, reports should explain what can be summarized and avoid inventing unsupported milestones.
+- If historical records are sparse, AI growth analysis should explain what can be summarized and avoid inventing unsupported milestones.
 - If the AI coach lacks enough relevant data, it should clearly state the evidence gap and still provide age-appropriate, low-risk suggestions.
 - If a parent asks a broad parenting theory question, the AI coach should redirect the answer toward the child's profile, goals, and recent family context.
 - If a generated activity requires unavailable materials, the AI coach should provide a simple alternative.
-- If an interest class is cancelled, missed, or rescheduled, parents should be able to record the actual outcome without distorting completion history.
+- If an interest class is cancelled, missed, or rescheduled, parents should record the actual outcome after it happens without turning v0.1 into a future scheduling workflow.
+- If a parent asks about medical treatment, mental health crisis, self-harm, abuse, or immediate personal safety risk, the AI coach should avoid diagnosis or crisis handling and direct the parent to appropriate professional or emergency support.
 
 ## Requirements *(mandatory)*
 
 ### Functional Requirements
 
 - **FR-001**: The system MUST support exactly one family workspace containing exactly one child profile for the MVP.
-- **FR-002**: The system MUST support two parent accounts with distinct father and mother roles.
+- **FR-002**: The system MUST support two parent accounts with distinct father and mother roles, and both roles MUST be able to view and manage all child growth data, AI conversations, and insights in v0.1.
 - **FR-003**: The child MUST NOT need an independent account.
 - **FR-004**: The system MUST allow a parent to create and edit the child profile with name, nickname, birth date, and gender.
 - **FR-005**: The system MUST allow parents to select multiple child interests from piano, swimming, football, basketball, reading, drawing, building blocks, English, and custom interests.
@@ -166,43 +164,41 @@ Parents receive monthly and annual summaries that transform accumulated records 
 - **FR-017**: The system MUST allow parents to create growth records with date, text, and optional photos or videos.
 - **FR-018**: The system MUST display growth records in a chronological timeline.
 - **FR-019**: The timeline MUST support month view and year view.
-- **FR-020**: The system MUST generate monthly growth reports covering physical development, reading habits, interest cultivation, English exposure, and emotional development.
-- **FR-021**: The system MUST generate annual growth reports covering key growth moments, media collections, ability changes, and parent messages.
-- **FR-022**: Parents MUST be able to export annual growth reports as a shareable document.
-- **FR-023**: The system MUST use warm, non-anxious language that emphasizes companionship, long-term growth, and family relationship quality.
-- **FR-024**: The system MUST avoid presenting child growth as academic competition, training-institution progress, or high-pressure scorekeeping.
-- **FR-025**: The system MUST provide bottom navigation with Home, Weekly Plan, Growth Archive, AI Coach, and Profile destinations.
-- **FR-026**: The system MUST provide an AI coach home screen with quick question buttons for piano resistance, reading habit, English exposure, recent growth, and weekend activity suggestions.
-- **FR-027**: The system MUST provide a free-form AI coach question input with a clear parenting-question prompt.
-- **FR-028**: Every AI coach answer MUST be grounded in the available child profile, annual goals, recent weekly plans, interest class records, growth records, and historical growth data.
-- **FR-029**: AI coach context MUST include child age, gender, interests, annual goals, the most recent four weeks of weekly plan data, recent interest class records, and recent growth events when available.
-- **FR-030**: The AI coach MUST support parenting question answering with analysis of likely causes and practical next actions.
-- **FR-031**: The AI coach MUST support parent-child activity generation with activity name, needed materials, activity steps, and growth purpose.
-- **FR-032**: The AI coach MUST support recent growth analysis covering physical development, reading habits, English exposure, piano interest, and emotional expression when relevant data exists.
-- **FR-033**: The AI coach MUST support weekly plan generation using annual goals and recent completion data.
-- **FR-034**: AI coach weekly plan output MUST include weekly theme, father tasks, mother tasks, child tasks, reading recommendation, English recommendation, and weekend activity.
-- **FR-035**: AI coach answers MUST prioritize concrete, executable advice connected to growth goals.
-- **FR-036**: AI coach answers MUST avoid generic parenting theory, long lectures, and suggestions that do not fit the child's age.
-- **FR-037**: The system MUST keep a history of AI coach conversations including family, parent role, parent message, coach response, and creation time.
-- **FR-038**: The system MUST support AI-generated growth insights with child, insight type, title, content, and creation time.
-- **FR-039**: Parents MUST be able to create, edit, and review interest class records for the child's selected or custom interests.
-- **FR-040**: Each interest class record MUST include interest, date, participation outcome, and optional notes.
-- **FR-041**: Interest class records MUST be available as context for weekly plan generation, growth analysis, and AI coach answers.
-- **FR-042**: The MVP MUST NOT include AI proactive reminders, multiple children, multiple families, commercialization, social features, or child-owned accounts.
+- **FR-020**: The system MUST use warm, non-anxious language that emphasizes companionship, long-term growth, and family relationship quality.
+- **FR-021**: The system MUST avoid presenting child growth as academic competition, training-institution progress, or high-pressure scorekeeping.
+- **FR-022**: The system MUST provide bottom navigation with Home, Weekly Plan, Growth Archive, AI Coach, and Profile destinations.
+- **FR-023**: The system MUST provide an AI coach home screen with quick question buttons for piano resistance, reading habit, English exposure, recent growth, and weekend activity suggestions.
+- **FR-024**: The system MUST provide a free-form AI coach question input with a clear parenting-question prompt.
+- **FR-025**: Every AI coach answer MUST be grounded in the available child profile, annual goals, recent weekly plans, interest class records, growth records, and historical growth data.
+- **FR-026**: AI coach context MUST include child age, gender, interests, annual goals, the most recent four weeks of weekly plan data, recent interest class records, and recent growth events when available.
+- **FR-027**: The AI coach MUST support parenting question answering with analysis of likely causes and practical next actions.
+- **FR-028**: The AI coach MUST support parent-child activity generation with activity name, needed materials, activity steps, and growth purpose.
+- **FR-029**: The AI coach MUST support on-demand recent growth analysis covering physical development, reading habits, English exposure, piano interest, and emotional expression when relevant data exists.
+- **FR-030**: The AI coach MUST support weekly plan draft generation using annual goals and recent completion data.
+- **FR-031**: AI coach weekly plan draft output MUST include weekly theme, father tasks, mother tasks, child tasks, reading recommendation, English recommendation, and weekend activity.
+- **FR-032**: AI-generated weekly plan drafts MUST require parent confirmation before creating or replacing the official weekly plan.
+- **FR-033**: AI coach answers MUST prioritize concrete, executable advice connected to growth goals.
+- **FR-034**: AI coach answers MUST avoid generic parenting theory, long lectures, and suggestions that do not fit the child's age.
+- **FR-035**: The system MUST keep a history of AI coach conversations including family, parent role, parent message, coach response, and creation time.
+- **FR-036**: The system MUST support AI-generated growth insights with child, insight type, title, content, and creation time.
+- **FR-037**: Parents MUST be able to create, edit, and review records for interest classes or practices that already happened for the child's selected or custom interests.
+- **FR-038**: Each interest class record MUST include interest, date, participation outcome, duration or count, and optional notes.
+- **FR-039**: Interest class records MUST be available as context for weekly plan generation, growth analysis, and AI coach answers.
+- **FR-040**: The AI coach MUST provide only general companionship guidance for medical, mental health, or safety-adjacent questions and MUST direct parents to professional or emergency support for medical treatment, mental health crisis, self-harm, abuse, or immediate personal safety risk.
+- **FR-041**: The MVP MUST NOT include standalone monthly report pages, standalone annual report pages, report export, medical diagnosis, mental health crisis intervention, future course scheduling, recurring class rules, leave requests, make-up class management, AI proactive reminders, multiple children, multiple families, commercialization, social features, or child-owned accounts.
 
 ### Key Entities
 
-- **Family**: The single family workspace for the MVP; connects father account, mother account, child profile, plans, tasks, records, and reports.
-- **Parent Account**: A father or mother role that can configure the growth system, view plans, update tasks, create records, and review reports.
+- **Family**: The single family workspace for the MVP; connects father account, mother account, child profile, plans, tasks, records, AI conversations, and insights.
+- **Parent Account**: A father or mother role that can configure the growth system, view plans, update tasks, create records, and review AI growth analyses.
 - **Child Profile**: The growth subject; includes name, nickname, birth date, gender, interests, and current developmental context.
-- **Interest**: A selected or custom area used to personalize goals, plans, recommendations, and reports.
+- **Interest**: A selected or custom area used to personalize goals, plans, recommendations, AI analyses, and insights.
 - **Annual Goal**: A long-term growth direction such as swimming, piano interest, English exposure, reading habit, or school readiness.
 - **Monthly Theme**: A theme derived from annual goals that guides weekly planning within a month.
 - **Weekly Plan**: A role-based plan for the current week, including theme, tasks, weekend activity, and recommendations.
 - **Task**: A planned action assigned to father, mother, child, or family with a planned count and completion status.
 - **Growth Record**: A dated text, photo, or video record of a meaningful growth moment.
-- **Growth Report**: A monthly or annual summary generated from plans, task progress, growth records, and parent input.
-- **Interest Class Record**: A dated class or practice record for activities such as piano, swimming, English, or other interests; includes interest, participation outcome, optional notes, and evidence for planning and coaching.
+- **Interest Class Record**: A dated record for a class or practice that already happened for activities such as piano, swimming, English, or other interests; includes interest, participation outcome, duration or count, optional notes, and evidence for planning and coaching.
 - **AI Coach Conversation**: A parent question and coach response associated with family, parent role, and creation time.
 - **AI Growth Insight**: A generated observation about the child's growth pattern, such as stable piano practice or reduced reading activity, with type, title, content, and creation time.
 
@@ -216,28 +212,28 @@ Parents receive monthly and annual summaries that transform accumulated records 
 - **SC-004**: Weekly completion rate updates accurately after task progress changes in at least 99% of normal usage attempts.
 - **SC-005**: Parents can create a text-only growth record in under 60 seconds and a record with media in under 3 minutes, excluding time spent selecting media.
 - **SC-006**: Timeline month and year views correctly display all records for the selected period during acceptance testing.
-- **SC-007**: Monthly reports cover all five required growth dimensions when sufficient source data exists.
-- **SC-008**: Annual report export produces a readable shareable document containing key growth moments, selected media references, ability changes, and parent messages.
-- **SC-009**: In usability review, parents describe the product tone as supportive and non-anxious in at least 80% of feedback sessions.
-- **SC-010**: Parents can reach the AI coach from bottom navigation in one tap from the main app shell.
-- **SC-011**: At least 90% of AI coach answers in acceptance testing reference at least one relevant child-specific context item when such data exists.
-- **SC-012**: At least 90% of AI coach parenting answers include concrete next actions rather than only general explanation.
-- **SC-013**: Activity generation responses include activity name, needed materials, activity steps, and growth purpose in at least 95% of acceptance tests.
-- **SC-014**: Growth analysis responses cover all requested growth dimensions for which source data exists and explicitly identify dimensions with insufficient evidence.
-- **SC-015**: AI weekly plan generation includes all required sections in at least 95% of acceptance tests.
-- **SC-016**: In review of sample AI coach responses, no accepted response should include age-inappropriate or high-pressure advice.
-- **SC-017**: Parents can create an interest class record in under 60 seconds during acceptance testing.
-- **SC-018**: Recent interest class records are included in weekly planning or AI coach context in at least 90% of relevant acceptance tests.
-- **SC-019**: The MVP can be accepted without any AI proactive reminder, multi-child, social, or commercial workflow.
+- **SC-007**: In usability review, parents describe the product tone as supportive and non-anxious in at least 80% of feedback sessions.
+- **SC-008**: Parents can reach the AI coach from bottom navigation in one tap from the main app shell.
+- **SC-009**: At least 90% of AI coach answers in acceptance testing reference at least one relevant child-specific context item when such data exists.
+- **SC-010**: At least 90% of AI coach parenting answers include concrete next actions rather than only general explanation.
+- **SC-011**: Activity generation responses include activity name, needed materials, activity steps, and growth purpose in at least 95% of acceptance tests.
+- **SC-012**: On-demand AI growth analysis responses cover all requested growth dimensions for which source data exists and explicitly identify dimensions with insufficient evidence.
+- **SC-013**: AI weekly plan draft generation includes all required sections in at least 95% of acceptance tests.
+- **SC-014**: AI-generated weekly plan drafts do not create or replace the official weekly plan until a parent confirms them in 100% of acceptance tests.
+- **SC-015**: In review of sample AI coach responses, no accepted response should include age-inappropriate or high-pressure advice.
+- **SC-016**: Parents can create an actual interest class or practice record in under 60 seconds during acceptance testing.
+- **SC-017**: Recent interest class records are included in weekly planning or AI coach context in at least 90% of relevant acceptance tests.
+- **SC-018**: In safety-boundary acceptance tests, AI coach responses to medical treatment, mental health crisis, self-harm, abuse, or immediate personal safety risk prompts direct parents to professional or emergency support and do not provide diagnosis or crisis handling.
+- **SC-019**: The MVP can be accepted without any standalone monthly or annual report module, report export, medical diagnosis, mental health crisis intervention, AI proactive reminder, multi-child, social, or commercial workflow.
 
 ## Assumptions
 
 - The MVP serves one private household and is not designed for classrooms, tutors, relatives, or social sharing.
-- Either parent can perform setup and edit core data unless a future permission model explicitly separates responsibilities.
+- Either parent can view and manage all child growth data, AI conversations, and insights unless a future permission model explicitly separates responsibilities.
 - Father and mother role labels are used because they are part of the MVP scope; the product copy should remain respectful and family-centered.
 - "Current stage" can be inferred from child age and parent-provided goals unless later refined by a dedicated assessment flow.
-- Reports summarize available records and plan progress; they should not fabricate milestones when source data is missing.
-- Annual report export means a parent can obtain a portable, shareable document; exact file format and layout can be decided during planning.
+- AI growth analyses summarize available records and plan progress; they should not fabricate milestones when source data is missing.
+- Standalone monthly report pages, standalone annual report pages, and report export are outside v0.1 scope.
 - The AI coach should use the most relevant available family context by default; parents do not need to manually attach child data to each question.
 - AI proactive reminders are a later enhancement even though generated insights are part of the MVP.
-- Interest class management in v0.1 tracks participation and notes; tuition, billing, teacher communication, and scheduling automation are outside MVP scope.
+- Interest class management in v0.1 tracks actual participation, duration or count, and notes; tuition, billing, teacher communication, future scheduling, recurring class rules, leave requests, and make-up class management are outside MVP scope.
