@@ -1,0 +1,362 @@
+openapi: 3.1.0
+info:
+  title: Growth OS v0.1 MVP API
+  version: 0.1.0
+  description: Internal contract for the Growth OS v0.1 web app route handlers and Supabase-backed operations.
+servers:
+  - url: /api
+security:
+  - supabaseAuth: []
+components:
+  securitySchemes:
+    supabaseAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+    ChildProfileInput:
+      type: object
+      required: [name, nickname, birthDate, gender]
+      properties:
+        name:
+          type: string
+        nickname:
+          type: string
+        birthDate:
+          type: string
+          format: date
+        gender:
+          type: string
+    AnnualGoalInput:
+      type: object
+      required: [title]
+      properties:
+        title:
+          type: string
+        category:
+          type: string
+    OnboardingRequest:
+      type: object
+      required: [childProfile, interests, annualGoals]
+      properties:
+        childProfile:
+          $ref: "#/components/schemas/ChildProfileInput"
+        interests:
+          type: array
+          items:
+            type: string
+          minItems: 1
+        annualGoals:
+          type: array
+          items:
+            $ref: "#/components/schemas/AnnualGoalInput"
+          minItems: 1
+    InviteParentRequest:
+      type: object
+      required: [email, role]
+      properties:
+        email:
+          type: string
+          format: email
+        role:
+          type: string
+          enum: [father, mother]
+    WeeklyTask:
+      type: object
+      required: [id, title, assigneeType, plannedCount, completedCount, remainingCount, status]
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        assigneeType:
+          type: string
+          enum: [father, mother, child, family]
+        plannedCount:
+          type: integer
+          minimum: 0
+        completedCount:
+          type: integer
+          minimum: 0
+        remainingCount:
+          type: integer
+          minimum: 0
+        status:
+          type: string
+          enum: [not_started, in_progress, completed]
+    WeeklyPlan:
+      type: object
+      required: [id, theme, weekStartDate, weekEndDate, completionRate, tasks]
+      properties:
+        id:
+          type: string
+          format: uuid
+        theme:
+          type: string
+        weekStartDate:
+          type: string
+          format: date
+        weekEndDate:
+          type: string
+          format: date
+        completionRate:
+          type: number
+          minimum: 0
+          maximum: 1
+        readingRecommendation:
+          type: string
+        englishRecommendation:
+          type: string
+        weekendActivity:
+          type: string
+        tasks:
+          type: array
+          items:
+            $ref: "#/components/schemas/WeeklyTask"
+    UpdateTaskProgressRequest:
+      type: object
+      required: [completedCount]
+      properties:
+        completedCount:
+          type: integer
+          minimum: 0
+    InterestClassRecordInput:
+      type: object
+      required: [interestId, happenedOn, participationOutcome]
+      properties:
+        interestId:
+          type: string
+          format: uuid
+        happenedOn:
+          type: string
+          format: date
+        participationOutcome:
+          type: string
+          enum: [completed, missed, cancelled, rescheduled]
+        durationMinutes:
+          type: integer
+          minimum: 0
+        count:
+          type: integer
+          minimum: 0
+        notes:
+          type: string
+    GrowthRecordInput:
+      type: object
+      required: [happenedOn, text]
+      properties:
+        happenedOn:
+          type: string
+          format: date
+        text:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        parentNotes:
+          type: string
+    AICoachRequest:
+      type: object
+      required: [mode, message]
+      properties:
+        mode:
+          type: string
+          enum: [parenting_qa, activity_generation, growth_analysis, weekly_plan_draft]
+        message:
+          type: string
+    AICoachResponse:
+      type: object
+      required: [conversationId, mode, response]
+      properties:
+        conversationId:
+          type: string
+          format: uuid
+        mode:
+          type: string
+        response:
+          type: object
+        draftId:
+          type: string
+          format: uuid
+paths:
+  /onboarding:
+    post:
+      summary: Create family, child profile, interests, goals, and initial growth system
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OnboardingRequest"
+      responses:
+        "201":
+          description: Family workspace created
+        "400":
+          description: Missing required onboarding data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /family/invite:
+    post:
+      summary: Invite second parent to the existing family
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InviteParentRequest"
+      responses:
+        "200":
+          description: Invitation created
+  /dashboard:
+    get:
+      summary: Get dashboard data
+      responses:
+        "200":
+          description: Dashboard payload with goals, theme, completion rate, and today tasks
+  /weekly-plan/current:
+    get:
+      summary: Get current official weekly plan
+      responses:
+        "200":
+          description: Current weekly plan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WeeklyPlan"
+  /weekly-plan/tasks/{taskId}/progress:
+    patch:
+      summary: Update completed count for a weekly task
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateTaskProgressRequest"
+      responses:
+        "200":
+          description: Task progress updated
+        "422":
+          description: Completed count exceeds planned count
+  /ai/coach:
+    post:
+      summary: Ask AI growth coach
+      description: Server assembles family context and calls AI. Media contents and deleted data are excluded.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AICoachRequest"
+      responses:
+        "200":
+          description: AI coach response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AICoachResponse"
+  /ai/weekly-plan-drafts/{draftId}/confirm:
+    post:
+      summary: Confirm AI weekly plan draft as official plan
+      parameters:
+        - name: draftId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Draft confirmed and official plan created or replaced
+  /interest-class-records:
+    post:
+      summary: Create actual interest class or practice record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InterestClassRecordInput"
+      responses:
+        "201":
+          description: Interest class record created
+  /interest-class-records/{recordId}:
+    delete:
+      summary: Delete interest class record with 30-day restore window
+      parameters:
+        - name: recordId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "204":
+          description: Record deleted
+  /interest-class-records/{recordId}/restore:
+    post:
+      summary: Restore deleted interest class record within restore window
+      parameters:
+        - name: recordId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Record restored
+  /growth-records:
+    post:
+      summary: Create growth record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GrowthRecordInput"
+      responses:
+        "201":
+          description: Growth record created
+  /growth-records/{recordId}:
+    delete:
+      summary: Delete growth record with 30-day restore window
+      parameters:
+        - name: recordId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "204":
+          description: Record deleted
+  /growth-records/{recordId}/restore:
+    post:
+      summary: Restore deleted growth record within restore window
+      parameters:
+        - name: recordId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Record restored
