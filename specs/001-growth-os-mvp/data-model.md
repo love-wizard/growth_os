@@ -2,7 +2,7 @@
 
 ## Overview
 
-The model supports exactly one family workspace and one child profile in v0.1, while still using family-scoped tables so future multi-family support does not require rewriting every relationship. Supabase Auth owns user identities; application tables store family membership, child data, plans, records, and AI history.
+The model supports exactly one family workspace and one child profile in v0.1, while still using family-scoped tables so future multi-family support does not require rewriting every relationship. Supabase Auth owns user identities; application tables store family membership, child data, plans, records, and AI history. A lightweight first-guidance session can exist before full onboarding so parents receive value before completing the full growth system.
 
 ## Common Fields
 
@@ -21,6 +21,28 @@ Restorable records include:
 Deleted records are hidden from normal reads and excluded from AI context unless restored.
 
 ## Entities
+
+### FirstGuidanceSession
+
+Temporary first-use context used to generate today's companionship suggestion before full onboarding is complete.
+
+Fields:
+
+- `id`
+- `user_id`
+- `child_nickname`
+- `child_birth_date`
+- `focus_directions`
+- `today_suggestion`
+- `converted_family_id`
+- `created_at`
+
+Rules:
+
+- Must generate a useful today's companionship suggestion from child nickname, birth date, and 2-3 focus directions.
+- Must not require full annual goals or second-parent invitation.
+- Can be converted into the full family workspace during onboarding.
+- Default child age segment is 3-8; suggestions outside that range must be conservative and age-aware.
 
 ### Family
 
@@ -182,9 +204,9 @@ Rules:
 - `completed_count` cannot exceed `planned_count`.
 - Weekly completion rate is `sum(completed_count) / sum(planned_count)` across all tasks.
 
-### InterestClassRecord
+### InterestParticipationRecord
 
-Actual completed, missed, cancelled, or rescheduled class/practice history.
+Actual completed, missed, cancelled, or rescheduled participation/practice history.
 
 Fields:
 
@@ -324,7 +346,7 @@ Rules:
 
 - `Family` has many `FamilyMember`
 - `Family` has one `ChildProfile`
-- `ChildProfile` has many `ChildInterest`, `AnnualGoal`, `MonthlyTheme`, `WeeklyPlan`, `InterestClassRecord`, `GrowthRecord`, `AIInsight`
+- `ChildProfile` has many `ChildInterest`, `AnnualGoal`, `MonthlyTheme`, `WeeklyPlan`, `InterestParticipationRecord`, `GrowthRecord`, `AIInsight`
 - `WeeklyPlan` has many `WeeklyTask`
 - `GrowthRecord` has many `GrowthRecordMedia`
 - `AIConversation` can have one `AIWeeklyPlanDraft`
@@ -346,7 +368,7 @@ Server-side context includes:
 - Child profile: age, gender, interests
 - Active annual goals
 - Most recent 4 weeks of weekly plans and tasks
-- Most recent 90 days of non-deleted interest class records
+- Most recent 90 days of non-deleted interest participation records
 - Most recent 90 days of non-deleted growth records using text, dates, tags, and notes
 
 Context excludes:

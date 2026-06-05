@@ -52,6 +52,41 @@ components:
           items:
             type: string
           minItems: 1
+    FirstGuidanceRequest:
+      type: object
+      required: [childNickname, childBirthDate, focusDirections]
+      properties:
+        childNickname:
+          type: string
+        childBirthDate:
+          type: string
+          format: date
+        focusDirections:
+          type: array
+          items:
+            type: string
+          minItems: 2
+          maxItems: 3
+    FirstGuidanceResponse:
+      type: object
+      required: [sessionId, todaySuggestion]
+      properties:
+        sessionId:
+          type: string
+          format: uuid
+        todaySuggestion:
+          type: object
+          required: [title, action, estimatedMinutes, whyItHelps]
+          properties:
+            title:
+              type: string
+            action:
+              type: string
+            estimatedMinutes:
+              type: integer
+              minimum: 1
+            whyItHelps:
+              type: string
         annualGoals:
           type: array
           items:
@@ -127,7 +162,7 @@ components:
         completedCount:
           type: integer
           minimum: 0
-    InterestClassRecordInput:
+    InterestParticipationRecordInput:
       type: object
       required: [interestId, happenedOn, participationOutcome]
       properties:
@@ -187,6 +222,23 @@ components:
           type: string
           format: uuid
 paths:
+  /first-guidance:
+    post:
+      summary: Generate today's companionship suggestion before full onboarding
+      description: Creates a lightweight first-guidance session from child nickname, birth date, and 2-3 focus directions.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FirstGuidanceRequest"
+      responses:
+        "201":
+          description: Today's companionship suggestion generated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FirstGuidanceResponse"
   /onboarding:
     post:
       summary: Create family, child profile, interests, goals, and initial growth system
@@ -222,7 +274,7 @@ paths:
       summary: Get dashboard data
       responses:
         "200":
-          description: Dashboard payload with goals, theme, completion rate, and today tasks
+          description: Dashboard payload with primary today's companionship suggestion, goals, theme, supportive progress signal, AI coach entry, and today tasks
   /weekly-plan/current:
     get:
       summary: Get current official weekly plan
@@ -284,21 +336,21 @@ paths:
       responses:
         "200":
           description: Draft confirmed and official plan created or replaced
-  /interest-class-records:
+  /interest-participation-records:
     post:
-      summary: Create actual interest class or practice record
+      summary: Create actual interest participation or practice record
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/InterestClassRecordInput"
+              $ref: "#/components/schemas/InterestParticipationRecordInput"
       responses:
         "201":
-          description: Interest class record created
-  /interest-class-records/{recordId}:
+          description: Interest participation record created
+  /interest-participation-records/{recordId}:
     delete:
-      summary: Delete interest class record with 30-day restore window
+      summary: Delete interest participation record with 30-day restore window
       parameters:
         - name: recordId
           in: path
@@ -309,9 +361,9 @@ paths:
       responses:
         "204":
           description: Record deleted
-  /interest-class-records/{recordId}/restore:
+  /interest-participation-records/{recordId}/restore:
     post:
-      summary: Restore deleted interest class record within restore window
+      summary: Restore deleted interest participation record within restore window
       parameters:
         - name: recordId
           in: path

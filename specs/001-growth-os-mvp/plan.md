@@ -7,9 +7,9 @@
 
 ## Summary
 
-Build Growth OS v0.1 as a private family web application for one family, one child, two parent accounts, weekly growth planning, interest class records, growth archive, and an AI growth coach. The implementation will use a Next.js TypeScript app backed by Supabase Auth, Postgres, Row Level Security, Supabase Storage, and server-side OpenAI Responses API calls with structured outputs for AI coach modes and weekly plan drafts.
+Build Growth OS v0.1 as a private family web application for parents of 3-8 year-old children: one family, one child, two parent accounts, weekly growth planning, interest participation records, growth archive, and an AI growth coach. The implementation will use a Next.js TypeScript app backed by Supabase Auth, Postgres, Row Level Security, Supabase Storage, and server-side OpenAI Responses API calls with structured outputs for AI coach modes and weekly plan drafts.
 
-The core architecture keeps family data private by default, enforces father/mother access through family membership rows, stores photos/videos for display only, excludes deleted records and media contents from AI context, and requires parent confirmation before AI-generated weekly plan drafts become official plans.
+The core architecture keeps family data private by default, enforces father/mother access through family membership rows, stores photos/videos for display only, excludes deleted records and media contents from AI context, and requires parent confirmation before AI-generated weekly plan drafts become official plans. The product experience prioritizes getting parents to a useful "what should I do today?" answer before full setup is complete.
 
 ## Technical Context
 
@@ -19,9 +19,9 @@ The core architecture keeps family data private by default, enforces father/moth
 **Testing**: Vitest for unit tests, React Testing Library for component tests, Playwright for primary user journeys, Supabase local CLI for database/RLS integration tests  
 **Target Platform**: Responsive web app, deployed as a server-rendered Next.js application with Supabase managed backend  
 **Project Type**: Web application with integrated frontend, route handlers, server actions, and Supabase backend  
-**Performance Goals**: Dashboard and weekly plan p95 under 1.5s after auth; AI non-streaming first useful response target under 8s; non-AI mutations visible after refresh or navigation within 1s  
-**Constraints**: One family and one child in v0.1; two parent accounts; no child account; AI context limited to 4 weeks of weekly plans and 90 days of interest/growth records; AI does not analyze media; deleted records excluded from AI context; 30-day restore window  
-**Scale/Scope**: v0.1 private household MVP, roughly 20-30 app screens/states, low concurrency, designed to support later multi-family generalization without adding it now
+**Performance Goals**: First today's companionship suggestion generated within 3 minutes of first use; dashboard primary guidance identifiable within 10 seconds; dashboard and weekly plan p95 under 1.5s after auth; AI non-streaming first useful response target under 8s; non-AI mutations visible after refresh or navigation within 1s  
+**Constraints**: Default child age segment 3-8; one family and one child in v0.1; two parent accounts; no child account; AI context limited to 4 weeks of weekly plans and 90 days of interest/growth records; AI does not analyze media; deleted records excluded from AI context; 30-day restore window; progress language must be supportive and non-punitive  
+**Scale/Scope**: v0.1 private household MVP for high-engagement parents, roughly 20-30 app screens/states, low concurrency, designed to support later multi-family generalization without adding it now
 
 ## Constitution Check
 
@@ -29,10 +29,11 @@ The core architecture keeps family data private by default, enforces father/moth
 
 | Gate | Status | Implementation Response |
 |------|--------|-------------------------|
-| Help parents accompany child growth | PASS | Dashboard, weekly plan, and AI coach all center parent actions rather than child-facing learning flows. |
+| Help parents accompany child growth | PASS | Dashboard, weekly plan, and AI coach all center parent actions rather than child-facing learning flows; the first useful guidance path answers what to do today. |
 | Long-termism over score pressure | PASS | Completion is operational progress only; copy and AI prompts must avoid punitive language. |
 | Record growth, do not manufacture anxiety | PASS | Growth archive and AI analyses summarize evidence and state gaps instead of inventing milestones. |
 | Less check-in, more companionship | PASS | Tasks use simple count progress; no gamified streaks, rankings, or social comparison. |
+| First value before full setup | PASS | First-guidance flow generates today's companionship suggestion from minimal child context before full annual planning. |
 | Child privacy and family control | PASS | Supabase Auth + RLS + private Storage; AI excludes deleted data and media contents. |
 
 **Post-Design Recheck**: PASS. Phase 1 artifacts preserve the same constraints through data model deletion states, RLS policies, private media bucket, and AI context assembly rules.
@@ -67,10 +68,11 @@ app/
 ├── onboarding/
 ├── invite/
 └── api/
+    ├── first-guidance/
     ├── ai/
     ├── weekly-plans/
     ├── growth-records/
-    ├── interest-classes/
+    ├── interest-participation/
     └── storage/
 
 components/

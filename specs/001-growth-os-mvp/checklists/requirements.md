@@ -33,8 +33,9 @@
 
 - Validation passed after initial authoring.
 - Validation passed after adding AI Growth Coach to MVP scope on 2026-06-05.
-- Validation passed after locking Growth OS v0.1 MVP core modules and adding interest class management acceptance coverage on 2026-06-05.
-- Validation passed after `/speckit.clarify` session on 2026-06-05 resolved parent data visibility, interest class scope, AI safety boundaries, AI weekly plan confirmation, and standalone report scope.
+- Validation passed after locking Growth OS v0.1 MVP core modules and adding interest participation records acceptance coverage on 2026-06-05.
+- Validation passed after `/speckit.clarify` session on 2026-06-05 resolved parent data visibility, interest participation scope, AI safety boundaries, AI weekly plan confirmation, and standalone report scope.
 - Validation passed after second `/speckit.clarify` session on 2026-06-05 resolved parent invitation flow, AI media analysis scope, weekly task completion calculation, deletion/restore behavior, and AI context time windows.
+- Validation passed after product review updates on 2026-06-05 added 3-8 age focus, sharper target family definition, first-guidance path, dashboard-first guidance hierarchy, non-punitive progress constraints, and interest participation naming.
 - The provided technical stack was intentionally excluded from this product specification because `/speckit.specify` requires technology-agnostic requirements. It should be carried into `/speckit.plan`.
 - The spec uses the speckit-compatible identifier `001-growth-os-mvp`.

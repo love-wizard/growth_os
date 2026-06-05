@@ -9,6 +9,24 @@
 - Separate frontend/backend services: rejected for v0.1 because Supabase already provides auth, database, storage, and generated APIs.
 - Mobile-first native app: rejected for v0.1 because the product needs fast iteration and can work well as a responsive web app.
 
+## Decision: Focus v0.1 on parents of children aged 3-8
+
+**Rationale**: The core use cases in the spec, including reading habits, English exposure, piano interest, swimming, emotional expression, and school readiness, are most coherent for families with children aged 3-8. This age focus reduces AI advice ambiguity and keeps activity recommendations developmentally appropriate.
+
+**Alternatives considered**:
+
+- All child ages: rejected because weekly plan intensity, parent involvement, and AI advice would become too broad.
+- Infants/toddlers only: rejected because interest participation, reading habit, and early English/piano goals would be less central.
+
+## Decision: Deliver today's companionship suggestion before full setup
+
+**Rationale**: The product's first value should be concrete guidance, not completion of a planning system. A lightweight first-guidance flow using nickname, birth date, and 2-3 focus directions lets parents experience the core promise within 3 minutes.
+
+**Alternatives considered**:
+
+- Require full annual goals before any useful output: rejected because it delays perceived value.
+- Let users browse an empty dashboard first: rejected because it fails the "what should I do today?" promise.
+
 ## Decision: Use Supabase Auth, Postgres, RLS, and private Storage
 
 **Rationale**: The data model is relational and centered on one family, parent membership, child records, weekly plans, and AI history. Supabase Row Level Security can enforce family membership at the database boundary, and Supabase Storage uses RLS-backed policies for media access. Supabase documentation recommends enabling RLS on exposed tables and notes that rows are inaccessible through public clients until policies exist.
@@ -47,7 +65,7 @@
 
 ## Decision: Soft delete restorable family records
 
-**Rationale**: Growth records, interest class records, and AI conversations have a 30-day restore window. Use `deleted_at` and `restore_until` to remove them from normal views and AI context while allowing restoration.
+**Rationale**: Growth records, interest participation records, and AI conversations have a 30-day restore window. Use `deleted_at` and `restore_until` to remove them from normal views and AI context while allowing restoration.
 
 **Alternatives considered**:
 
