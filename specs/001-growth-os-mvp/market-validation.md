@@ -99,6 +99,7 @@ Target for private MVP pilot:
 - At least 40% accept or save a suggestion
 - At least 25% complete one companionship action within 7 days
 - At least 30% return in the next week
+- At least 35% enable one warm reminder type during reminder validation
 
 ## Private Beta Script
 
@@ -119,6 +120,8 @@ Success interview questions:
 - 哪句话最有用？哪句话最空？
 - 你有没有真的照做？为什么做或没做？
 - 它让你更轻松，还是更像一个新任务？
+- 如果它在晚上或周末温和提醒你一次，你会觉得有帮助还是打扰？
+- 如果部分回答由真人育儿专家审核过，你会更信任吗？会为此付费吗？
 - 你下周还会打开它问什么？
 
 ## MVP Funnel
@@ -131,7 +134,8 @@ Activation funnel:
 4. Parent accepts/saves suggestion
 5. Parent completes companionship action
 6. Parent records moment or creates growth record draft
-7. Parent returns next week
+7. Parent receives or opens an opt-in warm reminder
+8. Parent returns next week
 
 Key drop-off diagnosis:
 
@@ -140,7 +144,8 @@ Key drop-off diagnosis:
 - Step 3 -> 4 drop: suggestion not specific enough
 - Step 4 -> 5 drop: action too hard or badly timed
 - Step 5 -> 6 drop: recording friction too high
-- Step 6 -> 7 drop: no repeated weekly value
+- Step 6 -> 7 drop: reminders feel intrusive or are not tied to real family moments
+- Step 7 -> 8 drop: no repeated weekly value
 
 ## Messaging Experiments
 
@@ -185,6 +190,14 @@ Risk: Parents expect adolescent or medical/psychological support.
 
 - Mitigation: clearly state v0.1 early-childhood beachhead and safety boundaries.
 
+Risk: Notifications become another source of parent pressure.
+
+- Mitigation: make reminders opt-in, limit them to natural companionship moments, and measure downstream action plus parent sentiment rather than opens alone.
+
+Risk: Expert Q&A turns the product into an operationally heavy consulting service.
+
+- Mitigation: use experts first for AI quality review and limited asynchronous private beta Q&A; do not offer real-time expert chat, guaranteed response times, or paid consulting in v0.1.
+
 ## Investor Objection Response
 
 The skeptical investor case is useful because it identifies the riskiest assumptions:
@@ -195,6 +208,8 @@ The skeptical investor case is useful because it identifies the riskiest assumpt
 - Parents may not pay for growth records or planning alone.
 - Anti-anxiety positioning may reduce urgency.
 - Weekly planning may be a pseudo-need rather than the real purchase driver.
+- Return frequency may depend on reminders rather than intrinsic demand.
+- AI trust may remain weak without human expert calibration.
 
 Product response:
 
@@ -203,6 +218,8 @@ Product response:
 - Require every useful answer to connect child context to one concrete action.
 - Make accepted suggestions and completed actions flow into plans and growth record drafts.
 - Measure repeated action and next-week return before expanding scope.
+- Use opt-in warm reminders to test natural return moments without creating check-in pressure.
+- Use parenting experts to review AI answer quality and test whether limited human-backed Q&A increases trust.
 
 Validation response:
 
@@ -210,6 +227,8 @@ Validation response:
 - Compare Growth OS answers against generic AI answers for the same parent challenge.
 - Interview parents who did not act to separate weak advice, bad timing, and recording friction.
 - Keep scope frozen if parents describe the product as "another task" instead of "less uncertainty".
+- Measure whether reminders create completed companionship actions, not just notification opens.
+- Measure whether expert-reviewed or expert-answered guidance changes trust and willingness to pay.
 
 Detailed objection handling and kill criteria are maintained in [investor-risk-review.md](./investor-risk-review.md).
 
@@ -221,7 +240,10 @@ Do not broaden beyond private beta until:
 - Suggestion adoption rate reaches 40%
 - At least 25% complete one companionship action within 7 days
 - At least 30% of activated families return the next week
+- At least 35% of activated families enable one warm reminder type during reminder validation
+- At least 20% of opened reminders lead to suggestion generation, suggestion acceptance, completed action, or growth record draft creation
 - At least 80% of reviewed AI outputs pass the child-specific quality bar
+- At least 80% of expert-reviewed AI answer samples pass the quality and safety bar
 - At least 60% of parents in side-by-side review prefer the Growth OS answer over a generic AI answer for the same challenge
 - Parent feedback shows the product feels supportive rather than pressure-inducing
 
@@ -235,5 +257,8 @@ Do not build these until the first Aha loop works:
 - Class scheduling or billing
 - Full report export
 - Streak systems
+- Missed-task notification pressure
+- 24/7 real-time expert chat
+- Paid expert consultation workflows
 - Adolescent-specific privacy workflows
 - Marketplace recommendations

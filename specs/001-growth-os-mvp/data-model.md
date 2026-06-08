@@ -349,8 +349,57 @@ Fields:
 
 Rules:
 
-- Insights do not trigger proactive reminders in v0.1.
+- Insights do not trigger automatic high-pressure risk reminders in v0.1.
 - Insights must be grounded in available records and plans.
+
+### WarmReminderPreference
+
+Parent-controlled reminder settings for private beta engagement validation.
+
+Fields:
+
+- `id`
+- `family_id`
+- `user_id`
+- `reminder_type`
+- `enabled`
+- `preferred_window`
+- `created_at`
+- `updated_at`
+
+Allowed reminder types:
+
+- `evening_companionship`
+- `weekend_planning`
+- `accepted_suggestion_follow_up`
+- `weekly_reset`
+
+Rules:
+
+- Reminders are opt-in by type.
+- Disabled reminder types must not be sent.
+- Reminder copy must invite companionship and avoid missed-task warnings, streak pressure, red-alert completion drops, comparative child performance, or parent-failure wording.
+
+### ExpertQualityReview
+
+Private beta quality review of sampled AI coach answers by a human parenting expert.
+
+Fields:
+
+- `id`
+- `conversation_id`
+- `expert_reviewer_id`
+- `review_status`
+- `quality_scores`
+- `safety_boundary_passed`
+- `review_notes`
+- `created_at`
+
+Rules:
+
+- Expert review evaluates AI answer quality; it does not create medical, psychological, abuse, or safety intervention advice.
+- Review dimensions should include child-specific context, age appropriateness, concrete action, gentle fallback, non-pressure language, and safety boundary.
+- Real-time expert consulting and guaranteed response times are outside v0.1.
 
 ### ProductMetricEvent
 
@@ -373,6 +422,11 @@ Recommended event names:
 - `companionship_action_completed`
 - `growth_record_created`
 - `next_week_returned`
+- `warm_reminder_enabled`
+- `warm_reminder_opened`
+- `warm_reminder_action_completed`
+- `expert_review_completed`
+- `expert_qa_requested`
 - `parent_anxiety_pulse_recorded`
 
 Rules:
@@ -389,6 +443,8 @@ Rules:
 - `WeeklyPlan` has many `WeeklyTask`
 - `GrowthRecord` has many `GrowthRecordMedia`
 - `AIConversation` can have one `AIWeeklyPlanDraft`
+- `AIConversation` can have many `ExpertQualityReview`
+- `Family` has many `WarmReminderPreference`
 - `Family` has many `ProductMetricEvent`
 
 ## RLS Policy Shape

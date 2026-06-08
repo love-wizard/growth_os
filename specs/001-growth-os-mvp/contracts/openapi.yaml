@@ -286,15 +286,35 @@ components:
             - companionship_action_completed
             - growth_record_created
             - next_week_returned
+            - warm_reminder_enabled
+            - warm_reminder_opened
+            - warm_reminder_action_completed
+            - expert_review_completed
+            - expert_qa_requested
             - parent_anxiety_pulse_recorded
         eventProperties:
           type: object
           additionalProperties: true
+    NotificationPreferenceRequest:
+      type: object
+      required: [reminderType, enabled]
+      properties:
+        reminderType:
+          type: string
+          enum:
+            - evening_companionship
+            - weekend_planning
+            - accepted_suggestion_follow_up
+            - weekly_reset
+        enabled:
+          type: boolean
+        preferredWindow:
+          type: string
 paths:
   /first-guidance:
     post:
       summary: Generate today's companionship suggestion before full onboarding
-      description: Creates a lightweight first-guidance session from child nickname, birth date, and 2-3 focus directions.
+      description: Creates a lightweight first-guidance session from child nickname, birth date, 2-3 focus directions, one current challenge, and 1-3 child traits.
       requestBody:
         required: true
         content:
@@ -364,6 +384,19 @@ paths:
       responses:
         "200":
           description: Dashboard payload with primary today's companionship suggestion, goals, theme, supportive progress signal, AI coach entry, and today tasks
+  /notification-preferences:
+    patch:
+      summary: Update warm reminder preference
+      description: Enables or disables low-pressure companionship reminder types for the authenticated parent.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NotificationPreferenceRequest"
+      responses:
+        "200":
+          description: Warm reminder preference updated
   /weekly-plan/current:
     get:
       summary: Get current official weekly plan

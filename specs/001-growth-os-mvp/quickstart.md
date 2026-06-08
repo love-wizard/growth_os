@@ -71,8 +71,10 @@ Open the app at `http://localhost:3000`.
     - On-demand growth analysis
     - Weekly plan draft generation
 15. Confirm an AI weekly plan draft and verify it becomes official only after confirmation.
-16. Delete and restore a growth record, interest participation record, and AI conversation.
-17. Verify deleted items are excluded from AI context while deleted.
+16. Enable and disable one warm reminder type, then verify the preference is saved and reminder-related product events can be recorded.
+17. Verify sampled AI answers can be marked as expert-reviewed against the quality and safety bar during private beta validation.
+18. Delete and restore a growth record, interest participation record, and AI conversation.
+19. Verify deleted items are excluded from AI context while deleted.
 
 ## Test Commands
 
@@ -96,3 +98,5 @@ Expected test coverage:
 - Parent invitation flow
 - Weekly plan draft confirmation
 - Growth archive month/year views
+- Warm reminder opt-in, suppression, and conversion events
+- Expert review quality bar and bounded asynchronous Q&A labeling

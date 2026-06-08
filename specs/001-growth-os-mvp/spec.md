@@ -17,6 +17,14 @@ Growth OS v0.1 MVP includes these core modules:
 - Growth archive
 - AI growth coach
 
+v0.1 validation additions:
+
+- Optional warm companionship reminders for private beta engagement validation
+- Human parenting expert quality review for AI answer calibration
+- Limited asynchronous expert Q&A experiment for private beta trust validation
+
+v0.1 must not become a real-time expert consulting marketplace or a pressure-based reminder system.
+
 ## Product Positioning
 
 Growth OS is a long-term family companionship system for parents across a child's growth stages. The long-term product can support early childhood companionship, school-age companionship, and adolescent companionship. Growth OS v0.1 uses families with children aged 3-8 as the first beachhead because this stage has strong parent involvement, frequent companionship decisions, and concrete daily routines around reading, movement, expression, and early interests.
@@ -74,9 +82,11 @@ Supporting product metrics:
 
 - First useful guidance generated within 3 minutes of first use
 - AI suggestion adoption rate
+- Warm reminder opt-in and downstream action rate
 - Weekly plan confirmation rate
 - Growth record creation rate
 - Next-week return rate
+- Expert-reviewed AI answer pass rate
 - Parent-reported anxiety reduction after using the product
 
 Private beta launch gates:
@@ -84,6 +94,7 @@ Private beta launch gates:
 - At least 60% of invited parents complete first guidance
 - At least 40% accept or save a suggestion
 - At least 25% complete one companionship action within 7 days
+- At least 35% of activated families enable at least one warm reminder type during reminder validation
 - At least 80% of reviewed AI outputs pass the child-specific quality bar
 - Parent feedback indicates the product feels supportive rather than pressure-inducing
 
@@ -93,6 +104,8 @@ Investor-risk response:
 - If the first Aha loop does not show repeated use, the product should not expand into reports, multi-child workflows, adolescent support, marketplace recommendations, or broader family management.
 - The practical wedge is "today's companionship decision", not annual planning, weekly completion, or growth archiving by themselves.
 - The product must be meaningfully better than a generic AI chat by using persistent child context, saving accepted suggestions, inserting actions into plans, and turning completed actions into growth record drafts.
+- Warm reminders address return-frequency risk, but their success is measured by downstream companionship actions rather than notification opens alone.
+- Human expert involvement addresses trust risk by calibrating AI quality and testing limited asynchronous Q&A, not by turning the product into a heavy real-time consulting service.
 
 Default first-use focus directions:
 
@@ -141,6 +154,9 @@ Default child trait options:
 - Weekly plans should act as a support layer for today's companionship guidance rather than a project-management experience parents must maintain.
 - The user-facing label for interest history should emphasize participation or practice records, not course administration.
 - Growth records should be created as a low-friction byproduct of real activity whenever possible, such as after task completion, accepted AI suggestions, or short parent notes.
+- Notifications must be opt-in, low-pressure, and tied to natural companionship moments such as evenings, weekends, accepted suggestion follow-up, and weekly reset.
+- Notifications must avoid missed-task warnings, streak pressure, red-alert completion drops, comparative child performance messages, or wording that implies parent failure.
+- Human expert Q&A in v0.1, if tested, must be limited, asynchronous, and clearly bounded away from medical, mental health, abuse, or safety intervention.
 
 ## Clarifications
 
@@ -279,6 +295,24 @@ Parents capture meaningful growth moments with date, text, tags, notes, photos, 
 
 ---
 
+### User Story 8 - Receive Warm Reminders and Trust-Calibrated Guidance (Priority: P2)
+
+Parents can opt into gentle reminders that bring them back to real companionship moments, while the product team can review AI answer quality with human parenting experts during private beta.
+
+**Why this priority**: Reminders address return-frequency risk, and expert review addresses AI trust risk without making reminders or expert consultation the core product.
+
+**Independent Test**: A tester can enable and disable reminder types, verify reminder-related product events can be measured, and verify that expert review or expert Q&A is clearly labeled as bounded companionship guidance rather than medical, psychological, or crisis support.
+
+**Acceptance Scenarios**:
+
+1. **Given** a parent is in settings, **When** they enable warm reminders, **Then** they can choose from evening companionship, weekend planning, accepted suggestion follow-up, and weekly reset reminder types.
+2. **Given** warm reminders are enabled, **When** a reminder is shown or opened, **Then** the system can record whether it led to AI suggestion generation, suggestion acceptance, completed companionship action, or growth record draft creation.
+3. **Given** a parent disables a reminder type, **When** the next reminder window arrives, **Then** that disabled reminder type is not sent.
+4. **Given** the product team reviews AI output quality with a parenting expert, **When** the expert completes review, **Then** the review uses the AI quality bar and safety boundary rather than subjective approval alone.
+5. **Given** limited expert Q&A is tested in private beta, **When** a parent asks an expert question, **Then** the answer is asynchronous, clearly bounded, and does not promise diagnosis, crisis handling, or guaranteed real-time support.
+
+---
+
 ### Edge Cases
 
 - If the child is too young for a selected goal, the system should generate age-appropriate actions rather than reject the goal.
@@ -294,6 +328,9 @@ Parents capture meaningful growth moments with date, text, tags, notes, photos, 
 - If a parent asks about medical treatment, mental health crisis, self-harm, abuse, or immediate personal safety risk, the AI coach should avoid diagnosis or crisis handling and direct the parent to appropriate professional or emergency support.
 - If a parent deletes a growth record, interest participation record, or AI conversation by mistake, they should be able to restore it within 30 days.
 - If a record or conversation is deleted but still within the restore window, the AI coach should exclude it from future context unless it is restored.
+- If a reminder is triggered after a parent has disabled that reminder type, the reminder should be suppressed.
+- If a reminder would frame a missed task as failure, the system should use a neutral companionship invitation or skip the reminder.
+- If an expert Q&A question asks for diagnosis, crisis handling, abuse response, or immediate safety intervention, the response should follow the same professional-support boundary as the AI coach.
 
 ## Requirements *(mandatory)*
 
@@ -342,7 +379,7 @@ Parents capture meaningful growth moments with date, text, tags, notes, photos, 
 - **FR-041**: Interest participation records MUST be available as context for weekly plan generation, growth analysis, and AI coach answers.
 - **FR-042**: The AI coach MUST provide only general companionship guidance for medical, mental health, or safety-adjacent questions and MUST direct parents to professional or emergency support for medical treatment, mental health crisis, self-harm, abuse, or immediate personal safety risk.
 - **FR-043**: The AI coach MUST NOT analyze photo or video content from growth records in v0.1; attached media is stored and displayed only.
-- **FR-044**: The MVP MUST NOT include standalone monthly report pages, standalone annual report pages, report export, AI analysis of photo or video content, medical diagnosis, mental health crisis intervention, future course scheduling, recurring class rules, leave requests, make-up class management, AI proactive reminders, multiple children, multiple families, commercialization, social features, or child-owned accounts.
+- **FR-044**: The MVP MUST NOT include standalone monthly report pages, standalone annual report pages, report export, AI analysis of photo or video content, medical diagnosis, mental health crisis intervention, future course scheduling, recurring class rules, leave requests, make-up class management, high-pressure AI proactive risk reminders, multiple children, multiple families, commercialization, social features, real-time expert consulting marketplace, or child-owned accounts.
 - **FR-045**: Parents MUST be able to delete and restore growth records, interest participation records, and AI coach conversations within a 30-day restore window.
 - **FR-046**: Deleted growth records, interest participation records, and AI coach conversations MUST be excluded from AI coach context unless restored.
 - **FR-047**: The system MUST support a lightweight first-use flow that generates today's companionship suggestion from child nickname, birth date, 2-3 focus directions, one current challenge, and 1-3 child traits before full annual goal setup.
@@ -362,6 +399,11 @@ Parents capture meaningful growth moments with date, text, tags, notes, photos, 
 - **FR-061**: Market-facing and first-use copy MUST present the product as an AI family companionship coach or today's companionship suggestion before presenting it as an operating system.
 - **FR-062**: The system MUST allow product review to distinguish the repeated Aha loop stages: first guidance generated, suggestion accepted or saved, companionship action completed, growth record draft created, and next-week return.
 - **FR-063**: The product MUST NOT make weekly completion rate, annual planning, or growth archive browsing the primary first-use success state before today's companionship suggestion has been generated.
+- **FR-064**: The system MUST allow parents to opt into and opt out of warm reminder types for evening companionship, weekend planning, accepted suggestion follow-up, and weekly reset.
+- **FR-065**: Warm reminder copy MUST invite companionship and MUST NOT use missed-task warnings, streak pressure, red-alert completion drops, comparative child performance messages, or parent-failure wording.
+- **FR-066**: The system MUST allow product review to measure reminder opt-in, reminder open, AI suggestion generation after reminder, suggestion acceptance after reminder, companionship action completion after reminder, and growth record draft creation after reminder.
+- **FR-067**: The product MUST support expert quality review of sampled AI answers against the AI quality bar and safety boundary during private beta.
+- **FR-068**: Limited expert Q&A, if tested in private beta, MUST be asynchronous, bounded, and clearly separated from medical, psychological, abuse, or immediate safety intervention.
 
 ### Key Entities
 
@@ -377,6 +419,8 @@ Parents capture meaningful growth moments with date, text, tags, notes, photos, 
 - **Interest Participation Record**: A dated record for a class or practice that already happened for activities such as piano, swimming, English, or other interests; includes interest, participation outcome, duration or count, optional notes, deletion or restore state, and evidence for planning and coaching.
 - **AI Coach Conversation**: A parent question and coach response associated with family, parent role, creation time, and deletion or restore state.
 - **AI Growth Insight**: A generated observation about the child's growth pattern, such as stable piano practice or reduced reading activity, with type, title, content, and creation time.
+- **Warm Reminder Preference**: A parent-controlled setting for reminder categories such as evening companionship, weekend planning, accepted suggestion follow-up, and weekly reset.
+- **Expert Quality Review**: A private beta review of sampled AI answers by a parenting expert against the product's quality and safety standards.
 
 ## Success Criteria *(mandatory)*
 
@@ -401,7 +445,7 @@ Parents capture meaningful growth moments with date, text, tags, notes, photos, 
 - **SC-017**: Interest participation records from the most recent 90 days are included in weekly planning or AI coach context in at least 90% of relevant acceptance tests.
 - **SC-018**: In safety-boundary acceptance tests, AI coach responses to medical treatment, mental health crisis, self-harm, abuse, or immediate personal safety risk prompts direct parents to professional or emergency support and do not provide diagnosis or crisis handling.
 - **SC-019**: AI coach context assembly excludes photo and video content in 100% of acceptance tests while still preserving media for timeline display.
-- **SC-020**: The MVP can be accepted without any standalone monthly or annual report module, report export, AI media analysis, medical diagnosis, mental health crisis intervention, AI proactive reminder, multi-child, social, or commercial workflow.
+- **SC-020**: The MVP can be accepted without any standalone monthly or annual report module, report export, AI media analysis, medical diagnosis, mental health crisis intervention, high-pressure AI proactive risk reminder, multi-child, social, commercial workflow, or real-time expert consulting marketplace.
 - **SC-021**: Deleted growth records, interest participation records, and AI coach conversations can be restored within 30 days and are excluded from AI coach context while deleted in 100% of acceptance tests.
 - **SC-022**: A new parent can receive the first today's companionship suggestion within 3 minutes after entering child nickname, birth date, 2-3 focus directions, one current challenge, and 1-3 child traits.
 - **SC-023**: Parents can identify the primary answer to "how should I accompany my child today?" within 10 seconds on the dashboard.
@@ -415,6 +459,10 @@ Parents capture meaningful growth moments with date, text, tags, notes, photos, 
 - **SC-031**: Parents can create an editable growth record draft from a completed task, accepted AI suggestion, or short parent note in under 30 seconds.
 - **SC-032**: At least 30% of activated families return in the next week with a new question, accepted suggestion, completed action, or growth record during the private MVP pilot.
 - **SC-033**: In side-by-side private-beta review, at least 60% of parents prefer the Growth OS answer over a generic AI answer for the same parenting challenge because it is more child-specific, concrete, or lower-conflict.
+- **SC-034**: At least 35% of activated families enable at least one warm reminder type during reminder validation.
+- **SC-035**: At least 20% of opened warm reminders lead to AI suggestion generation, suggestion acceptance, completed companionship action, or growth record draft creation during private beta validation.
+- **SC-036**: At least 80% of parent feedback about reminders describes them as supportive or acceptable rather than intrusive during private beta validation.
+- **SC-037**: At least 80% of expert-reviewed AI answer samples pass the child-specific, age-appropriate, concrete-action, gentle-fallback, non-pressure, and safety-boundary quality bar.
 
 ## Assumptions
 
@@ -430,7 +478,8 @@ Parents capture meaningful growth moments with date, text, tags, notes, photos, 
 - Standalone monthly report pages, standalone annual report pages, and report export are outside v0.1 scope.
 - The AI coach should use the most relevant available family context by default; parents do not need to manually attach child data to each question.
 - AI coach context uses the most recent 4 weeks of weekly plans and the most recent 90 days of interest participation records and growth records by default.
-- AI proactive reminders are a later enhancement even though generated insights are part of the MVP.
+- Optional warm reminders are allowed for private beta engagement validation, but AI-generated risk alerts and high-pressure proactive reminders are later enhancements.
+- Human parenting experts can calibrate AI answer quality and participate in limited asynchronous private beta Q&A; real-time expert consulting, guaranteed response times, paid expert services, and professional diagnosis are outside v0.1 scope.
 - Interest participation records in v0.1 track actual participation, duration or count, and notes; tuition, billing, teacher communication, future scheduling, recurring class rules, leave requests, and make-up class management are outside MVP scope.
 - Deletion in v0.1 means parent-visible removal with a 30-day restore window.
 - Investor objections should be treated as validation inputs; expansion is blocked until the first Aha loop is proven with private-beta behavior, not just positive concept feedback.

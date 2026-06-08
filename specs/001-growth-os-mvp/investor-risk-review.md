@@ -17,7 +17,8 @@ The product response is to narrow v0.1 around one repeated loop:
 3. AI uses child-specific context to recommend one practical action.
 4. Parent accepts or tries the action.
 5. The result becomes a lightweight growth record.
-6. The parent returns when the next companionship friction appears.
+6. An opt-in warm reminder may bring the parent back at a natural family moment.
+7. The parent returns when the next companionship friction appears.
 
 If this loop does not work, the product should not expand into a broader family growth system.
 
@@ -36,9 +37,11 @@ The long-term "Growth OS" architecture remains useful only after the product pro
 | Investor Objection | Product Response | Validation Signal |
 |-------------------|------------------|-------------------|
 | Parents will not build a daily habit around this. | Do not require daily check-ins; optimize for recurring real frictions such as piano resistance, reading drop-off, limited evening time, and weekend planning. | At least 30% of activated families return the next week with a new question or action. |
+| Parents may forget to return even if the first answer is useful. | Use opt-in warm reminders tied to evenings, weekends, accepted suggestion follow-up, and weekly reset. Avoid task warnings and streak pressure. | At least 35% enable one reminder type; at least 20% of opened reminders lead to a downstream action. |
 | Cold start requires too much data entry. | First value must happen before full setup. Ask only nickname, birth date, 2-3 focus directions, one current challenge, and 1-3 traits. | First guidance generated within 3 minutes for at least 60% of invited parents. |
 | AI advice will sound generic. | Every reviewed answer must include child-specific context, likely interpretation, concrete action, gentle fallback, and an evidence boundary. | At least 80% of reviewed outputs pass the "sounds like my child" quality bar. |
 | Parents can already ask ChatGPT. | Growth OS must win through persistent child context, action saving, weekly plan insertion, and growth record drafts, not through chat alone. | At least 40% of generated suggestions are accepted or saved. |
+| Parents may not trust AI guidance for parenting. | Use human parenting experts to review answer samples and run limited asynchronous private beta Q&A, while preserving AI as the scalable core. | At least 80% of expert-reviewed samples pass the quality and safety bar; parents report higher trust in expert-reviewed guidance. |
 | Recording data is a chore. | Records should be generated from completed actions, accepted suggestions, or short notes, not required before value. | At least 25% of families complete one action within 7 days; record draft creation friction stays under 30 seconds. |
 | Anti-anxiety positioning reduces commercial urgency. | Sell relief from concrete daily friction, not abstract anxiety reduction. | Parents report the product reduced today's uncertainty without feeling like a new task. |
 | Weekly plans may be a pseudo-need. | Treat weekly plans as a support layer for today's guidance, not the emotional center or primary sales message. | Dashboard users identify today's companionship action faster than weekly completion status. |
@@ -106,6 +109,38 @@ Pass threshold:
 - At least 60% prefer the Growth OS answer.
 - Preference reasons mention child-specific context, concrete action, or lower conflict.
 
+### Experiment 4: Warm Reminder Conversion
+
+Goal: determine whether reminders improve frequency without creating pressure.
+
+Method:
+
+- Let private beta families opt into evening, weekend, accepted suggestion follow-up, and weekly reset reminders.
+- Track reminder open, suggestion generation after reminder, suggestion acceptance after reminder, companionship action completion after reminder, and record draft creation after reminder.
+- Ask parents whether reminders felt supportive, neutral, or intrusive.
+
+Pass threshold:
+
+- At least 35% enable one reminder type.
+- At least 20% of opened reminders lead to a downstream action.
+- At least 80% of feedback describes reminders as supportive or acceptable.
+
+### Experiment 5: Expert Trust Layer
+
+Goal: determine whether human expert review increases trust and willingness to pay without turning the MVP into a consulting business.
+
+Method:
+
+- Ask parenting experts to review a sample of AI coach answers using the product quality bar.
+- Offer a limited asynchronous expert Q&A trial to selected private beta families.
+- Compare trust and willingness-to-pay feedback for AI-only, expert-reviewed, and expert-answered guidance.
+
+Pass threshold:
+
+- At least 80% of expert-reviewed AI answer samples pass the quality and safety bar.
+- Parents report higher trust for expert-reviewed or expert-answered guidance.
+- Expert workflow remains asynchronous and operationally bounded.
+
 ## Kill Criteria
 
 Pause expansion and revisit positioning if any of these persist after two focused product iterations:
@@ -116,6 +151,8 @@ Pause expansion and revisit positioning if any of these persist after two focuse
 - Parents consistently describe answers as generic, theoretical, or not fitting their child.
 - Parents say the product creates more work than relief.
 - Usage concentrates only around one-time curiosity with no second-week return.
+- Reminders are described as intrusive or pressure-inducing by more than 20% of participating families.
+- Expert Q&A demand cannot be served asynchronously without creating heavy operations or safety risk.
 
 ## Product Constraints From This Review
 
@@ -124,5 +161,6 @@ Pause expansion and revisit positioning if any of these persist after two focuse
 - First-use input must stay lightweight until the first suggestion is generated.
 - AI output quality must be reviewed with concrete examples, not only model-level confidence.
 - Growth records should mostly emerge after real actions.
+- Reminders are a frequency tool, not the product's core value; if reminders do not lead to actions, they should be reduced or removed.
+- Expert involvement is a trust and quality layer, not the scalable core loop; real-time expert consulting is outside v0.1.
 - v0.1 must not expand beyond the 3-8 beachhead until the Aha loop is proven.
-
