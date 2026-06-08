@@ -73,8 +73,10 @@ Open the app at `http://localhost:3000`.
 15. Confirm an AI weekly plan draft and verify it becomes official only after confirmation.
 16. Enable and disable one warm reminder type, then verify the preference is saved and reminder-related product events can be recorded.
 17. Verify sampled AI answers can be marked as expert-reviewed against the quality and safety bar during private beta validation.
-18. Delete and restore a growth record, interest participation record, and AI conversation.
-19. Verify deleted items are excluded from AI context while deleted.
+18. Record validation events for organic second-week return, reminder-driven return, generic-AI comparison, expert trust feedback, payment intent, and parent pressure sentiment.
+19. Verify the product event set can populate the investment validation scorecard without child ranking or social comparison.
+20. Delete and restore a growth record, interest participation record, and AI conversation.
+21. Verify deleted items are excluded from AI context while deleted.
 
 ## Test Commands
 
@@ -100,3 +102,5 @@ Expected test coverage:
 - Growth archive month/year views
 - Warm reminder opt-in, suppression, and conversion events
 - Expert review quality bar and bounded asynchronous Q&A labeling
+- Investment validation scorecard event coverage
+- Payment-intent signal recording without payment workflow implementation

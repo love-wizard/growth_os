@@ -422,9 +422,14 @@ Recommended event names:
 - `companionship_action_completed`
 - `growth_record_created`
 - `next_week_returned`
+- `organic_second_week_returned`
+- `reminder_driven_second_week_returned`
 - `warm_reminder_enabled`
 - `warm_reminder_opened`
 - `warm_reminder_action_completed`
+- `generic_ai_comparison_recorded`
+- `payment_intent_recorded`
+- `expert_trust_feedback_recorded`
 - `expert_review_completed`
 - `expert_qa_requested`
 - `parent_anxiety_pulse_recorded`
@@ -433,7 +438,40 @@ Rules:
 
 - Events are used for product learning, not child ranking or social comparison.
 - `companionship_action_completed` should map to at least one concrete parent-child action, such as a completed weekly task, interest participation record, growth record, or accepted AI suggestion.
+- `payment_intent_recorded` captures package and price preference only; it does not imply payment collection or subscription management in v0.1.
 - Parent anxiety pulse should be optional and lightweight.
+
+### PaymentIntentSignal
+
+Private beta payment-intent signal collected during interviews or in-product survey.
+
+Fields:
+
+- `id`
+- `family_id`
+- `package_concept`
+- `price_point`
+- `intent_level`
+- `reason`
+- `created_at`
+
+Package concepts:
+
+- `basic_ai_archive`
+- `plus_monthly_analysis`
+- `high_trust_expert_reviewed`
+
+Price points:
+
+- `rmb_19_month`
+- `rmb_29_month`
+- `rmb_49_month`
+
+Rules:
+
+- This is a validation signal, not a payment workflow.
+- Strong intent requires selecting a package and price the parent says they would realistically pay.
+- Do not store payment details in v0.1.
 
 ## Relationships
 
@@ -446,6 +484,7 @@ Rules:
 - `AIConversation` can have many `ExpertQualityReview`
 - `Family` has many `WarmReminderPreference`
 - `Family` has many `ProductMetricEvent`
+- `Family` has many `PaymentIntentSignal`
 
 ## RLS Policy Shape
 

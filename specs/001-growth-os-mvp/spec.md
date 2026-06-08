@@ -25,6 +25,13 @@ v0.1 validation additions:
 
 v0.1 must not become a real-time expert consulting marketplace or a pressure-based reminder system.
 
+v0.1 validation mode:
+
+- Treat v0.1 as a 14-day validation MVP before treating it as a feature-complete product.
+- Recruit 30 high-pain private beta families, prioritizing children aged 4-7 with a recent piano or interest-practice conflict, reading interruption, unclear English exposure, or limited evening companionship time.
+- Use the investment validation scorecard to decide whether to expand scope.
+- Defer features that do not improve first guidance completion, suggestion acceptance, companionship action completion, organic second-week return, generic-AI comparison win rate, willingness to pay, trust, or parent pressure sentiment.
+
 ## Product Positioning
 
 Growth OS is a long-term family companionship system for parents across a child's growth stages. The long-term product can support early childhood companionship, school-age companionship, and adolescent companionship. Growth OS v0.1 uses families with children aged 3-8 as the first beachhead because this stage has strong parent involvement, frequent companionship decisions, and concrete daily routines around reading, movement, expression, and early interests.
@@ -55,6 +62,7 @@ Core target families:
 - Parents in high-engagement households who are willing to accompany the child but lack a weekly structure
 - Families with 1-3 active growth directions such as reading, English exposure, piano, swimming, outdoor activity, or emotional expression
 - Parents who want to avoid both "training institution" pressure and fully unstructured parenting
+- For private beta validation, broad growth-interest families are lower priority than high-pain families with a recent companionship conflict.
 
 Core product promise:
 
@@ -82,10 +90,14 @@ Supporting product metrics:
 
 - First useful guidance generated within 3 minutes of first use
 - AI suggestion adoption rate
+- Seven-day companionship action rate
 - Warm reminder opt-in and downstream action rate
 - Weekly plan confirmation rate
 - Growth record creation rate
+- Organic second-week return rate
 - Next-week return rate
+- Generic AI comparison win rate
+- Payment intent at RMB 19/29/49 per month
 - Expert-reviewed AI answer pass rate
 - Parent-reported anxiety reduction after using the product
 
@@ -94,6 +106,8 @@ Private beta launch gates:
 - At least 60% of invited parents complete first guidance
 - At least 40% accept or save a suggestion
 - At least 25% complete one companionship action within 7 days
+- At least 20% return organically in the second week without reminder entry
+- At least 15% show strong payment intent for one tested package at RMB 19/29/49 per month
 - At least 35% of activated families enable at least one warm reminder type during reminder validation
 - At least 80% of reviewed AI outputs pass the child-specific quality bar
 - Parent feedback indicates the product feels supportive rather than pressure-inducing
@@ -106,6 +120,9 @@ Investor-risk response:
 - The product must be meaningfully better than a generic AI chat by using persistent child context, saving accepted suggestions, inserting actions into plans, and turning completed actions into growth record drafts.
 - Warm reminders address return-frequency risk, but their success is measured by downstream companionship actions rather than notification opens alone.
 - Human expert involvement addresses trust risk by calibrating AI quality and testing limited asynchronous Q&A, not by turning the product into a heavy real-time consulting service.
+- Natural return must be measured separately from reminder-driven return so notifications do not hide weak intrinsic demand.
+- Expert trust experiments should start with internal answer review and small label tests; a user-facing "ask an expert" entry is not required for v0.1 validation.
+- Commercial validation should test package and price intent before building subscription or payment workflows.
 
 Default first-use focus directions:
 
@@ -404,6 +421,11 @@ Parents can opt into gentle reminders that bring them back to real companionship
 - **FR-066**: The system MUST allow product review to measure reminder opt-in, reminder open, AI suggestion generation after reminder, suggestion acceptance after reminder, companionship action completion after reminder, and growth record draft creation after reminder.
 - **FR-067**: The product MUST support expert quality review of sampled AI answers against the AI quality bar and safety boundary during private beta.
 - **FR-068**: Limited expert Q&A, if tested in private beta, MUST be asynchronous, bounded, and clearly separated from medical, psychological, abuse, or immediate safety intervention.
+- **FR-069**: The system MUST allow private beta review to distinguish organic second-week return from reminder-driven second-week return.
+- **FR-070**: The system MUST allow private beta review to record generic-AI comparison preference for the same parent challenge.
+- **FR-071**: The system MUST allow private beta review to record payment intent for tested package concepts at RMB 19, RMB 29, and RMB 49 per month without requiring payment workflow implementation.
+- **FR-072**: Expert trust experiments MUST start with internal answer review, expert-reviewed labels, or limited asynchronous tests; a prominent user-facing "ask an expert" entry MUST NOT be required for v0.1 validation.
+- **FR-073**: Proposed v0.1 scope additions MUST be evaluated against the investment validation scorecard before being added to the MVP.
 
 ### Key Entities
 
@@ -421,6 +443,7 @@ Parents can opt into gentle reminders that bring them back to real companionship
 - **AI Growth Insight**: A generated observation about the child's growth pattern, such as stable piano practice or reduced reading activity, with type, title, content, and creation time.
 - **Warm Reminder Preference**: A parent-controlled setting for reminder categories such as evening companionship, weekend planning, accepted suggestion follow-up, and weekly reset.
 - **Expert Quality Review**: A private beta review of sampled AI answers by a parenting expert against the product's quality and safety standards.
+- **Investment Validation Scorecard**: A private beta decision artifact that tracks first guidance completion, suggestion acceptance, seven-day action, growth record draft creation, organic and reminder-driven return, generic-AI comparison, expert trust, payment intent, and parent pressure sentiment.
 
 ## Success Criteria *(mandatory)*
 
@@ -463,6 +486,9 @@ Parents can opt into gentle reminders that bring them back to real companionship
 - **SC-035**: At least 20% of opened warm reminders lead to AI suggestion generation, suggestion acceptance, completed companionship action, or growth record draft creation during private beta validation.
 - **SC-036**: At least 80% of parent feedback about reminders describes them as supportive or acceptable rather than intrusive during private beta validation.
 - **SC-037**: At least 80% of expert-reviewed AI answer samples pass the child-specific, age-appropriate, concrete-action, gentle-fallback, non-pressure, and safety-boundary quality bar.
+- **SC-038**: At least 20% of activated families return organically in the second week without reminder entry during private beta validation.
+- **SC-039**: At least 15% of pilot families express strong payment intent for one tested package at RMB 19, RMB 29, or RMB 49 per month.
+- **SC-040**: At least 80% of private beta families match the high-pain recruitment profile of child age 4-7, one ongoing interest or habit direction, and a real companionship friction in the last 30 days.
 
 ## Assumptions
 
@@ -470,6 +496,7 @@ Parents can opt into gentle reminders that bring them back to real companionship
 - Growth OS's long-term vision can cover early childhood, school-age, and adolescent companionship; v0.1 is optimized for the 3-8 beachhead.
 - Guidance for children outside the v0.1 beachhead should be conservative and age-aware until future versions explicitly expand support.
 - The strongest early user segment is high-engagement parents who want structured companionship without training-institution pressure.
+- The private beta should prioritize high-pain families over broad positive-feedback families, because urgency and willingness to pay matter more than concept approval.
 - Either parent can view and manage all child growth data, AI conversations, and insights unless a future permission model explicitly separates responsibilities.
 - Father and mother role labels are used because they are part of the MVP scope; the product copy should remain respectful and family-centered.
 - "Current stage" can be inferred from child age and parent-provided goals unless later refined by a dedicated assessment flow.
@@ -480,6 +507,7 @@ Parents can opt into gentle reminders that bring them back to real companionship
 - AI coach context uses the most recent 4 weeks of weekly plans and the most recent 90 days of interest participation records and growth records by default.
 - Optional warm reminders are allowed for private beta engagement validation, but AI-generated risk alerts and high-pressure proactive reminders are later enhancements.
 - Human parenting experts can calibrate AI answer quality and participate in limited asynchronous private beta Q&A; real-time expert consulting, guaranteed response times, paid expert services, and professional diagnosis are outside v0.1 scope.
+- Payment intent testing is part of private beta validation; subscription, payment collection, and commercial workflows are outside v0.1 implementation scope.
 - Interest participation records in v0.1 track actual participation, duration or count, and notes; tuition, billing, teacher communication, future scheduling, recurring class rules, leave requests, and make-up class management are outside MVP scope.
 - Deletion in v0.1 means parent-visible removal with a 30-day restore window.
 - Investor objections should be treated as validation inputs; expansion is blocked until the first Aha loop is proven with private-beta behavior, not just positive concept feedback.

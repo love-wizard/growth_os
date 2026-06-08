@@ -41,6 +41,8 @@ Measure:
 
 - Reminder opt-in rate
 - Reminder open rate
+- Organic second-week return rate
+- Reminder-driven second-week return rate
 - AI suggestion generation after reminder
 - Suggestion acceptance after reminder
 - Companionship action completion after reminder
@@ -50,6 +52,7 @@ Private beta pass signal:
 
 - At least 35% of activated families enable one reminder type.
 - At least 20% of reminder opens lead to a generated suggestion, accepted suggestion, completed action, or growth record draft.
+- At least 20% of activated families return organically in the second week without reminder entry.
 - At least 80% of feedback about reminders describes them as supportive or acceptable rather than intrusive.
 
 ## Trust Strategy: Human Expert Layer
@@ -59,7 +62,7 @@ Human parenting experts should improve trust and quality without replacing the A
 v0.1 expert involvement has three layers:
 
 1. Expert quality review
-2. Private beta expert Q&A experiment
+2. Expert-reviewed label experiment
 3. Future paid expert services
 
 ### Layer 1: Expert Quality Review
@@ -75,19 +78,20 @@ Experts review a sample of AI answers against the product quality bar:
 
 This is part of product quality assurance and can happen before or during private beta.
 
-### Layer 2: Private Beta Expert Q&A Experiment
+### Layer 2: Expert-Reviewed Label Experiment
 
-The product may test limited expert Q&A during private beta, but it should be asynchronous and bounded.
+The product may test whether an expert-reviewed label increases trust, but the default v0.1 experience should still be AI-first.
 
 Allowed:
 
-- Weekly expert office-hour collection of parent questions
-- Asynchronous expert answers to selected private beta questions
+- Expert-reviewed labels on sampled AI coach responses
 - Expert-reviewed versions of common AI coach responses
 - Expert notes that improve AI prompt and response standards
+- A very limited asynchronous expert answer test for selected private beta questions, if needed for trust validation
 
 Not allowed in v0.1:
 
+- Prominent "ask an expert" entry as a main product tab or dashboard CTA
 - 24/7 real-time expert chat
 - Medical, psychological diagnosis, or crisis intervention
 - Teacher scheduling, course sales, or offline service marketplace
@@ -111,6 +115,10 @@ Frequency objection:
 
 > We do not rely only on parents remembering to open the app. Growth OS uses opt-in, low-pressure reminders at natural family moments, then measures whether reminders lead to actual companionship actions.
 
+Important caveat:
+
+> Natural return and reminder-driven return must be reported separately. If reminders are the only source of repeat use, Growth OS has not proven intrinsic demand.
+
 Trust objection:
 
 > We do not ask parents to blindly trust generic AI. Expert review calibrates AI quality, and limited expert Q&A tests whether human-backed guidance increases trust and willingness to pay without turning the product into a heavy consulting business.
@@ -120,6 +128,7 @@ Trust objection:
 - Reminders must be optional and user-controlled.
 - Reminders must be tied to companionship moments, not completion anxiety.
 - Reminder success must be measured by downstream action, not opens alone.
+- Natural return must be measured separately from reminder-driven return.
 - Expert involvement must improve AI quality and trust, not replace the product's scalable AI-memory loop.
+- Expert-reviewed labels should be tested before adding any user-facing expert request entry.
 - Real-time expert consultation is outside v0.1 unless a later validation explicitly proves demand and operational feasibility.
-

@@ -18,6 +18,22 @@ Primary early adopters:
 - Parents who feel time-constrained and want concrete companionship ideas
 - Parents who dislike high-pressure training-style products but do not want fully unstructured parenting
 
+Private beta priority segment:
+
+- Parents of children aged 4-7
+- At least one ongoing interest or habit direction
+- A real companionship friction occurred in the last 30 days
+- Parent is willing to try at least one AI suggestion during a 14-day pilot
+
+Priority friction examples:
+
+- Piano or interest-practice conflict
+- Reading habit interruption
+- Unclear English exposure
+- Limited evening time for companionship
+
+Broad "education-interested" families without recent friction are lower priority for the pilot because they may validate concept appeal without proving urgency or willingness to pay.
+
 Likely acquisition channels:
 
 - Parent communities
@@ -98,21 +114,24 @@ Target for private MVP pilot:
 - At least 60% of invited parents complete first guidance
 - At least 40% accept or save a suggestion
 - At least 25% complete one companionship action within 7 days
+- At least 20% return organically in the second week without reminder entry
 - At least 30% return in the next week
 - At least 35% enable one warm reminder type during reminder validation
+- At least 15% show strong payment intent for one tested package at RMB 19, RMB 29, or RMB 49 per month
 
 ## Private Beta Script
 
 Recruiting prompt:
 
-> 我们在做一个 AI 家庭陪伴教练，不是学习软件，也不是打卡工具。你只需要告诉它孩子年龄、最近困扰和几个特点，它会给你一个今晚就能用的陪伴建议。想邀请你试用 7 天，看它能不能真的帮你少一点焦虑、多一点方法。
+> 我们在做一个 AI 家庭陪伴教练，不是学习软件，也不是打卡工具。它会根据你家孩子的年龄、特点和最近困扰，给你一个今晚就能用的陪伴建议。我们正在找 4-7 岁、最近有练琴/阅读/英语/陪伴时间冲突的家庭试用 14 天，看它能不能真的帮你少一点冲突、多一点方法。
 
 Qualifying questions:
 
 - 孩子年龄？
+- 过去 30 天有没有出现过练琴、阅读、英语、运动、情绪或陪伴时间上的具体摩擦？
 - 最近最常见的陪伴困扰是什么？
 - 现在是否有阅读、英语、运动、钢琴、情绪表达等关注方向？
-- 你是否愿意在一周内尝试至少一次 AI 给出的陪伴建议？
+- 你是否愿意在 14 天内尝试至少一次 AI 给出的陪伴建议？
 
 Success interview questions:
 
@@ -122,6 +141,8 @@ Success interview questions:
 - 它让你更轻松，还是更像一个新任务？
 - 如果它在晚上或周末温和提醒你一次，你会觉得有帮助还是打扰？
 - 如果部分回答由真人育儿专家审核过，你会更信任吗？会为此付费吗？
+- 如果产品分为 19/29/49 元每月的不同套餐，你会考虑哪个？为什么？
+- 你会不会推荐给同龄孩子父母？
 - 你下周还会打开它问什么？
 
 ## MVP Funnel
@@ -135,7 +156,8 @@ Activation funnel:
 5. Parent completes companionship action
 6. Parent records moment or creates growth record draft
 7. Parent receives or opens an opt-in warm reminder
-8. Parent returns next week
+8. Parent returns next week, tracked as organic or reminder-driven
+9. Parent selects or rejects a tested payment package
 
 Key drop-off diagnosis:
 
@@ -146,6 +168,7 @@ Key drop-off diagnosis:
 - Step 5 -> 6 drop: recording friction too high
 - Step 6 -> 7 drop: reminders feel intrusive or are not tied to real family moments
 - Step 7 -> 8 drop: no repeated weekly value
+- Step 8 -> 9 drop: usage value does not translate into payment value
 
 ## Messaging Experiments
 
@@ -163,6 +186,16 @@ Experiment C: Time-constrained framing
 
 - Headline: "今晚只有 30 分钟，也能高质量陪伴"
 - Expected strength: working parents with limited evening time
+
+Experiment D: Reading recovery framing
+
+- Headline: "最近阅读断了，不用补任务，先找回一个轻松开始"
+- Expected strength: parents with broken routines and low tolerance for pressure
+
+Experiment E: English exposure framing
+
+- Headline: "英语启蒙不知道怎么做？先从今晚 10 分钟亲子输入开始"
+- Expected strength: parents who want concrete action but do not want curriculum pressure
 
 Decision rule:
 
@@ -198,6 +231,10 @@ Risk: Expert Q&A turns the product into an operationally heavy consulting servic
 
 - Mitigation: use experts first for AI quality review and limited asynchronous private beta Q&A; do not offer real-time expert chat, guaranteed response times, or paid consulting in v0.1.
 
+Risk: Pilot feedback is positive but commercially weak.
+
+- Mitigation: recruit high-pain families, test payment intent at RMB 19/29/49 per month, and avoid treating "I like it" as payment validation.
+
 ## Investor Objection Response
 
 The skeptical investor case is useful because it identifies the riskiest assumptions:
@@ -210,6 +247,7 @@ The skeptical investor case is useful because it identifies the riskiest assumpt
 - Weekly planning may be a pseudo-need rather than the real purchase driver.
 - Return frequency may depend on reminders rather than intrinsic demand.
 - AI trust may remain weak without human expert calibration.
+- The product may get warm feedback from broad users but fail among high-pain users who would actually pay.
 
 Product response:
 
@@ -220,15 +258,17 @@ Product response:
 - Measure repeated action and next-week return before expanding scope.
 - Use opt-in warm reminders to test natural return moments without creating check-in pressure.
 - Use parenting experts to review AI answer quality and test whether limited human-backed Q&A increases trust.
+- Separate natural return, reminder-driven return, and payment intent in validation reporting.
 
 Validation response:
 
-- Run a seven-day private beta focused on one action loop: ask, accept, try, record, return.
+- Run a 14-day private beta with 30 high-pain families focused on one action loop: ask, accept, try, record, return, and payment-intent test.
 - Compare Growth OS answers against generic AI answers for the same parent challenge.
 - Interview parents who did not act to separate weak advice, bad timing, and recording friction.
 - Keep scope frozen if parents describe the product as "another task" instead of "less uncertainty".
 - Measure whether reminders create completed companionship actions, not just notification opens.
 - Measure whether expert-reviewed or expert-answered guidance changes trust and willingness to pay.
+- Use [investment-validation-scorecard.md](./investment-validation-scorecard.md) as the one-page investor validation report.
 
 Detailed objection handling and kill criteria are maintained in [investor-risk-review.md](./investor-risk-review.md).
 
@@ -239,12 +279,14 @@ Do not broaden beyond private beta until:
 - First-guidance completion rate reaches 60% among invited users
 - Suggestion adoption rate reaches 40%
 - At least 25% complete one companionship action within 7 days
+- At least 20% of activated families return organically in the second week without reminder entry
 - At least 30% of activated families return the next week
 - At least 35% of activated families enable one warm reminder type during reminder validation
 - At least 20% of opened reminders lead to suggestion generation, suggestion acceptance, completed action, or growth record draft creation
 - At least 80% of reviewed AI outputs pass the child-specific quality bar
 - At least 80% of expert-reviewed AI answer samples pass the quality and safety bar
 - At least 60% of parents in side-by-side review prefer the Growth OS answer over a generic AI answer for the same challenge
+- At least 15% of pilot families show strong payment intent for one tested package at RMB 19, RMB 29, or RMB 49 per month
 - Parent feedback shows the product feels supportive rather than pressure-inducing
 
 ## Not Yet
@@ -260,5 +302,7 @@ Do not build these until the first Aha loop works:
 - Missed-task notification pressure
 - 24/7 real-time expert chat
 - Paid expert consultation workflows
+- Subscription and payment collection workflows
+- User-facing expert marketplace entry
 - Adolescent-specific privacy workflows
 - Marketplace recommendations

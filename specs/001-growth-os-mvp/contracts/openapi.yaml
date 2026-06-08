@@ -286,9 +286,14 @@ components:
             - companionship_action_completed
             - growth_record_created
             - next_week_returned
+            - organic_second_week_returned
+            - reminder_driven_second_week_returned
             - warm_reminder_enabled
             - warm_reminder_opened
             - warm_reminder_action_completed
+            - generic_ai_comparison_recorded
+            - payment_intent_recorded
+            - expert_trust_feedback_recorded
             - expert_review_completed
             - expert_qa_requested
             - parent_anxiety_pulse_recorded

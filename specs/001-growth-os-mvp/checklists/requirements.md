@@ -41,5 +41,6 @@
 - Validation passed after market validation plan on 2026-06-08 defined ICP, beachhead wedge, landing page positioning, Aha test, private beta script, funnel diagnostics, and launch criteria.
 - Validation passed after investor-risk response update on 2026-06-08 added skeptical investor objections, repeated Aha loop validation, generic-AI comparison, next-week return criteria, and scope expansion kill criteria.
 - Validation passed after engagement and trust update on 2026-06-08 added opt-in warm reminder validation, human parenting expert quality review, bounded asynchronous expert Q&A, reminder conversion metrics, and explicit exclusion of pressure reminders and real-time expert consulting.
+- Validation passed after investment validation update on 2026-06-08 added the 30-family/14-day scorecard, high-pain private beta recruitment, organic-vs-reminder return split, payment-intent testing, generic-AI comparison, and scope-control rules.
 - The provided technical stack was intentionally excluded from this product specification because `/speckit.specify` requires technology-agnostic requirements. It should be carried into `/speckit.plan`.
 - The spec uses the speckit-compatible identifier `001-growth-os-mvp`.

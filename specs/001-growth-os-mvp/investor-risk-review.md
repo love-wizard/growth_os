@@ -19,6 +19,7 @@ The product response is to narrow v0.1 around one repeated loop:
 5. The result becomes a lightweight growth record.
 6. An opt-in warm reminder may bring the parent back at a natural family moment.
 7. The parent returns when the next companionship friction appears.
+8. The parent shows whether the value is strong enough to pay for.
 
 If this loop does not work, the product should not expand into a broader family growth system.
 
@@ -43,9 +44,10 @@ The long-term "Growth OS" architecture remains useful only after the product pro
 | Parents can already ask ChatGPT. | Growth OS must win through persistent child context, action saving, weekly plan insertion, and growth record drafts, not through chat alone. | At least 40% of generated suggestions are accepted or saved. |
 | Parents may not trust AI guidance for parenting. | Use human parenting experts to review answer samples and run limited asynchronous private beta Q&A, while preserving AI as the scalable core. | At least 80% of expert-reviewed samples pass the quality and safety bar; parents report higher trust in expert-reviewed guidance. |
 | Recording data is a chore. | Records should be generated from completed actions, accepted suggestions, or short notes, not required before value. | At least 25% of families complete one action within 7 days; record draft creation friction stays under 30 seconds. |
+| Parents may like the concept but not pay. | Run payment-intent testing for Basic, Plus, and High-trust packages at RMB 19/29/49 per month before building payment workflows. | At least 15% of pilot families show strong payment intent for one package and price point. |
 | Anti-anxiety positioning reduces commercial urgency. | Sell relief from concrete daily friction, not abstract anxiety reduction. | Parents report the product reduced today's uncertainty without feeling like a new task. |
 | Weekly plans may be a pseudo-need. | Treat weekly plans as a support layer for today's guidance, not the emotional center or primary sales message. | Dashboard users identify today's companionship action faster than weekly completion status. |
-| The target user may be too narrow. | Keep v0.1 focused on 3-8 year-old high-engagement households; expansion to 0-3, 9-12, and 13-18 depends on proof of the first loop. | Do not broaden scope until launch gates are met. |
+| The target user may still be too broad. | For private beta, recruit 30 high-pain families with children aged 4-7 and a recent piano, reading, English, or limited-time companionship friction. | At least 80% of pilot families match the high-pain recruitment profile. |
 | Father/mother collaboration may add complexity without driving demand. | Keep dual-parent support minimal: shared child context, role-aware suggestions, shared records, and simple invitation. | No complex permissions, comments, or family messaging in v0.1. |
 | AI advice creates safety and liability risk. | Position as companionship guidance only; avoid diagnosis, crisis handling, medical advice, or psychological treatment. | Safety-boundary tests pass before private beta expansion. |
 
@@ -53,11 +55,11 @@ The long-term "Growth OS" architecture remains useful only after the product pro
 
 The MVP should prioritize wedges by urgency and repeatability:
 
-1. Tonight's 30-minute companionship action
-2. Child resists piano or another interest practice
+1. Child resists piano or another interest practice
+2. Tonight's 30-minute companionship action
 3. Reading habit recovery
-4. Weekend activity recommendation
-5. Recent growth analysis
+4. Unclear English exposure
+5. Weekend activity recommendation
 
 The first three wedges should be tested before building broader reporting, marketplace, social, or multi-child workflows.
 
@@ -79,20 +81,22 @@ Pass threshold:
 - At least 60% say the suggestion feels child-specific.
 - At least 40% accept, save, or say they would try it within 24 hours.
 
-### Experiment 2: Seven-Day Action Loop
+### Experiment 2: Fourteen-Day Action Loop
 
 Goal: determine whether advice becomes actual companionship.
 
 Method:
 
-- Invite activated parents to use the product for 7 days.
-- Measure suggestion adoption, completed companionship actions, growth record drafts, and next-week return.
+- Invite 30 high-pain families to use the product for 14 days.
+- Measure suggestion adoption, completed companionship actions, growth record drafts, organic second-week return, reminder-driven return, and payment intent.
 - Interview parents who did not act.
 
 Pass threshold:
 
 - At least 25% complete one companionship action within 7 days.
+- At least 20% return organically in the second week.
 - At least 30% return the next week.
+- At least 15% show strong payment intent for one tested package at RMB 19/29/49 per month.
 - Main failure reason is not "this felt generic" or "this became another task."
 
 ### Experiment 3: Generic AI Comparison
@@ -141,6 +145,24 @@ Pass threshold:
 - Parents report higher trust for expert-reviewed or expert-answered guidance.
 - Expert workflow remains asynchronous and operationally bounded.
 
+### Experiment 6: Payment Packaging
+
+Goal: determine whether Growth OS has a plausible commercial wedge.
+
+Method:
+
+- Present three package concepts after parents have used at least one AI suggestion:
+  - Basic: AI companionship suggestions + growth archive
+  - Plus: AI companionship suggestions + growth archive + monthly growth analysis
+  - High-trust: AI companionship suggestions + expert-reviewed guidance samples
+- Test RMB 19, RMB 29, and RMB 49 per month as price anchors.
+- Ask which package they would realistically pay for and why.
+
+Pass threshold:
+
+- At least 15% of pilot families show strong payment intent for one package and price point.
+- Expert-reviewed packaging does not create expectations for real-time expert support.
+
 ## Kill Criteria
 
 Pause expansion and revisit positioning if any of these persist after two focused product iterations:
@@ -151,6 +173,8 @@ Pause expansion and revisit positioning if any of these persist after two focuse
 - Parents consistently describe answers as generic, theoretical, or not fitting their child.
 - Parents say the product creates more work than relief.
 - Usage concentrates only around one-time curiosity with no second-week return.
+- Organic second-week return is near zero while reminder-driven return is the only source of repeat usage.
+- Fewer than 15% of pilot families show strong payment intent for any tested package.
 - Reminders are described as intrusive or pressure-inducing by more than 20% of participating families.
 - Expert Q&A demand cannot be served asynchronously without creating heavy operations or safety risk.
 
@@ -163,4 +187,6 @@ Pause expansion and revisit positioning if any of these persist after two focuse
 - Growth records should mostly emerge after real actions.
 - Reminders are a frequency tool, not the product's core value; if reminders do not lead to actions, they should be reduced or removed.
 - Expert involvement is a trust and quality layer, not the scalable core loop; real-time expert consulting is outside v0.1.
+- Natural return, reminder-driven return, and payment intent must be reported separately in the investment validation scorecard.
+- Expert review should first appear as internal quality calibration or limited label testing, not as a primary "ask an expert" product entry.
 - v0.1 must not expand beyond the 3-8 beachhead until the Aha loop is proven.
