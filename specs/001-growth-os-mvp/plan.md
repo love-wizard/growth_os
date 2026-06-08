@@ -7,9 +7,9 @@
 
 ## Summary
 
-Build Growth OS v0.1 as the first beachhead of a broader family companionship system. The long-term product can support early childhood, school-age, and adolescent companionship; v0.1 focuses on parents of 3-8 year-old children with one family, one child, two parent accounts, weekly growth planning, interest participation records, growth archive, and an AI growth coach. The implementation will use a Next.js TypeScript app backed by Supabase Auth, Postgres, Row Level Security, Supabase Storage, and server-side OpenAI Responses API calls with structured outputs for AI coach modes and weekly plan drafts.
+Build Growth OS v0.1 as the first beachhead of a broader family companionship system. The long-term product can support early childhood, school-age, and adolescent companionship; v0.1 focuses on parents of 3-8 year-old children with one family, one child, two parent accounts, weekly growth planning, interest participation records, growth archive, and an AI growth coach. The immediate product wedge is today's companionship decision: help a parent turn a real friction into one child-specific action, then save or record the result. The implementation will use a Next.js TypeScript app backed by Supabase Auth, Postgres, Row Level Security, Supabase Storage, and server-side OpenAI Responses API calls with structured outputs for AI coach modes and weekly plan drafts.
 
-The core architecture keeps family data private by default, enforces father/mother access through family membership rows, stores photos/videos for display only, excludes deleted records and media contents from AI context, and requires parent confirmation before AI-generated weekly plan drafts become official plans. The product experience prioritizes getting parents to a useful "what should I do today?" answer before full setup is complete, uses current challenge and child traits to create an Aha moment, then measures whether families complete at least one high-quality companionship action per week.
+The core architecture keeps family data private by default, enforces father/mother access through family membership rows, stores photos/videos for display only, excludes deleted records and media contents from AI context, and requires parent confirmation before AI-generated weekly plan drafts become official plans. The product experience prioritizes getting parents to a useful "what should I do today?" answer before full setup is complete, uses current challenge and child traits to create an Aha moment, then measures whether families accept the suggestion, complete at least one high-quality companionship action, create a lightweight record, and return the next week.
 
 ## Technical Context
 
@@ -19,9 +19,9 @@ The core architecture keeps family data private by default, enforces father/moth
 **Testing**: Vitest for unit tests, React Testing Library for component tests, Playwright for primary user journeys, Supabase local CLI for database/RLS integration tests  
 **Target Platform**: Responsive web app, deployed as a server-rendered Next.js application with Supabase managed backend  
 **Project Type**: Web application with integrated frontend, route handlers, server actions, and Supabase backend  
-**Performance Goals**: First today's companionship suggestion generated within 3 minutes of first use; first suggestion references child age, current challenge, focus direction, and child trait in at least 90% of acceptance tests; dashboard primary guidance identifiable within 10 seconds; dashboard and weekly plan p95 under 1.5s after auth; AI non-streaming first useful response target under 8s; non-AI mutations visible after refresh or navigation within 1s  
+**Performance Goals**: First today's companionship suggestion generated within 3 minutes of first use; first suggestion references child age, current challenge, focus direction, and child trait in at least 90% of acceptance tests; dashboard primary guidance identifiable within 10 seconds; suggestion acceptance and growth record draft creation each under 30 seconds; dashboard and weekly plan p95 under 1.5s after auth; AI non-streaming first useful response target under 8s; non-AI mutations visible after refresh or navigation within 1s  
 **Constraints**: v0.1 beachhead is ages 3-8; one family and one child in v0.1; two parent accounts; no child account; AI context limited to 4 weeks of weekly plans and 90 days of interest/growth records; AI does not analyze media; deleted records excluded from AI context; 30-day restore window; progress language must be supportive and non-punitive; product metrics must avoid child ranking or comparative scoring  
-**Scale/Scope**: v0.1 private household MVP for high-engagement early-childhood parents, roughly 20-30 app screens/states, low concurrency, designed to support later school-age, adolescent, and multi-family generalization without adding those workflows now
+**Scale/Scope**: v0.1 private household MVP for high-engagement early-childhood parents, roughly 20-30 app screens/states, low concurrency, designed to support later school-age, adolescent, and multi-family generalization without adding those workflows now. Expansion is intentionally blocked until private-beta behavior proves the first Aha loop rather than only validating concept appeal.
 
 ## Constitution Check
 
@@ -48,6 +48,7 @@ specs/001-growth-os-mvp/
 ├── plan.md
 ├── research.md
 ├── market-validation.md
+├── investor-risk-review.md
 ├── data-model.md
 ├── quickstart.md
 ├── contracts/
@@ -126,6 +127,7 @@ Generated artifacts:
 
 - [data-model.md](./data-model.md)
 - [market-validation.md](./market-validation.md)
+- [investor-risk-review.md](./investor-risk-review.md)
 - [contracts/openapi.yaml](./contracts/openapi.yaml)
 - [quickstart.md](./quickstart.md)
 

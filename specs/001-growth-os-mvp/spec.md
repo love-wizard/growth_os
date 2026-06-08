@@ -87,6 +87,13 @@ Private beta launch gates:
 - At least 80% of reviewed AI outputs pass the child-specific quality bar
 - Parent feedback indicates the product feels supportive rather than pressure-inducing
 
+Investor-risk response:
+
+- v0.1 must prove a narrow repeated loop before claiming the broader Growth OS opportunity: parent friction, child-specific AI suggestion, accepted action, completed companionship, lightweight record, and next-week return.
+- If the first Aha loop does not show repeated use, the product should not expand into reports, multi-child workflows, adolescent support, marketplace recommendations, or broader family management.
+- The practical wedge is "today's companionship decision", not annual planning, weekly completion, or growth archiving by themselves.
+- The product must be meaningfully better than a generic AI chat by using persistent child context, saving accepted suggestions, inserting actions into plans, and turning completed actions into growth record drafts.
+
 Default first-use focus directions:
 
 - Reading habit
@@ -131,6 +138,7 @@ Default child trait options:
 - AI coach answers should follow a consistent quality pattern: child-specific context, likely interpretation, concrete action, gentle fallback, and evidence boundary when data is limited.
 - Progress language must be supportive and non-punitive; avoid failure framing, rankings, streak pressure, and red warning-heavy states.
 - Weekly completion rate is a secondary operational signal, not the main emotional center of the experience.
+- Weekly plans should act as a support layer for today's companionship guidance rather than a project-management experience parents must maintain.
 - The user-facing label for interest history should emphasize participation or practice records, not course administration.
 - Growth records should be created as a low-friction byproduct of real activity whenever possible, such as after task completion, accepted AI suggestions, or short parent notes.
 
@@ -337,7 +345,6 @@ Parents capture meaningful growth moments with date, text, tags, notes, photos, 
 - **FR-044**: The MVP MUST NOT include standalone monthly report pages, standalone annual report pages, report export, AI analysis of photo or video content, medical diagnosis, mental health crisis intervention, future course scheduling, recurring class rules, leave requests, make-up class management, AI proactive reminders, multiple children, multiple families, commercialization, social features, or child-owned accounts.
 - **FR-045**: Parents MUST be able to delete and restore growth records, interest participation records, and AI coach conversations within a 30-day restore window.
 - **FR-046**: Deleted growth records, interest participation records, and AI coach conversations MUST be excluded from AI coach context unless restored.
-- **FR-047**: The system MUST support a lightweight first-use flow that generates today's companionship suggestion from child nickname, birth date, and 2-3 focus directions before full annual goal setup.
 - **FR-047**: The system MUST support a lightweight first-use flow that generates today's companionship suggestion from child nickname, birth date, 2-3 focus directions, one current challenge, and 1-3 child traits before full annual goal setup.
 - **FR-048**: The dashboard MUST make today's recommended companionship action more visually prominent than weekly completion rate.
 - **FR-049**: The dashboard MUST provide a direct AI coach entry for asking "What should I do with my child today?" or an equivalent context-aware prompt.
@@ -353,6 +360,8 @@ Parents capture meaningful growth moments with date, text, tags, notes, photos, 
 - **FR-059**: Parents MUST be able to accept an AI suggestion and add it to the current weekly plan when it is action-oriented.
 - **FR-060**: The system MUST offer editable growth record drafts after completed weekly tasks, accepted AI suggestions, or short parent notes.
 - **FR-061**: Market-facing and first-use copy MUST present the product as an AI family companionship coach or today's companionship suggestion before presenting it as an operating system.
+- **FR-062**: The system MUST allow product review to distinguish the repeated Aha loop stages: first guidance generated, suggestion accepted or saved, companionship action completed, growth record draft created, and next-week return.
+- **FR-063**: The product MUST NOT make weekly completion rate, annual planning, or growth archive browsing the primary first-use success state before today's companionship suggestion has been generated.
 
 ### Key Entities
 
@@ -404,6 +413,8 @@ Parents capture meaningful growth moments with date, text, tags, notes, photos, 
 - **SC-029**: At least 90% of first-guidance suggestions in acceptance testing reference child age, current challenge, selected focus direction, and at least one child trait.
 - **SC-030**: Parents can accept a first-guidance or AI coach suggestion and add it to the current weekly plan in under 30 seconds.
 - **SC-031**: Parents can create an editable growth record draft from a completed task, accepted AI suggestion, or short parent note in under 30 seconds.
+- **SC-032**: At least 30% of activated families return in the next week with a new question, accepted suggestion, completed action, or growth record during the private MVP pilot.
+- **SC-033**: In side-by-side private-beta review, at least 60% of parents prefer the Growth OS answer over a generic AI answer for the same parenting challenge because it is more child-specific, concrete, or lower-conflict.
 
 ## Assumptions
 
@@ -422,3 +433,4 @@ Parents capture meaningful growth moments with date, text, tags, notes, photos, 
 - AI proactive reminders are a later enhancement even though generated insights are part of the MVP.
 - Interest participation records in v0.1 track actual participation, duration or count, and notes; tuition, billing, teacher communication, future scheduling, recurring class rules, leave requests, and make-up class management are outside MVP scope.
 - Deletion in v0.1 means parent-visible removal with a 30-day restore window.
+- Investor objections should be treated as validation inputs; expansion is blocked until the first Aha loop is proven with private-beta behavior, not just positive concept feedback.

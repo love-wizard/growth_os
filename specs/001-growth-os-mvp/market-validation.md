@@ -185,6 +185,34 @@ Risk: Parents expect adolescent or medical/psychological support.
 
 - Mitigation: clearly state v0.1 early-childhood beachhead and safety boundaries.
 
+## Investor Objection Response
+
+The skeptical investor case is useful because it identifies the riskiest assumptions:
+
+- Parents may like the concept but not form a repeat habit.
+- First-use setup may feel too heavy before value appears.
+- AI advice may sound like generic parenting theory.
+- Parents may not pay for growth records or planning alone.
+- Anti-anxiety positioning may reduce urgency.
+- Weekly planning may be a pseudo-need rather than the real purchase driver.
+
+Product response:
+
+- Treat "today's companionship decision" as the wedge, not the whole Growth OS narrative.
+- Let AI create value before requiring a complete annual growth system.
+- Require every useful answer to connect child context to one concrete action.
+- Make accepted suggestions and completed actions flow into plans and growth record drafts.
+- Measure repeated action and next-week return before expanding scope.
+
+Validation response:
+
+- Run a seven-day private beta focused on one action loop: ask, accept, try, record, return.
+- Compare Growth OS answers against generic AI answers for the same parent challenge.
+- Interview parents who did not act to separate weak advice, bad timing, and recording friction.
+- Keep scope frozen if parents describe the product as "another task" instead of "less uncertainty".
+
+Detailed objection handling and kill criteria are maintained in [investor-risk-review.md](./investor-risk-review.md).
+
 ## Launch Criteria
 
 Do not broaden beyond private beta until:
@@ -192,7 +220,9 @@ Do not broaden beyond private beta until:
 - First-guidance completion rate reaches 60% among invited users
 - Suggestion adoption rate reaches 40%
 - At least 25% complete one companionship action within 7 days
+- At least 30% of activated families return the next week
 - At least 80% of reviewed AI outputs pass the child-specific quality bar
+- At least 60% of parents in side-by-side review prefer the Growth OS answer over a generic AI answer for the same challenge
 - Parent feedback shows the product feels supportive rather than pressure-inducing
 
 ## Not Yet
