@@ -494,6 +494,22 @@ paths:
       responses:
         "200":
           description: Invitation created
+  /family/invite/{inviteId}/accept:
+    post:
+      summary: Accept second-parent invitation to existing family
+      description: Joins the invited parent to the existing family workspace without creating a duplicate family or child profile.
+      parameters:
+        - name: inviteId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Invitation accepted
+        "409":
+          description: Invitation would create a duplicate family or child profile
   /dashboard:
     get:
       summary: Get dashboard data
