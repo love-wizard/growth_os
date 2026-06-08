@@ -201,18 +201,18 @@
 
 **Independent Test**: Scenario card opens matching first-guidance flow, invite card joins the same family, subscription events remain separate from organic return, and record previews are privacy-safe.
 
-- [ ] T111 [P] [US9] Add WeChat channel attribution integration tests in `tests/integration/wechat-channel.api.test.ts`
-- [ ] T112 [P] [US9] Add WeChat Mini Program flow test fixtures in `tests/e2e/wechat-mini-program.spec.ts`
-- [ ] T113 [US9] Implement WeChat channel attribution repository and service in `lib/repositories/wechat-channel-repo.ts` and `lib/services/wechat-channel-service.ts`
-- [ ] T114 [US9] Implement WeChat parent identity binding service and route handler in `lib/auth/wechat-auth.ts` and `app/api/wechat/identity-bindings/route.ts`
-- [ ] T115 [US9] Implement WeChat scenario-card entry route handler in `app/api/wechat/scenario-entry/route.ts`
-- [ ] T116 [US9] Implement WeChat family invite share and accept route handlers in `app/api/wechat/family-invite/route.ts` and `app/api/wechat/family-invite/[inviteId]/accept/route.ts`
-- [ ] T117 [US9] Implement WeChat subscription message preference route and event adapter in `app/api/wechat/subscription-preferences/route.ts` and `lib/services/wechat-subscription-service.ts`
-- [ ] T118 [US9] Implement privacy-safe growth record share preview route and service in `app/api/wechat/record-share-preview/route.ts` and `lib/services/wechat-record-share-service.ts`
-- [ ] T119 [US9] Create optional Mini Program setup, first-guidance page, and service adapter in `miniprogram/app.ts`, `miniprogram/app.json`, `miniprogram/app.wxss`, `miniprogram/project.config.json`, `miniprogram/pages/first-guidance/index.ts`, `miniprogram/pages/first-guidance/index.wxml`, and `miniprogram/services/api.ts`
-- [ ] T120 [US9] Create optional Mini Program family invite page in `miniprogram/pages/invite/index.ts` and `miniprogram/pages/invite/index.wxml`
-- [ ] T121 [US9] Create optional Mini Program record preview page in `miniprogram/pages/record-preview/index.ts` and `miniprogram/pages/record-preview/index.wxml`
-- [ ] T122 [US9] Record WeChat scenario, invite, subscription, mini-program code, private beta service, and record share events in `lib/metrics/wechat-events.ts`
+- [X] T111 [P] [US9] Add WeChat channel attribution integration tests in `tests/integration/wechat-channel.api.test.ts`
+- [X] T112 [P] [US9] Add WeChat Mini Program flow test fixtures in `tests/e2e/wechat-mini-program.spec.ts`
+- [X] T113 [US9] Implement WeChat channel attribution repository and service in `lib/repositories/wechat-channel-repo.ts` and `lib/services/wechat-channel-service.ts`
+- [X] T114 [US9] Implement WeChat parent identity binding service and route handler in `lib/auth/wechat-auth.ts` and `app/api/wechat/identity-bindings/route.ts`
+- [X] T115 [US9] Implement WeChat scenario-card entry route handler in `app/api/wechat/scenario-entry/route.ts`
+- [X] T116 [US9] Implement WeChat family invite share and accept route handlers in `app/api/wechat/family-invite/route.ts` and `app/api/wechat/family-invite/[inviteId]/accept/route.ts`
+- [X] T117 [US9] Implement WeChat subscription message preference route and event adapter in `app/api/wechat/subscription-preferences/route.ts` and `lib/services/wechat-subscription-service.ts`
+- [X] T118 [US9] Implement privacy-safe growth record share preview route and service in `app/api/wechat/record-share-preview/route.ts` and `lib/services/wechat-record-share-service.ts`
+- [X] T119 [US9] Create optional Mini Program setup, first-guidance page, and service adapter in `miniprogram/app.ts`, `miniprogram/app.json`, `miniprogram/app.wxss`, `miniprogram/project.config.json`, `miniprogram/pages/first-guidance/index.ts`, `miniprogram/pages/first-guidance/index.wxml`, and `miniprogram/services/api.ts`
+- [X] T120 [US9] Create optional Mini Program family invite page in `miniprogram/pages/invite/index.ts` and `miniprogram/pages/invite/index.wxml`
+- [X] T121 [US9] Create optional Mini Program record preview page in `miniprogram/pages/record-preview/index.ts` and `miniprogram/pages/record-preview/index.wxml`
+- [X] T122 [US9] Record WeChat scenario, invite, subscription, mini-program code, private beta service, and record share events in `lib/metrics/wechat-events.ts`
 
 ## Final Phase: Polish & Cross-Cutting Concerns
 

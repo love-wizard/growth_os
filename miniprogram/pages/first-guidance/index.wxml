@@ -1,0 +1,6 @@
+<view class="page">
+  <view class="card">
+    <view class="title">今天如何陪伴孩子成长？</view>
+    <view class="muted">根据当前场景生成一件轻量、具体的亲子行动。</view>
+  </view>
+</view>

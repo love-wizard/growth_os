@@ -1,0 +1,12 @@
+{
+  "pages": [
+    "pages/first-guidance/index",
+    "pages/invite/index",
+    "pages/record-preview/index"
+  ],
+  "window": {
+    "navigationBarTitleText": "小钟成长 OS",
+    "navigationBarBackgroundColor": "#ffffff",
+    "navigationBarTextStyle": "black"
+  }
+}

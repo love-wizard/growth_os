@@ -1,0 +1,6 @@
+<view class="page">
+  <view class="card">
+    <view class="title">成长记录</view>
+    <view class="muted">只展示文字摘要，不展示家庭私密媒体。</view>
+  </view>
+</view>

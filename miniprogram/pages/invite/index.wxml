@@ -1,0 +1,7 @@
+<view class="page">
+  <view class="card">
+    <view class="title">邀请另一位家长</view>
+    <view class="muted">共同维护一个家庭成长系统。</view>
+    <button bindtap="shareInvite">生成邀请卡</button>
+  </view>
+</view>
