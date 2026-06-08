@@ -1,6 +1,8 @@
 import { expect, test } from "@playwright/test";
+import { signInE2EUser } from "./auth";
 
 test("AI coach page shows quick questions, input, and grounded answer", async ({ page }) => {
+  await signInE2EUser(page);
   await page.goto("/ai-coach");
 
   await expect(page.getByRole("heading", { name: "AI 成长教练" })).toBeVisible();

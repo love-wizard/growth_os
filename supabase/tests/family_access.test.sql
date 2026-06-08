@@ -34,19 +34,27 @@ select is(
   'RLS exposes only the authenticated parent family'
 );
 
+set local request.jwt.claim.sub = '00000000-0000-0000-0000-000000000002';
+
 select throws_ok(
   $$insert into public.family_members (family_id, user_id, role, invitation_status)
     values ('10000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000002', 'mother', 'accepted')$$,
   '23505',
+  'duplicate key value violates unique constraint "family_members_family_id_user_id_key"',
   'duplicate parent membership is prevented'
 );
+
+set local request.jwt.claim.sub = '00000000-0000-0000-0000-000000000004';
 
 select throws_ok(
   $$insert into public.family_members (family_id, user_id, role, invitation_status)
     values ('10000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000004', 'father', 'invited')$$,
   '23505',
+  'duplicate key value violates unique constraint "family_members_family_id_role_key"',
   'duplicate father role is prevented'
 );
+
+set local request.jwt.claim.sub = '00000000-0000-0000-0000-000000000001';
 
 insert into public.child_profiles (id, family_id, name, nickname, birth_date, gender)
 values ('20000000-0000-0000-0000-000000000001', '10000000-0000-0000-0000-000000000001', 'Kid A', 'A', '2021-01-01', 'female');

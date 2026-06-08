@@ -1,6 +1,8 @@
 import { expect, test } from "@playwright/test";
+import { signInE2EUser } from "./auth";
 
 test("dashboard makes today's guidance the primary section", async ({ page }) => {
+  await signInE2EUser(page);
   await page.goto("/dashboard");
 
   await expect(page.getByRole("heading", { name: "今天如何陪伴孩子成长？" })).toBeVisible();

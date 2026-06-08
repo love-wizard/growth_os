@@ -1,6 +1,8 @@
 import { expect, test } from "@playwright/test";
+import { signInE2EUser } from "./auth";
 
 test("profile page shows interest participation form and recent history", async ({ page }) => {
+  await signInE2EUser(page);
   await page.goto("/profile");
 
   await expect(page.getByRole("heading", { name: "家庭设置" })).toBeVisible();

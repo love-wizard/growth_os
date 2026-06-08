@@ -1,6 +1,8 @@
 import { expect, test } from "@playwright/test";
+import { signInE2EUser } from "./auth";
 
 test("weekly plan shows role tables and updates visible progress", async ({ page }) => {
+  await signInE2EUser(page);
   await page.route("**/api/weekly-plan/tasks/*/progress", async (route) => {
     await route.fulfill({
       status: 200,
