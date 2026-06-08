@@ -129,21 +129,21 @@
 
 **Independent Test**: Use each AI mode and verify child-specific context, concrete action, safety boundaries, and parent confirmation before weekly plan draft activation.
 
-- [ ] T067 [P] [US5] Add AI coach API integration tests for all four modes in `tests/integration/ai-coach.api.test.ts`
-- [ ] T068 [P] [US5] Add AI safety-boundary tests in `tests/integration/ai-safety.api.test.ts`
-- [ ] T069 [P] [US5] Add Playwright AI coach journey test in `tests/e2e/ai-coach.spec.ts`
-- [ ] T070 [US5] Implement AI conversation and weekly plan draft repositories in `lib/repositories/ai-repo.ts`
-- [ ] T071 [US5] Implement parenting Q&A prompt and response validation in `lib/ai/modes/parenting-qa.ts`
-- [ ] T072 [US5] Implement activity generation prompt and response validation in `lib/ai/modes/activity-generation.ts`
-- [ ] T073 [US5] Implement growth analysis prompt and response validation in `lib/ai/modes/growth-analysis.ts`
-- [ ] T074 [US5] Implement weekly plan draft prompt and response validation in `lib/ai/modes/weekly-plan-draft.ts`
-- [ ] T075 [US5] Implement AI safety boundary classifier and fallback copy in `lib/ai/safety-boundary.ts`
-- [ ] T076 [US5] Implement AI coach orchestrator in `lib/services/ai-coach-service.ts`
-- [ ] T077 [US5] Implement `POST /api/ai/coach` route handler in `app/api/ai/coach/route.ts`
-- [ ] T078 [US5] Implement `POST /api/ai/weekly-plan-drafts/[draftId]/confirm` route handler in `app/api/ai/weekly-plan-drafts/[draftId]/confirm/route.ts`
-- [ ] T079 [US5] Build AI coach quick questions, chat input, response renderer, and draft confirmation UI in `components/ai-coach/QuickQuestions.tsx`, `components/ai-coach/CoachInput.tsx`, `components/ai-coach/CoachResponse.tsx`, and `components/ai-coach/WeeklyPlanDraftConfirm.tsx`
-- [ ] T080 [US5] Compose AI coach page in `app/(app)/ai-coach/page.tsx`
-- [ ] T081 [US5] Record AI mode, suggestion adoption, generic-AI comparison, and expert trust feedback events in `lib/metrics/ai-coach-events.ts`
+- [X] T067 [P] [US5] Add AI coach API integration tests for all four modes in `tests/integration/ai-coach.api.test.ts`
+- [X] T068 [P] [US5] Add AI safety-boundary tests in `tests/integration/ai-safety.api.test.ts`
+- [X] T069 [P] [US5] Add Playwright AI coach journey test in `tests/e2e/ai-coach.spec.ts`
+- [X] T070 [US5] Implement AI conversation and weekly plan draft repositories in `lib/repositories/ai-repo.ts`
+- [X] T071 [US5] Implement parenting Q&A prompt and response validation in `lib/ai/modes/parenting-qa.ts`
+- [X] T072 [US5] Implement activity generation prompt and response validation in `lib/ai/modes/activity-generation.ts`
+- [X] T073 [US5] Implement growth analysis prompt and response validation in `lib/ai/modes/growth-analysis.ts`
+- [X] T074 [US5] Implement weekly plan draft prompt and response validation in `lib/ai/modes/weekly-plan-draft.ts`
+- [X] T075 [US5] Implement AI safety boundary classifier and fallback copy in `lib/ai/safety-boundary.ts`
+- [X] T076 [US5] Implement AI coach orchestrator in `lib/services/ai-coach-service.ts`
+- [X] T077 [US5] Implement `POST /api/ai/coach` route handler in `app/api/ai/coach/route.ts`
+- [X] T078 [US5] Implement `POST /api/ai/weekly-plan-drafts/[draftId]/confirm` route handler in `app/api/ai/weekly-plan-drafts/[draftId]/confirm/route.ts`
+- [X] T079 [US5] Build AI coach quick questions, chat input, response renderer, and draft confirmation UI in `components/ai-coach/QuickQuestions.tsx`, `components/ai-coach/CoachInput.tsx`, `components/ai-coach/CoachResponse.tsx`, and `components/ai-coach/WeeklyPlanDraftConfirm.tsx`
+- [X] T080 [US5] Compose AI coach page in `app/(app)/ai-coach/page.tsx`
+- [X] T081 [US5] Record AI mode, suggestion adoption, generic-AI comparison, and expert trust feedback events in `lib/metrics/ai-coach-events.ts`
 
 ## Phase 8: User Story 6 - Record Interest Participation (P2)
 
