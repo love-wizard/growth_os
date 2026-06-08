@@ -28,6 +28,14 @@ export class InternalReviewerAccessError extends Error {
   }
 }
 
+function isAuthSessionMissingError(error: unknown) {
+  return (
+    error instanceof Error &&
+    (error.name === "AuthSessionMissingError" ||
+      error.message.toLowerCase().includes("auth session missing"))
+  );
+}
+
 export async function getAuthenticatedUser(
   supabase: SupabaseClient
 ): Promise<User | null> {
@@ -37,6 +45,10 @@ export async function getAuthenticatedUser(
   } = await supabase.auth.getUser();
 
   if (error) {
+    if (isAuthSessionMissingError(error)) {
+      return null;
+    }
+
     throw error;
   }
 
