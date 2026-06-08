@@ -45,13 +45,13 @@
 - [X] T015 Add private storage bucket and policies for growth media in `supabase/migrations/003_storage_policies.sql`
 - [X] T016 [P] Add database tests for family membership isolation and duplicate-family prevention in `supabase/tests/family_access.test.sql`
 - [X] T017 [P] Add database tests for soft deletion, restore window, and AI context exclusion in `supabase/tests/soft_delete_restore.test.sql`
-- [ ] T018 Implement product metric event service with no child ranking or social comparison in `lib/metrics/product-events.ts`
-- [ ] T019 Implement investment validation event names and property helpers in `lib/metrics/validation-scorecard.ts`
-- [ ] T020 Implement OpenAI Responses API client wrapper and structured-output parser in `lib/ai/openai-client.ts`
-- [ ] T021 Implement server-side AI context assembly with 4-week plan and 90-day record windows in `lib/ai/context.ts`
-- [ ] T022 [P] Add unit tests for AI context assembly, deleted-record filtering, and media exclusion in `tests/unit/ai-context.test.ts`
-- [ ] T023 [P] Add unit tests for weekly completion calculation in `tests/unit/weekly-completion.test.ts`
-- [ ] T024 [P] Add unit tests for product event property validation in `tests/unit/product-events.test.ts`
+- [X] T018 Implement product metric event service with no child ranking or social comparison in `lib/metrics/product-events.ts`
+- [X] T019 Implement investment validation event names and property helpers in `lib/metrics/validation-scorecard.ts`
+- [X] T020 Implement OpenAI Responses API client wrapper and structured-output parser in `lib/ai/openai-client.ts`
+- [X] T021 Implement server-side AI context assembly with 4-week plan and 90-day record windows in `lib/ai/context.ts`
+- [X] T022 [P] Add unit tests for AI context assembly, deleted-record filtering, and media exclusion in `tests/unit/ai-context.test.ts`
+- [X] T023 [P] Add unit tests for weekly completion calculation in `tests/unit/weekly-completion.test.ts`
+- [X] T024 [P] Add unit tests for product event property validation in `tests/unit/product-events.test.ts`
 - [ ] T025 Create app shell, bottom navigation, and protected layout in `components/app-shell/AppShell.tsx`, `components/app-shell/BottomNav.tsx`, and `app/(app)/layout.tsx`
 - [ ] T026 Create shared UI primitives for cards, forms, empty states, and loading states in `components/ui/card.tsx`, `components/ui/form.tsx`, `components/ui/empty-state.tsx`, and `components/ui/loading.tsx`
 
