@@ -34,6 +34,7 @@ v0.1 scope:
 - Start with early childhood companionship for ages 3-8.
 - Keep the product language broad enough for future school-age and adolescent companionship.
 - Do not build school-age or adolescent-specific workflows in v0.1.
+- Do not broaden scope beyond the v0.1 beachhead until the private beta launch gates show the first Aha loop is working.
 
 Market-facing positioning:
 
@@ -77,6 +78,14 @@ Supporting product metrics:
 - Growth record creation rate
 - Next-week return rate
 - Parent-reported anxiety reduction after using the product
+
+Private beta launch gates:
+
+- At least 60% of invited parents complete first guidance
+- At least 40% accept or save a suggestion
+- At least 25% complete one companionship action within 7 days
+- At least 80% of reviewed AI outputs pass the child-specific quality bar
+- Parent feedback indicates the product feels supportive rather than pressure-inducing
 
 Default first-use focus directions:
 

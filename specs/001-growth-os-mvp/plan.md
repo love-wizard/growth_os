@@ -47,6 +47,7 @@ The core architecture keeps family data private by default, enforces father/moth
 specs/001-growth-os-mvp/
 ├── plan.md
 ├── research.md
+├── market-validation.md
 ├── data-model.md
 ├── quickstart.md
 ├── contracts/
@@ -124,6 +125,7 @@ Key decisions:
 Generated artifacts:
 
 - [data-model.md](./data-model.md)
+- [market-validation.md](./market-validation.md)
 - [contracts/openapi.yaml](./contracts/openapi.yaml)
 - [quickstart.md](./quickstart.md)
 
