@@ -166,18 +166,18 @@
 
 **Independent Test**: Create text/media growth records, generate drafts from tasks and AI suggestions, and verify timeline month/year display while AI excludes media.
 
-- [ ] T090 [P] [US7] Add growth record API integration tests in `tests/integration/growth-records.api.test.ts`
-- [ ] T091 [P] [US7] Add Playwright growth archive and draft test in `tests/e2e/growth-archive.spec.ts`
-- [ ] T092 [US7] Implement growth record and media repositories in `lib/repositories/growth-record-repo.ts`
-- [ ] T093 [US7] Implement storage upload service for private media in `lib/services/storage-service.ts`
-- [ ] T094 [US7] Implement growth record service with soft delete and restore rules in `lib/services/growth-record-service.ts`
-- [ ] T095 [US7] Implement growth record draft service for weekly task, AI suggestion, and parent note sources in `lib/services/growth-record-draft-service.ts`
-- [ ] T096 [US7] Implement `POST /api/growth-records` route handler in `app/api/growth-records/route.ts`
-- [ ] T097 [US7] Implement `POST /api/growth-record-drafts` route handler in `app/api/growth-record-drafts/route.ts`
-- [ ] T098 [US7] Implement delete and restore route handlers in `app/api/growth-records/[recordId]/route.ts` and `app/api/growth-records/[recordId]/restore/route.ts`
-- [ ] T099 [US7] Build growth record form, draft editor, timeline, month view, and year view components in `components/growth-archive/GrowthRecordForm.tsx`, `components/growth-archive/GrowthRecordDraftEditor.tsx`, `components/growth-archive/GrowthTimeline.tsx`, `components/growth-archive/MonthView.tsx`, and `components/growth-archive/YearView.tsx`
-- [ ] T100 [US7] Compose growth archive page in `app/(app)/archive/page.tsx`
-- [ ] T101 [US7] Record growth record creation and draft creation events in `lib/metrics/growth-record-events.ts`
+- [X] T090 [P] [US7] Add growth record API integration tests in `tests/integration/growth-records.api.test.ts`
+- [X] T091 [P] [US7] Add Playwright growth archive and draft test in `tests/e2e/growth-archive.spec.ts`
+- [X] T092 [US7] Implement growth record and media repositories in `lib/repositories/growth-record-repo.ts`
+- [X] T093 [US7] Implement storage upload service for private media in `lib/services/storage-service.ts`
+- [X] T094 [US7] Implement growth record service with soft delete and restore rules in `lib/services/growth-record-service.ts`
+- [X] T095 [US7] Implement growth record draft service for weekly task, AI suggestion, and parent note sources in `lib/services/growth-record-draft-service.ts`
+- [X] T096 [US7] Implement `POST /api/growth-records` route handler in `app/api/growth-records/route.ts`
+- [X] T097 [US7] Implement `POST /api/growth-record-drafts` route handler in `app/api/growth-record-drafts/route.ts`
+- [X] T098 [US7] Implement delete and restore route handlers in `app/api/growth-records/[recordId]/route.ts` and `app/api/growth-records/[recordId]/restore/route.ts`
+- [X] T099 [US7] Build growth record form, draft editor, timeline, month view, and year view components in `components/growth-archive/GrowthRecordForm.tsx`, `components/growth-archive/GrowthRecordDraftEditor.tsx`, `components/growth-archive/GrowthTimeline.tsx`, `components/growth-archive/MonthView.tsx`, and `components/growth-archive/YearView.tsx`
+- [X] T100 [US7] Compose growth archive page in `app/(app)/archive/page.tsx`
+- [X] T101 [US7] Record growth record creation and draft creation events in `lib/metrics/growth-record-events.ts`
 
 ## Phase 10: User Story 8 - Receive Warm Reminders and Trust-Calibrated Guidance (P2)
 
