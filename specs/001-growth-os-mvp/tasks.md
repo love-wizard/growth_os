@@ -61,17 +61,17 @@
 
 **Independent Test**: Start from an empty account, enter nickname, birth date, 2-3 focus directions, one current challenge, and 1-3 traits, then verify the generated suggestion references age, challenge, focus direction, and trait.
 
-- [ ] T027 [P] [US1] Add first-guidance API contract tests in `tests/integration/first-guidance.api.test.ts`
-- [ ] T028 [P] [US1] Add Playwright first-guidance journey test in `tests/e2e/first-guidance.spec.ts`
-- [ ] T029 [US1] Implement first guidance session repository in `lib/repositories/first-guidance-repo.ts`
-- [ ] T030 [US1] Implement first guidance prompt builder and structured response schema in `lib/ai/first-guidance.ts`
-- [ ] T031 [US1] Implement today's suggestion acceptance service in `lib/services/suggestion-service.ts`
-- [ ] T032 [US1] Implement `POST /api/first-guidance` route handler in `app/api/first-guidance/route.ts`
-- [ ] T033 [US1] Implement `POST /api/first-guidance/[sessionId]/accept` route handler in `app/api/first-guidance/[sessionId]/accept/route.ts`
-- [ ] T034 [US1] Build first-use flow component with focus direction, current challenge, and trait inputs in `components/onboarding/FirstGuidanceFlow.tsx`
-- [ ] T035 [US1] Build today's suggestion result component with child-specific context and accept action in `components/onboarding/TodaySuggestionResult.tsx`
-- [ ] T036 [US1] Wire first-use page to first-guidance flow in `app/onboarding/page.tsx`
-- [ ] T037 [US1] Record `first_guidance_generated` and `ai_suggestion_adopted` events from first guidance flow in `lib/metrics/first-guidance-events.ts`
+- [X] T027 [P] [US1] Add first-guidance API contract tests in `tests/integration/first-guidance.api.test.ts`
+- [X] T028 [P] [US1] Add Playwright first-guidance journey test in `tests/e2e/first-guidance.spec.ts`
+- [X] T029 [US1] Implement first guidance session repository in `lib/repositories/first-guidance-repo.ts`
+- [X] T030 [US1] Implement first guidance prompt builder and structured response schema in `lib/ai/first-guidance.ts`
+- [X] T031 [US1] Implement today's suggestion acceptance service in `lib/services/suggestion-service.ts`
+- [X] T032 [US1] Implement `POST /api/first-guidance` route handler in `app/api/first-guidance/route.ts`
+- [X] T033 [US1] Implement `POST /api/first-guidance/[sessionId]/accept` route handler in `app/api/first-guidance/[sessionId]/accept/route.ts`
+- [X] T034 [US1] Build first-use flow component with focus direction, current challenge, and trait inputs in `components/onboarding/FirstGuidanceFlow.tsx`
+- [X] T035 [US1] Build today's suggestion result component with child-specific context and accept action in `components/onboarding/TodaySuggestionResult.tsx`
+- [X] T036 [US1] Wire first-use page to first-guidance flow in `app/onboarding/page.tsx`
+- [X] T037 [US1] Record `first_guidance_generated` and `ai_suggestion_adopted` events from first guidance flow in `lib/metrics/first-guidance-events.ts`
 
 ## Phase 4: User Story 2 - Configure a Child Growth System (P1)
 
