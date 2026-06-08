@@ -151,14 +151,14 @@
 
 **Independent Test**: Create an interest participation record, review it, and verify it is available as AI context and weekly planning context.
 
-- [ ] T082 [P] [US6] Add interest participation API integration tests in `tests/integration/interest-participation.api.test.ts`
-- [ ] T083 [P] [US6] Add Playwright interest participation test in `tests/e2e/interest-participation.spec.ts`
-- [ ] T084 [US6] Implement interest participation repository in `lib/repositories/interest-participation-repo.ts`
-- [ ] T085 [US6] Implement interest participation service with actual-outcome rules in `lib/services/interest-participation-service.ts`
-- [ ] T086 [US6] Implement `POST /api/interest-participation-records` route handler in `app/api/interest-participation-records/route.ts`
-- [ ] T087 [US6] Implement delete and restore route handlers in `app/api/interest-participation-records/[recordId]/route.ts` and `app/api/interest-participation-records/[recordId]/restore/route.ts`
-- [ ] T088 [US6] Build interest participation form and recent history components in `components/profile/InterestParticipationForm.tsx` and `components/profile/InterestParticipationHistory.tsx`
-- [ ] T089 [US6] Integrate interest participation records into profile page in `app/(app)/profile/page.tsx`
+- [X] T082 [P] [US6] Add interest participation API integration tests in `tests/integration/interest-participation.api.test.ts`
+- [X] T083 [P] [US6] Add Playwright interest participation test in `tests/e2e/interest-participation.spec.ts`
+- [X] T084 [US6] Implement interest participation repository in `lib/repositories/interest-participation-repo.ts`
+- [X] T085 [US6] Implement interest participation service with actual-outcome rules in `lib/services/interest-participation-service.ts`
+- [X] T086 [US6] Implement `POST /api/interest-participation-records` route handler in `app/api/interest-participation-records/route.ts`
+- [X] T087 [US6] Implement delete and restore route handlers in `app/api/interest-participation-records/[recordId]/route.ts` and `app/api/interest-participation-records/[recordId]/restore/route.ts`
+- [X] T088 [US6] Build interest participation form and recent history components in `components/profile/InterestParticipationForm.tsx` and `components/profile/InterestParticipationHistory.tsx`
+- [X] T089 [US6] Integrate interest participation records into profile page in `app/(app)/profile/page.tsx`
 
 ## Phase 9: User Story 7 - Record Growth Moments (P2)
 

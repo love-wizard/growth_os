@@ -1,3 +1,6 @@
+import { InterestParticipationForm } from "@/components/profile/InterestParticipationForm";
+import { InterestParticipationHistory } from "@/components/profile/InterestParticipationHistory";
+
 export default function ProfilePage() {
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-5xl flex-col gap-6 px-5 py-8">
@@ -11,6 +14,8 @@ export default function ProfilePage() {
           管理孩子信息、兴趣参与记录和温和提醒偏好。
         </p>
       </section>
+      <InterestParticipationForm />
+      <InterestParticipationHistory />
     </main>
   );
 }
