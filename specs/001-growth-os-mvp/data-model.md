@@ -432,6 +432,15 @@ Recommended event names:
 - `expert_trust_feedback_recorded`
 - `expert_review_completed`
 - `expert_qa_requested`
+- `wechat_mini_program_entry_opened`
+- `wechat_scenario_card_opened`
+- `wechat_family_invite_shared`
+- `wechat_family_invite_accepted`
+- `wechat_subscription_message_opted_in`
+- `wechat_subscription_message_opened`
+- `wechat_record_card_shared`
+- `wechat_private_beta_service_contacted`
+- `wechat_mini_program_code_scanned`
 - `parent_anxiety_pulse_recorded`
 
 Rules:
@@ -439,7 +448,40 @@ Rules:
 - Events are used for product learning, not child ranking or social comparison.
 - `companionship_action_completed` should map to at least one concrete parent-child action, such as a completed weekly task, interest participation record, growth record, or accepted AI suggestion.
 - `payment_intent_recorded` captures package and price preference only; it does not imply payment collection or subscription management in v0.1.
+- WeChat channel events are used for attribution and validation only; they must not create public sharing, ranking, or social graph behavior in v0.1.
 - Parent anxiety pulse should be optional and lightweight.
+
+### WeChatChannelAttribution
+
+Private beta channel attribution signal if WeChat Mini Program is used.
+
+Fields:
+
+- `id`
+- `family_id`
+- `user_id`
+- `entry_type`
+- `source_context`
+- `related_entity_type`
+- `related_entity_id`
+- `created_at`
+
+Entry types:
+
+- `mini_program_entry`
+- `scenario_card`
+- `family_invite_card`
+- `subscription_message`
+- `record_share_card`
+- `mini_program_code`
+- `customer_service`
+- `enterprise_wechat`
+
+Rules:
+
+- Attribution events must not expose private child records to unauthorized recipients.
+- Share-card attribution should store source and flow metadata, not public social graph data.
+- WeChat Pay, location, WeChat Sports, and device-data integrations are outside v0.1.
 
 ### PaymentIntentSignal
 
@@ -485,6 +527,7 @@ Rules:
 - `Family` has many `WarmReminderPreference`
 - `Family` has many `ProductMetricEvent`
 - `Family` has many `PaymentIntentSignal`
+- `Family` has many `WeChatChannelAttribution`
 
 ## RLS Policy Shape
 

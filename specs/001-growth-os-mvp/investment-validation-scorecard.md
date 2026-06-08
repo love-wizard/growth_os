@@ -50,6 +50,8 @@ The scorecard tracks one loop:
 
 Warm reminders, expert review, weekly plans, and growth records are supporting mechanisms. They are not independent success stories unless they strengthen this loop.
 
+If WeChat Mini Program is used, WeChat entry, family invite cards, scenario cards, subscription messages, mini-program codes, and customer-service operations are also supporting mechanisms. They are not independent success stories unless they lead to guidance, action, return, trust, or payment-intent signals.
+
 ## Scorecard Metrics
 
 | Metric | Target | Why It Matters |
@@ -62,6 +64,8 @@ Warm reminders, expert review, weekly plans, and growth records are supporting m
 | Organic second-week return rate | 20% | Separates intrinsic demand from notification-driven traffic. |
 | Total second-week return rate | 30% | Measures overall return including warm reminders. |
 | Warm-reminder downstream action rate | 20% of opened reminders | Proves reminders create useful action, not just opens. |
+| WeChat scenario-card conversion | Reported if WeChat is used | Separates channel reach from actual first-guidance completion. |
+| WeChat second-parent invite acceptance | Reported if WeChat is used | Tests whether WeChat improves family activation. |
 | Generic AI comparison win rate | 60% | Proves Growth OS beats a generic chatbot for the same challenge. |
 | Expert-reviewed trust lift | Positive lift in trust feedback | Tests whether expert calibration increases confidence without becoming the product. |
 | Payment intent at RMB 19/29/49 per month | 15% strong intent | Tests whether usage value can become commercial value. |
@@ -107,6 +111,28 @@ Therefore the pilot must split:
 
 If organic return is weak but reminder-driven return is strong, Growth OS should keep testing the reminder mechanism but should not claim strong natural habit formation.
 
+## WeChat Channel Test
+
+If WeChat Mini Program is used, channel performance must be reported as attribution, not as product proof.
+
+Measure:
+
+- Scenario card opens
+- Scenario card to first guidance conversion
+- Family invite card shares
+- Family invite acceptance
+- Subscription message opt-in and open
+- Subscription message downstream action
+- Mini-program code scans
+- Private beta service contacts
+
+Interpretation:
+
+- WeChat opens without first guidance completion are channel curiosity, not Aha.
+- Family invite acceptance is useful only if the second parent joins the same family workspace and sees relevant guidance.
+- Subscription message opens are useful only if they lead to suggestion generation, suggestion acceptance, action, or record draft.
+- Growth record share cards must remain privacy-safe and family-oriented, not public social proof.
+
 ## Expert Trust Test
 
 Expert involvement must be tested without turning Growth OS into a consulting marketplace.
@@ -138,6 +164,7 @@ Proceed to broader MVP implementation if:
 - Growth OS beats generic AI in side-by-side comparison
 - Payment intent is visible in at least one package
 - Parent pressure sentiment remains acceptable
+- WeChat metrics, if used, show conversion into the core loop rather than only card opens
 
 Iterate the wedge if:
 
@@ -145,6 +172,7 @@ Iterate the wedge if:
 - Suggestions are accepted but not tried
 - Reminder-driven return works but organic return is weak
 - Payment intent is unclear
+- WeChat traffic creates opens but not guidance completion or action
 
 Pause expansion if:
 
@@ -165,6 +193,6 @@ Any proposed v0.1 feature must answer one of these:
 - Does it prove Growth OS is better than generic AI?
 - Does it clarify willingness to pay?
 - Does it reduce parent pressure or trust risk?
+- If WeChat-specific, does it improve entry, second-parent activation, warm reminder action, or private beta learning without creating social or privacy drift?
 
 If not, defer it.
-

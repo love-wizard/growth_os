@@ -75,8 +75,12 @@ Open the app at `http://localhost:3000`.
 17. Verify sampled AI answers can be marked as expert-reviewed against the quality and safety bar during private beta validation.
 18. Record validation events for organic second-week return, reminder-driven return, generic-AI comparison, expert trust feedback, payment intent, and parent pressure sentiment.
 19. Verify the product event set can populate the investment validation scorecard without child ranking or social comparison.
-20. Delete and restore a growth record, interest participation record, and AI conversation.
-21. Verify deleted items are excluded from AI context while deleted.
+20. If WeChat Mini Program is used, verify a scenario card opens the matching first-guidance flow and records channel attribution.
+21. If WeChat Mini Program is used, verify a WeChat family invite joins the second parent to the existing family workspace without duplicate family or child profile creation.
+22. If WeChat Mini Program is used, verify WeChat subscription-message opt-in/open events are separated from organic return.
+23. If WeChat Mini Program is used, verify growth-record share previews are privacy-safe for unauthorized recipients.
+24. Delete and restore a growth record, interest participation record, and AI conversation.
+25. Verify deleted items are excluded from AI context while deleted.
 
 ## Test Commands
 
@@ -104,3 +108,5 @@ Expected test coverage:
 - Expert review quality bar and bounded asynchronous Q&A labeling
 - Investment validation scorecard event coverage
 - Payment-intent signal recording without payment workflow implementation
+- WeChat channel attribution for scenario cards, family invites, subscription messages, mini-program codes, and private beta service contacts
+- WeChat privacy-safe share card behavior

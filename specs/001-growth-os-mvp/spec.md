@@ -22,6 +22,7 @@ v0.1 validation additions:
 - Optional warm companionship reminders for private beta engagement validation
 - Human parenting expert quality review for AI answer calibration
 - Limited asynchronous expert Q&A experiment for private beta trust validation
+- WeChat Mini Program channel validation for low-friction entry, family invitation, scenario sharing, and reminder delivery if WeChat is selected as the first private beta surface
 
 v0.1 must not become a real-time expert consulting marketplace or a pressure-based reminder system.
 
@@ -31,6 +32,7 @@ v0.1 validation mode:
 - Recruit 30 high-pain private beta families, prioritizing children aged 4-7 with a recent piano or interest-practice conflict, reading interruption, unclear English exposure, or limited evening companionship time.
 - Use the investment validation scorecard to decide whether to expand scope.
 - Defer features that do not improve first guidance completion, suggestion acceptance, companionship action completion, organic second-week return, generic-AI comparison win rate, willingness to pay, trust, or parent pressure sentiment.
+- If WeChat Mini Program is used, treat WeChat as a distribution and engagement layer; do not turn Growth OS into a social-sharing, ranking, lead-generation, or expert-consulting product.
 
 ## Product Positioning
 
@@ -89,6 +91,8 @@ A high-quality family companionship action means:
 Supporting product metrics:
 
 - First useful guidance generated within 3 minutes of first use
+- WeChat scenario-card to first-guidance conversion rate, if WeChat channel is used
+- Second-parent invite acceptance rate, if WeChat family invitation is used
 - AI suggestion adoption rate
 - Seven-day companionship action rate
 - Warm reminder opt-in and downstream action rate
@@ -123,6 +127,7 @@ Investor-risk response:
 - Natural return must be measured separately from reminder-driven return so notifications do not hide weak intrinsic demand.
 - Expert trust experiments should start with internal answer review and small label tests; a user-facing "ask an expert" entry is not required for v0.1 validation.
 - Commercial validation should test package and price intent before building subscription or payment workflows.
+- WeChat share cards, subscription messages, customer-service tools, and mini-program codes are selected only when they strengthen the scorecard loop; public social feed, group rankings, WeChat Pay collection, location recommendations, and device-data integrations are outside v0.1.
 
 Default first-use focus directions:
 
@@ -174,6 +179,8 @@ Default child trait options:
 - Notifications must be opt-in, low-pressure, and tied to natural companionship moments such as evenings, weekends, accepted suggestion follow-up, and weekly reset.
 - Notifications must avoid missed-task warnings, streak pressure, red-alert completion drops, comparative child performance messages, or wording that implies parent failure.
 - Human expert Q&A in v0.1, if tested, must be limited, asynchronous, and clearly bounded away from medical, mental health, abuse, or safety intervention.
+- WeChat family-invite and growth-record share cards must be privacy-safe by default and must not expose child records, photos, videos, or performance-like claims to unintended recipients.
+- WeChat scenario share cards should open directly into high-intent first-guidance or AI coach flows rather than a generic marketing page.
 
 ## Clarifications
 
@@ -330,6 +337,24 @@ Parents can opt into gentle reminders that bring them back to real companionship
 
 ---
 
+### User Story 9 - Use WeChat Mini Program Channel Loops (Priority: P2)
+
+Parents enter Growth OS through WeChat Mini Program surfaces such as family invite cards, high-intent scenario cards, opt-in subscription messages, and private beta community operations.
+
+**Why this priority**: WeChat can reduce entry friction and support family sharing, but it must serve the validation loop rather than turning Growth OS into a social product.
+
+**Independent Test**: A tester can open a scenario share card, generate first guidance, share a family invite to the second parent, opt into a warm reminder subscription message, and verify WeChat channel events can be attributed without exposing private child records.
+
+**Acceptance Scenarios**:
+
+1. **Given** a parent opens a high-intent WeChat scenario card, **When** they enter Growth OS, **Then** the system starts the relevant first-guidance or AI coach flow without requiring a generic landing page first.
+2. **Given** the first parent has created a family, **When** they share a WeChat family invite card, **Then** the second parent can join the same family workspace without creating duplicate family or child profiles.
+3. **Given** a parent opts into WeChat subscription messages, **When** a warm reminder is sent, **Then** the message uses low-pressure companionship wording and can be tied to downstream suggestion or action events.
+4. **Given** a parent shares a growth record card through WeChat, **When** the recipient opens it, **Then** the default preview is privacy-safe and does not expose child photos, videos, or detailed records unless family access is authorized.
+5. **Given** private beta support uses WeChat customer-service or Enterprise WeChat operations, **When** parent feedback is collected, **Then** it is treated as validation input and not as a real-time expert consulting workflow.
+
+---
+
 ### Edge Cases
 
 - If the child is too young for a selected goal, the system should generate age-appropriate actions rather than reject the goal.
@@ -348,6 +373,9 @@ Parents can opt into gentle reminders that bring them back to real companionship
 - If a reminder is triggered after a parent has disabled that reminder type, the reminder should be suppressed.
 - If a reminder would frame a missed task as failure, the system should use a neutral companionship invitation or skip the reminder.
 - If an expert Q&A question asks for diagnosis, crisis handling, abuse response, or immediate safety intervention, the response should follow the same professional-support boundary as the AI coach.
+- If a WeChat share card is forwarded outside the intended family context, the recipient should see only a limited, privacy-safe preview.
+- If a WeChat channel entry cannot identify family membership, the system should require normal family authorization before showing private child data.
+- If a WeChat subscription message would become a missed-task warning, it should be skipped or rewritten as a companionship invitation.
 
 ## Requirements *(mandatory)*
 
@@ -426,6 +454,13 @@ Parents can opt into gentle reminders that bring them back to real companionship
 - **FR-071**: The system MUST allow private beta review to record payment intent for tested package concepts at RMB 19, RMB 29, and RMB 49 per month without requiring payment workflow implementation.
 - **FR-072**: Expert trust experiments MUST start with internal answer review, expert-reviewed labels, or limited asynchronous tests; a prominent user-facing "ask an expert" entry MUST NOT be required for v0.1 validation.
 - **FR-073**: Proposed v0.1 scope additions MUST be evaluated against the investment validation scorecard before being added to the MVP.
+- **FR-074**: If WeChat Mini Program is used as the private beta surface, the system MUST support WeChat channel attribution for scenario card opens, family invite shares, family invite acceptance, subscription message opt-in, subscription message opens, mini-program code scans, and private beta service contacts.
+- **FR-075**: WeChat family invite cards MUST allow the invited second parent to join the existing family workspace without creating a duplicate family or child profile.
+- **FR-076**: WeChat high-intent scenario cards MUST open directly into the relevant first-guidance or AI coach flow for piano resistance, limited evening time, reading recovery, English exposure, or weekend activity.
+- **FR-077**: WeChat subscription messages, if used, MUST map only to approved warm reminder types and MUST require parent opt-in.
+- **FR-078**: WeChat growth-record share cards MUST be privacy-safe by default and MUST NOT expose photos, videos, detailed notes, or performance-like claims to recipients without family authorization.
+- **FR-079**: WeChat customer-service or Enterprise WeChat operations, if used, MUST be limited to private beta feedback, expert-review coordination, and payment-intent interviews; they MUST NOT create a 24/7 expert support or consulting workflow.
+- **FR-080**: WeChat Pay collection, public social feed, group ranking, location-based recommendations, WeChat Sports or device-data integration, course sales, and expert marketplace workflows MUST remain outside v0.1.
 
 ### Key Entities
 
@@ -444,6 +479,7 @@ Parents can opt into gentle reminders that bring them back to real companionship
 - **Warm Reminder Preference**: A parent-controlled setting for reminder categories such as evening companionship, weekend planning, accepted suggestion follow-up, and weekly reset.
 - **Expert Quality Review**: A private beta review of sampled AI answers by a parenting expert against the product's quality and safety standards.
 - **Investment Validation Scorecard**: A private beta decision artifact that tracks first guidance completion, suggestion acceptance, seven-day action, growth record draft creation, organic and reminder-driven return, generic-AI comparison, expert trust, payment intent, and parent pressure sentiment.
+- **WeChat Channel Event**: A product metric event generated from WeChat entry, scenario sharing, family invitation, subscription message, mini-program code, private beta service, or privacy-safe record sharing.
 
 ## Success Criteria *(mandatory)*
 
@@ -489,6 +525,10 @@ Parents can opt into gentle reminders that bring them back to real companionship
 - **SC-038**: At least 20% of activated families return organically in the second week without reminder entry during private beta validation.
 - **SC-039**: At least 15% of pilot families express strong payment intent for one tested package at RMB 19, RMB 29, or RMB 49 per month.
 - **SC-040**: At least 80% of private beta families match the high-pain recruitment profile of child age 4-7, one ongoing interest or habit direction, and a real companionship friction in the last 30 days.
+- **SC-041**: In WeChat Mini Program acceptance testing, a high-intent scenario card can open the relevant first-guidance or AI coach flow and record a channel attribution event in 100% of test cases.
+- **SC-042**: In WeChat family-invite acceptance testing, the second parent joins the existing family workspace without duplicate family or child profile creation in 100% of test cases.
+- **SC-043**: In WeChat reminder acceptance testing, subscription-message opt-in, open, and downstream action events can be reported separately from organic return in product metrics.
+- **SC-044**: In WeChat privacy acceptance testing, shared growth-record previews do not expose photos, videos, detailed notes, or performance-like claims to unauthorized recipients in 100% of test cases.
 
 ## Assumptions
 
@@ -508,6 +548,8 @@ Parents can opt into gentle reminders that bring them back to real companionship
 - Optional warm reminders are allowed for private beta engagement validation, but AI-generated risk alerts and high-pressure proactive reminders are later enhancements.
 - Human parenting experts can calibrate AI answer quality and participate in limited asynchronous private beta Q&A; real-time expert consulting, guaranteed response times, paid expert services, and professional diagnosis are outside v0.1 scope.
 - Payment intent testing is part of private beta validation; subscription, payment collection, and commercial workflows are outside v0.1 implementation scope.
+- WeChat Mini Program is an optional private beta channel strategy; if used, it should prioritize family invitation, scenario cards, warm reminder subscription messages, private beta operations, and privacy-safe family sharing.
+- WeChat Pay collection, public sharing, location recommendations, WeChat Sports or device-data integration, and group or social mechanics are outside v0.1.
 - Interest participation records in v0.1 track actual participation, duration or count, and notes; tuition, billing, teacher communication, future scheduling, recurring class rules, leave requests, and make-up class management are outside MVP scope.
 - Deletion in v0.1 means parent-visible removal with a 30-day restore window.
 - Investor objections should be treated as validation inputs; expansion is blocked until the first Aha loop is proven with private-beta behavior, not just positive concept feedback.

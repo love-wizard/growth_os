@@ -42,6 +42,8 @@ Likely acquisition channels:
 - Piano, reading, English exposure, swimming, and outdoor activity communities
 - Founder-led private beta invitations
 
+WeChat Mini Program can be the preferred China private beta surface because it supports parent-group entry, family invitation, scenario cards, opt-in reminders, and lightweight private beta operations without requiring a separate app install.
+
 Poor-fit users for v0.1:
 
 - Parents seeking curriculum, tutoring, test prep, or academic score improvement
@@ -68,6 +70,38 @@ Do not lead with:
 - "孩子任务完成率"
 
 Reason: the market buys immediate relief before buying a system.
+
+## WeChat Mini Program Channel Strategy
+
+Selected P0 capabilities:
+
+- WeChat entry and parent identity binding for low-friction private beta access
+- Family invite share card so the second parent can join the same family workspace
+- High-intent scenario share cards for piano resistance, limited evening time, reading recovery, English exposure, and weekend activity
+- Opt-in subscription messages for warm reminders
+- WeChat channel attribution events for the investment validation scorecard
+
+Selected P1 capabilities:
+
+- WeChat groups and private communities for high-pain parent recruitment
+- Official Account and Video Account content funnel into scenario cards
+- WeChat customer service or Enterprise WeChat for private beta support, expert-review coordination, and payment-intent interviews
+- Privacy-safe growth-record share cards for family connection
+- Mini-program codes for workshops, expert livestreams, and community entry
+
+Not selected for v0.1:
+
+- WeChat Pay collection
+- Public growth sharing
+- Group leaderboards or rankings
+- Location-based activity recommendations
+- WeChat Sports or device-data integration
+- Expert marketplace or paid expert consultation
+- Course purchase or training-institution lead generation
+
+Decision rule:
+
+- Keep WeChat capabilities only when they improve first guidance completion, second-parent activation, suggestion acceptance, companionship action, reminder-driven return, trust, or payment-intent learning.
 
 ## Landing Page Positioning
 
@@ -118,6 +152,7 @@ Target for private MVP pilot:
 - At least 30% return in the next week
 - At least 35% enable one warm reminder type during reminder validation
 - At least 15% show strong payment intent for one tested package at RMB 19, RMB 29, or RMB 49 per month
+- If WeChat is used, at least 50% of first guidance sessions should come from high-intent scenario cards, family invites, private beta groups, or mini-program codes rather than generic homepage entry.
 
 ## Private Beta Script
 
@@ -149,7 +184,7 @@ Success interview questions:
 
 Activation funnel:
 
-1. Visitor opens first-guidance flow
+1. Visitor opens first-guidance flow from a high-intent entry, including WeChat scenario cards if WeChat is used
 2. Parent enters nickname, birth date, focus directions, current challenge, traits
 3. First suggestion generated
 4. Parent accepts/saves suggestion
@@ -158,6 +193,16 @@ Activation funnel:
 7. Parent receives or opens an opt-in warm reminder
 8. Parent returns next week, tracked as organic or reminder-driven
 9. Parent selects or rejects a tested payment package
+
+WeChat-specific funnel:
+
+1. Parent sees a scenario card in a group, private message, official account article, video account content, or mini-program code
+2. Parent opens the Mini Program directly into the matching first-guidance flow
+3. Parent generates a suggestion and accepts or saves it
+4. Parent invites the second parent through a family invite card
+5. Parent opts into a warm reminder subscription message
+6. Parent completes an action or creates a growth record draft
+7. Product records channel attribution for the scorecard
 
 Key drop-off diagnosis:
 
@@ -235,6 +280,14 @@ Risk: Pilot feedback is positive but commercially weak.
 
 - Mitigation: recruit high-pain families, test payment intent at RMB 19/29/49 per month, and avoid treating "I like it" as payment validation.
 
+Risk: WeChat sharing turns Growth OS into social display or parent comparison.
+
+- Mitigation: only support privacy-safe family invite, scenario, and record-preview cards; explicitly exclude public feed, rankings, streaks, and performance-style sharing.
+
+Risk: WeChat channel metrics create vanity growth without product proof.
+
+- Mitigation: report WeChat opens separately from first guidance completion, suggestion acceptance, companionship action, and second-week return.
+
 ## Investor Objection Response
 
 The skeptical investor case is useful because it identifies the riskiest assumptions:
@@ -259,6 +312,7 @@ Product response:
 - Use opt-in warm reminders to test natural return moments without creating check-in pressure.
 - Use parenting experts to review AI answer quality and test whether limited human-backed Q&A increases trust.
 - Separate natural return, reminder-driven return, and payment intent in validation reporting.
+- Use WeChat Mini Program only as a low-friction channel layer; do not count share-card opens as Aha unless they lead to child-specific guidance or action.
 
 Validation response:
 
@@ -269,6 +323,7 @@ Validation response:
 - Measure whether reminders create completed companionship actions, not just notification opens.
 - Measure whether expert-reviewed or expert-answered guidance changes trust and willingness to pay.
 - Use [investment-validation-scorecard.md](./investment-validation-scorecard.md) as the one-page investor validation report.
+- Use [wechat-mini-program-strategy.md](./wechat-mini-program-strategy.md) if WeChat is selected as the private beta surface.
 
 Detailed objection handling and kill criteria are maintained in [investor-risk-review.md](./investor-risk-review.md).
 
@@ -287,6 +342,7 @@ Do not broaden beyond private beta until:
 - At least 80% of expert-reviewed AI answer samples pass the quality and safety bar
 - At least 60% of parents in side-by-side review prefer the Growth OS answer over a generic AI answer for the same challenge
 - At least 15% of pilot families show strong payment intent for one tested package at RMB 19, RMB 29, or RMB 49 per month
+- If WeChat is used, WeChat scenario-card and family-invite attribution can be reported separately from organic and reminder-driven return
 - Parent feedback shows the product feels supportive rather than pressure-inducing
 
 ## Not Yet
@@ -304,5 +360,10 @@ Do not build these until the first Aha loop works:
 - Paid expert consultation workflows
 - Subscription and payment collection workflows
 - User-facing expert marketplace entry
+- Public WeChat social feed
+- WeChat group leaderboards
+- WeChat location recommendations
+- WeChat Sports or device-data integration
+- Training-institution lead generation
 - Adolescent-specific privacy workflows
 - Marketplace recommendations

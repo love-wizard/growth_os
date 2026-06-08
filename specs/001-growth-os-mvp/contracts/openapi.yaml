@@ -296,6 +296,15 @@ components:
             - expert_trust_feedback_recorded
             - expert_review_completed
             - expert_qa_requested
+            - wechat_mini_program_entry_opened
+            - wechat_scenario_card_opened
+            - wechat_family_invite_shared
+            - wechat_family_invite_accepted
+            - wechat_subscription_message_opted_in
+            - wechat_subscription_message_opened
+            - wechat_record_card_shared
+            - wechat_private_beta_service_contacted
+            - wechat_mini_program_code_scanned
             - parent_anxiety_pulse_recorded
         eventProperties:
           type: object
