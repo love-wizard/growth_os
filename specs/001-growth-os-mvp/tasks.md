@@ -40,11 +40,11 @@
 - [X] T010 Implement family membership authorization helpers in `lib/auth/family-access.ts`
 - [X] T011 Implement authenticated app proxy middleware in `proxy.ts`
 - [X] T012 [P] Add Zod schemas for onboarding, first guidance, weekly plans, records, reminders, product events, and WeChat events in `lib/validation/schemas.ts`
-- [ ] T013 Create initial Supabase tables for families, family members, internal reviewers, WeChat identity bindings, child profiles, interests, goals, monthly themes, weekly plans, weekly tasks, records, AI history, reminders, expert reviews, payment intent, WeChat attribution, and product events in `supabase/migrations/001_initial_schema.sql`
-- [ ] T014 Add Row Level Security policies for family-scoped reads/writes, internal reviewer access, and WeChat identity binding checks in `supabase/migrations/002_rls_policies.sql`
-- [ ] T015 Add private storage bucket and policies for growth media in `supabase/migrations/003_storage_policies.sql`
-- [ ] T016 [P] Add database tests for family membership isolation and duplicate-family prevention in `supabase/tests/family_access.test.sql`
-- [ ] T017 [P] Add database tests for soft deletion, restore window, and AI context exclusion in `supabase/tests/soft_delete_restore.test.sql`
+- [X] T013 Create initial Supabase tables for families, family members, internal reviewers, WeChat identity bindings, child profiles, interests, goals, monthly themes, weekly plans, weekly tasks, records, AI history, reminders, expert reviews, payment intent, WeChat attribution, and product events in `supabase/migrations/001_initial_schema.sql`
+- [X] T014 Add Row Level Security policies for family-scoped reads/writes, internal reviewer access, and WeChat identity binding checks in `supabase/migrations/002_rls_policies.sql`
+- [X] T015 Add private storage bucket and policies for growth media in `supabase/migrations/003_storage_policies.sql`
+- [X] T016 [P] Add database tests for family membership isolation and duplicate-family prevention in `supabase/tests/family_access.test.sql`
+- [X] T017 [P] Add database tests for soft deletion, restore window, and AI context exclusion in `supabase/tests/soft_delete_restore.test.sql`
 - [ ] T018 Implement product metric event service with no child ranking or social comparison in `lib/metrics/product-events.ts`
 - [ ] T019 Implement investment validation event names and property helpers in `lib/metrics/validation-scorecard.ts`
 - [ ] T020 Implement OpenAI Responses API client wrapper and structured-output parser in `lib/ai/openai-client.ts`
