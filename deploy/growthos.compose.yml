@@ -1,0 +1,23 @@
+services:
+  growthos-app:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL:?set NEXT_PUBLIC_SUPABASE_URL}
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY:?set NEXT_PUBLIC_SUPABASE_ANON_KEY}
+    container_name: growthos-app
+    restart: unless-stopped
+    env_file:
+      - /opt/growth_os/.env.production
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+      HOSTNAME: 0.0.0.0
+    networks:
+      - yyy_love_network
+
+networks:
+  yyy_love_network:
+    external: true
+    name: yyy_love_yyy_love_network
