@@ -1,5 +1,6 @@
 import { CoachInput } from "@/components/ai-coach/CoachInput";
 import { CoachResponse } from "@/components/ai-coach/CoachResponse";
+import { ExpertReviewedLabel } from "@/components/ai-coach/ExpertReviewedLabel";
 import { QuickQuestions } from "@/components/ai-coach/QuickQuestions";
 import { WeeklyPlanDraftConfirm } from "@/components/ai-coach/WeeklyPlanDraftConfirm";
 import { Card } from "@/components/ui/card";
@@ -31,6 +32,7 @@ export default function AICoachPage() {
           followUpQuestion: "最近一次不想练琴，是在开始前还是练到一半时出现？"
         }}
       />
+      <ExpertReviewedLabel reviewed />
       <div>
         <WeeklyPlanDraftConfirm disabled />
       </div>

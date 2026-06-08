@@ -185,15 +185,15 @@
 
 **Independent Test**: Enable/disable reminder types, record reminder conversion events, and mark sampled AI answers as expert-reviewed against the quality and safety bar.
 
-- [ ] T102 [P] [US8] Add reminder preference API integration tests in `tests/integration/reminders.api.test.ts`
-- [ ] T103 [P] [US8] Add expert review API integration tests in `tests/integration/expert-review.api.test.ts`
-- [ ] T104 [US8] Implement warm reminder preference repository in `lib/repositories/reminder-repo.ts`
-- [ ] T105 [US8] Implement reminder service with opt-in, suppression, and approved copy rules in `lib/services/reminder-service.ts`
-- [ ] T106 [US8] Implement expert quality review repository and service in `lib/repositories/expert-review-repo.ts` and `lib/services/expert-review-service.ts`
-- [ ] T107 [US8] Implement `PATCH /api/notification-preferences` route handler in `app/api/notification-preferences/route.ts`
-- [ ] T108 [US8] Implement expert review admin route handler with active internal reviewer authorization in `app/api/admin/expert-reviews/route.ts`
-- [ ] T109 [US8] Build reminder preference settings and expert-reviewed label UI in `components/profile/ReminderPreferences.tsx` and `components/ai-coach/ExpertReviewedLabel.tsx`
-- [ ] T110 [US8] Record `warm_reminder_enabled`, `warm_reminder_opened`, `warm_reminder_action_completed`, `expert_review_completed`, and `expert_trust_feedback_recorded` events in `lib/metrics/engagement-trust-events.ts`
+- [X] T102 [P] [US8] Add reminder preference API integration tests in `tests/integration/reminders.api.test.ts`
+- [X] T103 [P] [US8] Add expert review API integration tests in `tests/integration/expert-review.api.test.ts`
+- [X] T104 [US8] Implement warm reminder preference repository in `lib/repositories/reminder-repo.ts`
+- [X] T105 [US8] Implement reminder service with opt-in, suppression, and approved copy rules in `lib/services/reminder-service.ts`
+- [X] T106 [US8] Implement expert quality review repository and service in `lib/repositories/expert-review-repo.ts` and `lib/services/expert-review-service.ts`
+- [X] T107 [US8] Implement `PATCH /api/notification-preferences` route handler in `app/api/notification-preferences/route.ts`
+- [X] T108 [US8] Implement expert review admin route handler with active internal reviewer authorization in `app/api/admin/expert-reviews/route.ts`
+- [X] T109 [US8] Build reminder preference settings and expert-reviewed label UI in `components/profile/ReminderPreferences.tsx` and `components/ai-coach/ExpertReviewedLabel.tsx`
+- [X] T110 [US8] Record `warm_reminder_enabled`, `warm_reminder_opened`, `warm_reminder_action_completed`, `expert_review_completed`, and `expert_trust_feedback_recorded` events in `lib/metrics/engagement-trust-events.ts`
 
 ## Phase 11: User Story 9 - Use WeChat Mini Program Channel Loops (P2, Optional If WeChat Is Selected)
 
