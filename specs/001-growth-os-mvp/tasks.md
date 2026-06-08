@@ -113,15 +113,15 @@
 
 **Independent Test**: Open weekly plan, update completed counts, verify statuses and completion rate update accurately.
 
-- [ ] T058 [P] [US4] Add weekly plan API integration tests in `tests/integration/weekly-plan.api.test.ts`
-- [ ] T059 [P] [US4] Add Playwright weekly plan progress test in `tests/e2e/weekly-plan.spec.ts`
-- [ ] T060 [US4] Implement weekly plan repository and task progress repository in `lib/repositories/weekly-plan-repo.ts`
-- [ ] T061 [US4] Implement weekly plan service with completed count validation in `lib/services/weekly-plan-service.ts`
-- [ ] T062 [US4] Implement `GET /api/weekly-plan/current` route handler in `app/api/weekly-plan/current/route.ts`
-- [ ] T063 [US4] Implement `PATCH /api/weekly-plan/tasks/[taskId]/progress` route handler in `app/api/weekly-plan/tasks/[taskId]/progress/route.ts`
-- [ ] T064 [US4] Build weekly theme, task table, recommendations, and weekend activity components in `components/weekly-plan/WeeklyTheme.tsx`, `components/weekly-plan/TaskTable.tsx`, `components/weekly-plan/Recommendations.tsx`, and `components/weekly-plan/WeekendActivity.tsx`
-- [ ] T065 [US4] Compose weekly plan page in `app/(app)/weekly-plan/page.tsx`
-- [ ] T066 [US4] Record `weekly_plan_confirmed` and progress-related companionship action events in `lib/metrics/weekly-plan-events.ts`
+- [X] T058 [P] [US4] Add weekly plan API integration tests in `tests/integration/weekly-plan.api.test.ts`
+- [X] T059 [P] [US4] Add Playwright weekly plan progress test in `tests/e2e/weekly-plan.spec.ts`
+- [X] T060 [US4] Implement weekly plan repository and task progress repository in `lib/repositories/weekly-plan-repo.ts`
+- [X] T061 [US4] Implement weekly plan service with completed count validation in `lib/services/weekly-plan-service.ts`
+- [X] T062 [US4] Implement `GET /api/weekly-plan/current` route handler in `app/api/weekly-plan/current/route.ts`
+- [X] T063 [US4] Implement `PATCH /api/weekly-plan/tasks/[taskId]/progress` route handler in `app/api/weekly-plan/tasks/[taskId]/progress/route.ts`
+- [X] T064 [US4] Build weekly theme, task table, recommendations, and weekend activity components in `components/weekly-plan/WeeklyTheme.tsx`, `components/weekly-plan/TaskTable.tsx`, `components/weekly-plan/Recommendations.tsx`, and `components/weekly-plan/WeekendActivity.tsx`
+- [X] T065 [US4] Compose weekly plan page in `app/(app)/weekly-plan/page.tsx`
+- [X] T066 [US4] Record `weekly_plan_confirmed` and progress-related companionship action events in `lib/metrics/weekly-plan-events.ts`
 
 ## Phase 7: User Story 5 - Ask the AI Growth Coach (P1)
 
