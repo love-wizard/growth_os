@@ -85,9 +85,19 @@ Open the app at `http://localhost:3000`.
 ## Test Commands
 
 ```bash
+npm run typecheck
+npm run lint
 npm run test
+npm run build
 npm run test:e2e
 ```
+
+Implementation notes:
+
+- `npm run test:e2e` requires Playwright browsers to be installed with `npx playwright install chromium`.
+- Local builds can run without Supabase/OpenAI credentials; protected API flows still require real Supabase Auth and project env vars.
+- AI coach uses OpenAI Responses API when `OPENAI_API_KEY` is configured and falls back to deterministic structured guidance in local test environments.
+- WeChat Mini Program files under `miniprogram/` are channel fixtures for private beta validation and reuse the same server API contracts.
 
 Expected test coverage:
 
@@ -110,3 +120,4 @@ Expected test coverage:
 - Payment-intent signal recording without payment workflow implementation
 - WeChat channel attribution for scenario cards, family invites, subscription messages, mini-program codes, and private beta service contacts
 - WeChat privacy-safe share card behavior
+- Mobile viewport coverage for primary tabs

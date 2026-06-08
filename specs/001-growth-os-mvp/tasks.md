@@ -218,14 +218,14 @@
 
 **Purpose**: Hardening, scorecard reporting, privacy checks, and documentation before implementation handoff.
 
-- [ ] T123 [P] Add investment validation scorecard report generator in `lib/metrics/scorecard-report.ts`
-- [ ] T124 [P] Add payment intent signal recording service and survey schema in `lib/services/payment-intent-service.ts` and `components/profile/PaymentIntentSurvey.tsx`
-- [ ] T125 [P] Add privacy review tests for media exclusion, share card previews, and unauthorized family access in `tests/integration/privacy-boundaries.test.ts`
-- [ ] T126 Add `POST /api/product-events` route handler and validation in `app/api/product-events/route.ts`
-- [ ] T127 Add internal-reviewer-only product event dashboard export for private beta review in `app/api/admin/validation-scorecard/route.ts`
-- [ ] T128 [P] Add accessibility and mobile viewport Playwright coverage for primary flows in `tests/e2e/mobile-accessibility.spec.ts`
-- [ ] T129 [P] Update quickstart implementation notes and test commands in `specs/001-growth-os-mvp/quickstart.md`
-- [ ] T130 Run and document full validation test suite results in `specs/001-growth-os-mvp/implementation-validation.md`
+- [X] T123 [P] Add investment validation scorecard report generator in `lib/metrics/scorecard-report.ts`
+- [X] T124 [P] Add payment intent signal recording service and survey schema in `lib/services/payment-intent-service.ts` and `components/profile/PaymentIntentSurvey.tsx`
+- [X] T125 [P] Add privacy review tests for media exclusion, share card previews, and unauthorized family access in `tests/integration/privacy-boundaries.test.ts`
+- [X] T126 Add `POST /api/product-events` route handler and validation in `app/api/product-events/route.ts`
+- [X] T127 Add internal-reviewer-only product event dashboard export for private beta review in `app/api/admin/validation-scorecard/route.ts`
+- [X] T128 [P] Add accessibility and mobile viewport Playwright coverage for primary flows in `tests/e2e/mobile-accessibility.spec.ts`
+- [X] T129 [P] Update quickstart implementation notes and test commands in `specs/001-growth-os-mvp/quickstart.md`
+- [X] T130 Run and document full validation test suite results in `specs/001-growth-os-mvp/implementation-validation.md`
 
 ## Dependencies
 

@@ -1,5 +1,6 @@
 import { InterestParticipationForm } from "@/components/profile/InterestParticipationForm";
 import { InterestParticipationHistory } from "@/components/profile/InterestParticipationHistory";
+import { PaymentIntentSurvey } from "@/components/profile/PaymentIntentSurvey";
 import { ReminderPreferences } from "@/components/profile/ReminderPreferences";
 
 export default function ProfilePage() {
@@ -18,6 +19,7 @@ export default function ProfilePage() {
       <InterestParticipationForm />
       <InterestParticipationHistory />
       <ReminderPreferences />
+      <PaymentIntentSurvey />
     </main>
   );
 }
