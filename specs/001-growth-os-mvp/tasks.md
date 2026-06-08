@@ -52,8 +52,8 @@
 - [X] T022 [P] Add unit tests for AI context assembly, deleted-record filtering, and media exclusion in `tests/unit/ai-context.test.ts`
 - [X] T023 [P] Add unit tests for weekly completion calculation in `tests/unit/weekly-completion.test.ts`
 - [X] T024 [P] Add unit tests for product event property validation in `tests/unit/product-events.test.ts`
-- [ ] T025 Create app shell, bottom navigation, and protected layout in `components/app-shell/AppShell.tsx`, `components/app-shell/BottomNav.tsx`, and `app/(app)/layout.tsx`
-- [ ] T026 Create shared UI primitives for cards, forms, empty states, and loading states in `components/ui/card.tsx`, `components/ui/form.tsx`, `components/ui/empty-state.tsx`, and `components/ui/loading.tsx`
+- [X] T025 Create app shell, bottom navigation, and protected layout in `components/app-shell/AppShell.tsx`, `components/app-shell/BottomNav.tsx`, and `app/(app)/layout.tsx`
+- [X] T026 Create shared UI primitives for cards, forms, empty states, and loading states in `components/ui/card.tsx`, `components/ui/form.tsx`, `components/ui/empty-state.tsx`, and `components/ui/loading.tsx`
 
 ## Phase 3: User Story 1 - Get Today's Companionship Guidance (P1)
 
