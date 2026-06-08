@@ -28,7 +28,7 @@
 - [ ] T003 [P] Configure linting, formatting, and test scripts in `package.json`, `eslint.config.mjs`, `vitest.config.ts`, and `playwright.config.ts`
 - [ ] T004 [P] Create environment template for Supabase and OpenAI settings in `.env.example`
 - [ ] T005 Create application route groups and module directories in `app/(app)/dashboard/page.tsx`, `app/(app)/weekly-plan/page.tsx`, `app/(app)/archive/page.tsx`, `app/(app)/ai-coach/page.tsx`, `app/(app)/profile/page.tsx`, `app/onboarding/page.tsx`, and `app/invite/page.tsx`
-- [ ] T006 [P] Create shared source directories in `components/app-shell/.gitkeep`, `components/dashboard/.gitkeep`, `components/weekly-plan/.gitkeep`, `components/growth-archive/.gitkeep`, `components/ai-coach/.gitkeep`, `components/onboarding/.gitkeep`, `lib/ai/.gitkeep`, `lib/auth/.gitkeep`, `lib/metrics/.gitkeep`, `lib/supabase/.gitkeep`, `lib/validation/.gitkeep`, and `lib/dates/.gitkeep`
+- [ ] T006 [P] Create shared source directories in `components/app-shell/.gitkeep`, `components/dashboard/.gitkeep`, `components/weekly-plan/.gitkeep`, `components/growth-archive/.gitkeep`, `components/ai-coach/.gitkeep`, `components/onboarding/.gitkeep`, `components/profile/.gitkeep`, `lib/ai/.gitkeep`, `lib/auth/.gitkeep`, `lib/domain/.gitkeep`, `lib/metrics/.gitkeep`, `lib/repositories/.gitkeep`, `lib/services/.gitkeep`, `lib/supabase/.gitkeep`, `lib/validation/.gitkeep`, and `lib/dates/.gitkeep`
 - [ ] T007 [P] Create Supabase migration and test directories in `supabase/migrations/.gitkeep`, `supabase/tests/.gitkeep`, and `supabase/seed.sql`
 
 ## Phase 2: Foundational
@@ -40,8 +40,8 @@
 - [ ] T010 Implement family membership authorization helpers in `lib/auth/family-access.ts`
 - [ ] T011 Implement authenticated app middleware in `middleware.ts`
 - [ ] T012 [P] Add Zod schemas for onboarding, first guidance, weekly plans, records, reminders, product events, and WeChat events in `lib/validation/schemas.ts`
-- [ ] T013 Create initial Supabase tables for families, family members, child profiles, interests, goals, monthly themes, weekly plans, weekly tasks, records, AI history, reminders, expert reviews, payment intent, WeChat attribution, and product events in `supabase/migrations/001_initial_schema.sql`
-- [ ] T014 Add Row Level Security policies for family-scoped reads and writes in `supabase/migrations/002_rls_policies.sql`
+- [ ] T013 Create initial Supabase tables for families, family members, internal reviewers, WeChat identity bindings, child profiles, interests, goals, monthly themes, weekly plans, weekly tasks, records, AI history, reminders, expert reviews, payment intent, WeChat attribution, and product events in `supabase/migrations/001_initial_schema.sql`
+- [ ] T014 Add Row Level Security policies for family-scoped reads/writes, internal reviewer access, and WeChat identity binding checks in `supabase/migrations/002_rls_policies.sql`
 - [ ] T015 Add private storage bucket and policies for growth media in `supabase/migrations/003_storage_policies.sql`
 - [ ] T016 [P] Add database tests for family membership isolation and duplicate-family prevention in `supabase/tests/family_access.test.sql`
 - [ ] T017 [P] Add database tests for soft deletion, restore window, and AI context exclusion in `supabase/tests/soft_delete_restore.test.sql`
@@ -191,7 +191,7 @@
 - [ ] T105 [US8] Implement reminder service with opt-in, suppression, and approved copy rules in `lib/services/reminder-service.ts`
 - [ ] T106 [US8] Implement expert quality review repository and service in `lib/repositories/expert-review-repo.ts` and `lib/services/expert-review-service.ts`
 - [ ] T107 [US8] Implement `PATCH /api/notification-preferences` route handler in `app/api/notification-preferences/route.ts`
-- [ ] T108 [US8] Implement expert review admin route handler in `app/api/admin/expert-reviews/route.ts`
+- [ ] T108 [US8] Implement expert review admin route handler with active internal reviewer authorization in `app/api/admin/expert-reviews/route.ts`
 - [ ] T109 [US8] Build reminder preference settings and expert-reviewed label UI in `components/profile/ReminderPreferences.tsx` and `components/ai-coach/ExpertReviewedLabel.tsx`
 - [ ] T110 [US8] Record `warm_reminder_enabled`, `warm_reminder_opened`, `warm_reminder_action_completed`, `expert_review_completed`, and `expert_trust_feedback_recorded` events in `lib/metrics/engagement-trust-events.ts`
 
@@ -204,12 +204,12 @@
 - [ ] T111 [P] [US9] Add WeChat channel attribution integration tests in `tests/integration/wechat-channel.api.test.ts`
 - [ ] T112 [P] [US9] Add WeChat Mini Program flow test fixtures in `tests/e2e/wechat-mini-program.spec.ts`
 - [ ] T113 [US9] Implement WeChat channel attribution repository and service in `lib/repositories/wechat-channel-repo.ts` and `lib/services/wechat-channel-service.ts`
-- [ ] T114 [US9] Implement WeChat parent identity binding service in `lib/auth/wechat-auth.ts`
+- [ ] T114 [US9] Implement WeChat parent identity binding service and route handler in `lib/auth/wechat-auth.ts` and `app/api/wechat/identity-bindings/route.ts`
 - [ ] T115 [US9] Implement WeChat scenario-card entry route handler in `app/api/wechat/scenario-entry/route.ts`
 - [ ] T116 [US9] Implement WeChat family invite share and accept route handlers in `app/api/wechat/family-invite/route.ts` and `app/api/wechat/family-invite/[inviteId]/accept/route.ts`
-- [ ] T117 [US9] Implement WeChat subscription message preference and event adapter in `lib/services/wechat-subscription-service.ts`
-- [ ] T118 [US9] Implement privacy-safe growth record share preview service in `lib/services/wechat-record-share-service.ts`
-- [ ] T119 [US9] Create optional Mini Program first-guidance page and service adapter in `miniprogram/pages/first-guidance/index.ts`, `miniprogram/pages/first-guidance/index.wxml`, and `miniprogram/services/api.ts`
+- [ ] T117 [US9] Implement WeChat subscription message preference route and event adapter in `app/api/wechat/subscription-preferences/route.ts` and `lib/services/wechat-subscription-service.ts`
+- [ ] T118 [US9] Implement privacy-safe growth record share preview route and service in `app/api/wechat/record-share-preview/route.ts` and `lib/services/wechat-record-share-service.ts`
+- [ ] T119 [US9] Create optional Mini Program setup, first-guidance page, and service adapter in `miniprogram/app.ts`, `miniprogram/app.json`, `miniprogram/app.wxss`, `miniprogram/project.config.json`, `miniprogram/pages/first-guidance/index.ts`, `miniprogram/pages/first-guidance/index.wxml`, and `miniprogram/services/api.ts`
 - [ ] T120 [US9] Create optional Mini Program family invite page in `miniprogram/pages/invite/index.ts` and `miniprogram/pages/invite/index.wxml`
 - [ ] T121 [US9] Create optional Mini Program record preview page in `miniprogram/pages/record-preview/index.ts` and `miniprogram/pages/record-preview/index.wxml`
 - [ ] T122 [US9] Record WeChat scenario, invite, subscription, mini-program code, private beta service, and record share events in `lib/metrics/wechat-events.ts`
@@ -222,7 +222,7 @@
 - [ ] T124 [P] Add payment intent signal recording service and survey schema in `lib/services/payment-intent-service.ts` and `components/profile/PaymentIntentSurvey.tsx`
 - [ ] T125 [P] Add privacy review tests for media exclusion, share card previews, and unauthorized family access in `tests/integration/privacy-boundaries.test.ts`
 - [ ] T126 Add `POST /api/product-events` route handler and validation in `app/api/product-events/route.ts`
-- [ ] T127 Add product event dashboard export for private beta review in `app/api/admin/validation-scorecard/route.ts`
+- [ ] T127 Add internal-reviewer-only product event dashboard export for private beta review in `app/api/admin/validation-scorecard/route.ts`
 - [ ] T128 [P] Add accessibility and mobile viewport Playwright coverage for primary flows in `tests/e2e/mobile-accessibility.spec.ts`
 - [ ] T129 [P] Update quickstart implementation notes and test commands in `specs/001-growth-os-mvp/quickstart.md`
 - [ ] T130 Run and document full validation test suite results in `specs/001-growth-os-mvp/implementation-validation.md`

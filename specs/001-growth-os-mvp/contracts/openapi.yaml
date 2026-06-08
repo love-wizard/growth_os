@@ -324,6 +324,108 @@ components:
           type: boolean
         preferredWindow:
           type: string
+    ExpertReviewRequest:
+      type: object
+      required: [conversationId, reviewStatus, qualityScores, safetyBoundaryPassed]
+      properties:
+        conversationId:
+          type: string
+          format: uuid
+        reviewStatus:
+          type: string
+          enum: [passed, needs_revision, safety_boundary_failed]
+        qualityScores:
+          type: object
+          additionalProperties:
+            type: integer
+            minimum: 1
+            maximum: 5
+        safetyBoundaryPassed:
+          type: boolean
+        reviewNotes:
+          type: string
+    ValidationScorecardResponse:
+      type: object
+      required: [periodStart, periodEnd, metrics]
+      properties:
+        periodStart:
+          type: string
+          format: date
+        periodEnd:
+          type: string
+          format: date
+        metrics:
+          type: object
+          additionalProperties: true
+        notes:
+          type: string
+    WeChatScenarioEntryRequest:
+      type: object
+      required: [scenarioType]
+      properties:
+        scenarioType:
+          type: string
+          enum:
+            - piano_resistance
+            - limited_evening_time
+            - reading_recovery
+            - english_exposure
+            - weekend_activity
+        sourceContext:
+          type: object
+          additionalProperties: true
+    WeChatFamilyInviteRequest:
+      type: object
+      required: [familyId, role]
+      properties:
+        familyId:
+          type: string
+          format: uuid
+        role:
+          type: string
+          enum: [father, mother]
+    WeChatIdentityBindingRequest:
+      type: object
+      required: [code]
+      properties:
+        code:
+          type: string
+          description: WeChat Mini Program login code exchanged server-side for identity binding.
+    WeChatSubscriptionPreferenceRequest:
+      type: object
+      required: [reminderType, enabled]
+      properties:
+        reminderType:
+          type: string
+          enum:
+            - evening_companionship
+            - weekend_planning
+            - accepted_suggestion_follow_up
+            - weekly_reset
+        enabled:
+          type: boolean
+        templateId:
+          type: string
+    WeChatRecordSharePreviewRequest:
+      type: object
+      required: [recordId]
+      properties:
+        recordId:
+          type: string
+          format: uuid
+    WeChatRecordSharePreviewResponse:
+      type: object
+      required: [previewId, title, summary]
+      properties:
+        previewId:
+          type: string
+          format: uuid
+        title:
+          type: string
+        summary:
+          type: string
+        authorized:
+          type: boolean
 paths:
   /first-guidance:
     post:
@@ -411,6 +513,34 @@ paths:
       responses:
         "200":
           description: Warm reminder preference updated
+  /admin/expert-reviews:
+    post:
+      summary: Create internal expert quality review for sampled AI answer
+      description: Requires an authenticated active internal reviewer or service-role workflow; does not expose real-time expert consulting to parents.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ExpertReviewRequest"
+      responses:
+        "201":
+          description: Expert review recorded
+        "403":
+          description: Internal reviewer access required
+  /admin/validation-scorecard:
+    get:
+      summary: Export aggregated private-beta validation scorecard
+      description: Aggregates product metrics for private-beta review without child ranking, social comparison, photos, videos, or detailed private notes.
+      responses:
+        "200":
+          description: Aggregated scorecard
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationScorecardResponse"
+        "403":
+          description: Internal reviewer access required
   /weekly-plan/current:
     get:
       summary: Get current official weekly plan
@@ -472,6 +602,85 @@ paths:
       responses:
         "200":
           description: Draft confirmed and official plan created or replaced
+  /wechat/identity-bindings:
+    post:
+      summary: Bind authenticated parent to WeChat Mini Program identity
+      description: WeChat identity reduces entry friction but does not grant family access without family membership.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WeChatIdentityBindingRequest"
+      responses:
+        "200":
+          description: WeChat identity bound
+  /wechat/scenario-entry:
+    post:
+      summary: Record WeChat scenario-card entry and route to first-guidance or AI coach flow
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WeChatScenarioEntryRequest"
+      responses:
+        "200":
+          description: Scenario entry recorded
+  /wechat/family-invite:
+    post:
+      summary: Create privacy-safe WeChat family invite card payload
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WeChatFamilyInviteRequest"
+      responses:
+        "201":
+          description: WeChat family invite created
+  /wechat/family-invite/{inviteId}/accept:
+    post:
+      summary: Accept WeChat family invite after normal family authorization checks
+      parameters:
+        - name: inviteId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Invite accepted without duplicate family or child profile creation
+  /wechat/subscription-preferences:
+    patch:
+      summary: Update WeChat subscription-message preference for approved warm reminder types
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WeChatSubscriptionPreferenceRequest"
+      responses:
+        "200":
+          description: WeChat subscription preference updated
+  /wechat/record-share-preview:
+    post:
+      summary: Create privacy-safe growth record share preview
+      description: Preview must not expose photos, videos, detailed notes, or performance-like claims to unauthorized recipients.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WeChatRecordSharePreviewRequest"
+      responses:
+        "201":
+          description: Privacy-safe preview created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WeChatRecordSharePreviewResponse"
   /interest-participation-records:
     post:
       summary: Create actual interest participation or practice record

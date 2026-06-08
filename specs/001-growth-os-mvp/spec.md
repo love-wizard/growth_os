@@ -447,14 +447,14 @@ Parents enter Growth OS through WeChat Mini Program surfaces such as family invi
 - **FR-064**: The system MUST allow parents to opt into and opt out of warm reminder types for evening companionship, weekend planning, accepted suggestion follow-up, and weekly reset.
 - **FR-065**: Warm reminder copy MUST invite companionship and MUST NOT use missed-task warnings, streak pressure, red-alert completion drops, comparative child performance messages, or parent-failure wording.
 - **FR-066**: The system MUST allow product review to measure reminder opt-in, reminder open, AI suggestion generation after reminder, suggestion acceptance after reminder, companionship action completion after reminder, and growth record draft creation after reminder.
-- **FR-067**: The product MUST support expert quality review of sampled AI answers against the AI quality bar and safety boundary during private beta.
+- **FR-067**: The product MUST support expert quality review of sampled AI answers against the AI quality bar and safety boundary during private beta, using internal reviewer access rather than normal parent permissions.
 - **FR-068**: Limited expert Q&A, if tested in private beta, MUST be asynchronous, bounded, and clearly separated from medical, psychological, abuse, or immediate safety intervention.
 - **FR-069**: The system MUST allow private beta review to distinguish organic second-week return from reminder-driven second-week return.
 - **FR-070**: The system MUST allow private beta review to record generic-AI comparison preference for the same parent challenge.
 - **FR-071**: The system MUST allow private beta review to record payment intent for tested package concepts at RMB 19, RMB 29, and RMB 49 per month without requiring payment workflow implementation.
 - **FR-072**: Expert trust experiments MUST start with internal answer review, expert-reviewed labels, or limited asynchronous tests; a prominent user-facing "ask an expert" entry MUST NOT be required for v0.1 validation.
 - **FR-073**: Proposed v0.1 scope additions MUST be evaluated against the investment validation scorecard before being added to the MVP.
-- **FR-074**: If WeChat Mini Program is used as the private beta surface, the system MUST support WeChat channel attribution for scenario card opens, family invite shares, family invite acceptance, subscription message opt-in, subscription message opens, mini-program code scans, and private beta service contacts.
+- **FR-074**: If WeChat Mini Program is used as the private beta surface, the system MUST support WeChat parent identity binding and channel attribution for scenario card opens, family invite shares, family invite acceptance, subscription message opt-in, subscription message opens, mini-program code scans, and private beta service contacts.
 - **FR-075**: WeChat family invite cards MUST allow the invited second parent to join the existing family workspace without creating a duplicate family or child profile.
 - **FR-076**: WeChat high-intent scenario cards MUST open directly into the relevant first-guidance or AI coach flow for piano resistance, limited evening time, reading recovery, English exposure, or weekend activity.
 - **FR-077**: WeChat subscription messages, if used, MUST map only to approved warm reminder types and MUST require parent opt-in.
@@ -477,8 +477,10 @@ Parents enter Growth OS through WeChat Mini Program surfaces such as family invi
 - **AI Coach Conversation**: A parent question and coach response associated with family, parent role, creation time, and deletion or restore state.
 - **AI Growth Insight**: A generated observation about the child's growth pattern, such as stable piano practice or reduced reading activity, with type, title, content, and creation time.
 - **Warm Reminder Preference**: A parent-controlled setting for reminder categories such as evening companionship, weekend planning, accepted suggestion follow-up, and weekly reset.
+- **Internal Reviewer**: A private-beta expert reviewer or operations reviewer who can review sampled AI answers or aggregated validation metrics without becoming a family member or real-time consultant.
 - **Expert Quality Review**: A private beta review of sampled AI answers by a parenting expert against the product's quality and safety standards.
 - **Investment Validation Scorecard**: A private beta decision artifact that tracks first guidance completion, suggestion acceptance, seven-day action, growth record draft creation, organic and reminder-driven return, generic-AI comparison, expert trust, payment intent, and parent pressure sentiment.
+- **WeChat Identity Binding**: An optional mapping between an authenticated parent and WeChat Mini Program identity that reduces entry friction but never replaces family authorization.
 - **WeChat Channel Event**: A product metric event generated from WeChat entry, scenario sharing, family invitation, subscription message, mini-program code, private beta service, or privacy-safe record sharing.
 
 ## Success Criteria *(mandatory)*

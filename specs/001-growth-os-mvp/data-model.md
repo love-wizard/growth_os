@@ -90,6 +90,50 @@ Rules:
 - Both roles can view and manage all child growth data, AI conversations, and insights.
 - Invitation join must not create duplicate family or child profile records.
 
+### InternalReviewer
+
+Internal private-beta reviewer or operations account for expert quality review and validation scorecard access.
+
+Fields:
+
+- `id`
+- `user_id`
+- `reviewer_type`: `parenting_expert`, `ops_admin`
+- `display_name`
+- `status`: `active`, `disabled`
+- `created_at`
+- `updated_at`
+
+Rules:
+
+- Internal reviewers are not family members and must not receive normal family-scoped read/write permissions.
+- Admin route handlers must verify active internal reviewer status before allowing expert review or validation scorecard access.
+- Parenting experts can review sampled AI answers but must not contact families as real-time consultants through v0.1 product flows.
+- Ops admins can view aggregated private-beta metrics for validation, not child-ranking or public comparison dashboards.
+
+### WeChatIdentityBinding
+
+Optional binding between a Supabase Auth user and WeChat identity if the WeChat Mini Program is selected.
+
+Fields:
+
+- `id`
+- `user_id`
+- `wechat_open_id`
+- `wechat_union_id`
+- `mini_program_app_id`
+- `binding_status`: `active`, `revoked`
+- `last_seen_at`
+- `created_at`
+- `updated_at`
+
+Rules:
+
+- WeChat identity reduces entry friction but does not replace Supabase Auth or family membership checks.
+- A WeChat-bound user must still be a father or mother `FamilyMember` before private family data is shown.
+- Revoked bindings must not authorize future Mini Program access.
+- Store only identity fields needed for login, attribution, invitation, and subscription-message opt-in validation.
+
 ### ChildProfile
 
 The child growth subject.
@@ -387,8 +431,9 @@ Private beta quality review of sampled AI coach answers by a human parenting exp
 Fields:
 
 - `id`
+- `family_id`
 - `conversation_id`
-- `expert_reviewer_id`
+- `reviewer_id`
 - `review_status`
 - `quality_scores`
 - `safety_boundary_passed`
@@ -399,6 +444,8 @@ Rules:
 
 - Expert review evaluates AI answer quality; it does not create medical, psychological, abuse, or safety intervention advice.
 - Review dimensions should include child-specific context, age appropriateness, concrete action, gentle fallback, non-pressure language, and safety boundary.
+- Reviews are created through internal reviewer access or server-side service-role workflows, not normal parent routes.
+- Parents may see an expert-reviewed label when appropriate, but raw reviewer notes are internal validation data in v0.1.
 - Real-time expert consulting and guaranteed response times are outside v0.1.
 
 ### ProductMetricEvent
@@ -519,6 +566,8 @@ Rules:
 
 - `Family` has many `FamilyMember`
 - `Family` has one `ChildProfile`
+- `FamilyMember` can have one or more optional `WeChatIdentityBinding` rows through `user_id`
+- `InternalReviewer` can have many `ExpertQualityReview`
 - `ChildProfile` has many `ChildInterest`, `AnnualGoal`, `MonthlyTheme`, `WeeklyPlan`, `InterestParticipationRecord`, `GrowthRecord`, `AIInsight`
 - `WeeklyPlan` has many `WeeklyTask`
 - `GrowthRecord` has many `GrowthRecordMedia`
@@ -531,13 +580,20 @@ Rules:
 
 ## RLS Policy Shape
 
-All family-scoped reads and writes require:
+Family-scoped reads and writes require:
 
 - Authenticated user
 - Membership in the row's `family_id`
 - Role is `father` or `mother`
 
 Storage object paths should include `family_id` and `growth_record_id`, and Storage policies should only allow reads/writes when the authenticated user belongs to the family that owns the record.
+
+Internal reviewer and admin access uses a separate boundary:
+
+- `InternalReviewer` rows are managed by service-role or ops-only tooling.
+- Expert quality review reads/writes require either service-role access or an authenticated active `InternalReviewer`.
+- Validation scorecard export must aggregate product events and avoid exposing child photos, videos, detailed notes, or public comparison data.
+- WeChat identity binding does not grant family access unless a matching `FamilyMember` row exists.
 
 ## AI Context Assembly
 

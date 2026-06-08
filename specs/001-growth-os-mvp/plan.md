@@ -3,7 +3,7 @@
 **Branch**: `001-growth-os-mvp` | **Date**: 2026-06-05 | **Spec**: [spec.md](./spec.md)  
 **Input**: Feature specification from `/specs/001-growth-os-mvp/spec.md`
 
-**Setup Note**: `.specify/scripts/bash/setup-plan.sh` and `.specify/memory/constitution.md` are not present in this repository. This plan uses the existing feature directory as the active feature and applies the product principles captured in the spec as the constitution gates.
+**Setup Note**: `.specify/scripts/bash/setup-plan.sh` is not present in this repository. This plan uses the existing feature directory as the active feature and applies `.specify/memory/constitution.md` plus the product principles captured in the spec as the constitution gates.
 
 ## Summary
 
@@ -78,14 +78,25 @@ app/
 ├── onboarding/
 ├── invite/
 └── api/
+    ├── admin/
     ├── first-guidance/
     ├── ai/
-    ├── weekly-plans/
+    ├── dashboard/
+    ├── family/
+    ├── weekly-plan/
     ├── growth-records/
-    ├── interest-participation/
+    ├── growth-record-drafts/
+    ├── interest-participation-records/
+    ├── notification-preferences/
+    ├── product-events/
+    ├── wechat/                  # Optional if WeChat Mini Program is selected
     └── storage/
 
 miniprogram/                # Optional if WeChat Mini Program is selected for private beta
+├── app.ts
+├── app.json
+├── app.wxss
+├── project.config.json
 ├── pages/
 ├── components/
 └── services/
@@ -96,12 +107,17 @@ components/
 ├── weekly-plan/
 ├── growth-archive/
 ├── ai-coach/
+├── onboarding/
+├── profile/
 └── ui/
 
 lib/
 ├── ai/
 ├── auth/
+├── domain/
 ├── metrics/
+├── repositories/
+├── services/
 ├── supabase/
 ├── validation/
 └── dates/
