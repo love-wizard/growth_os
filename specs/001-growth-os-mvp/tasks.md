@@ -23,13 +23,13 @@
 
 **Purpose**: Initialize the Next.js/Supabase/OpenAI workspace described in `plan.md`.
 
-- [ ] T001 Create Next.js TypeScript project scaffold with App Router in `package.json`, `next.config.ts`, `tsconfig.json`, and `app/layout.tsx`
-- [ ] T002 [P] Configure Tailwind and shadcn/ui foundations in `tailwind.config.ts`, `postcss.config.mjs`, `components.json`, and `app/globals.css`
-- [ ] T003 [P] Configure linting, formatting, and test scripts in `package.json`, `eslint.config.mjs`, `vitest.config.ts`, and `playwright.config.ts`
-- [ ] T004 [P] Create environment template for Supabase and OpenAI settings in `.env.example`
-- [ ] T005 Create application route groups and module directories in `app/(app)/dashboard/page.tsx`, `app/(app)/weekly-plan/page.tsx`, `app/(app)/archive/page.tsx`, `app/(app)/ai-coach/page.tsx`, `app/(app)/profile/page.tsx`, `app/onboarding/page.tsx`, and `app/invite/page.tsx`
-- [ ] T006 [P] Create shared source directories in `components/app-shell/.gitkeep`, `components/dashboard/.gitkeep`, `components/weekly-plan/.gitkeep`, `components/growth-archive/.gitkeep`, `components/ai-coach/.gitkeep`, `components/onboarding/.gitkeep`, `components/profile/.gitkeep`, `lib/ai/.gitkeep`, `lib/auth/.gitkeep`, `lib/domain/.gitkeep`, `lib/metrics/.gitkeep`, `lib/repositories/.gitkeep`, `lib/services/.gitkeep`, `lib/supabase/.gitkeep`, `lib/validation/.gitkeep`, and `lib/dates/.gitkeep`
-- [ ] T007 [P] Create Supabase migration and test directories in `supabase/migrations/.gitkeep`, `supabase/tests/.gitkeep`, and `supabase/seed.sql`
+- [X] T001 Create Next.js TypeScript project scaffold with App Router in `package.json`, `next.config.mjs`, `tsconfig.json`, and `app/layout.tsx`
+- [X] T002 [P] Configure Tailwind and shadcn/ui foundations in `tailwind.config.ts`, `postcss.config.mjs`, `components.json`, and `app/globals.css`
+- [X] T003 [P] Configure linting, formatting, and test scripts in `package.json`, `eslint.config.mjs`, `vitest.config.ts`, and `playwright.config.ts`
+- [X] T004 [P] Create environment template for Supabase and OpenAI settings in `.env.example`
+- [X] T005 Create application route groups and module directories in `app/(app)/dashboard/page.tsx`, `app/(app)/weekly-plan/page.tsx`, `app/(app)/archive/page.tsx`, `app/(app)/ai-coach/page.tsx`, `app/(app)/profile/page.tsx`, `app/onboarding/page.tsx`, and `app/invite/page.tsx`
+- [X] T006 [P] Create shared source directories in `components/app-shell/.gitkeep`, `components/dashboard/.gitkeep`, `components/weekly-plan/.gitkeep`, `components/growth-archive/.gitkeep`, `components/ai-coach/.gitkeep`, `components/onboarding/.gitkeep`, `components/profile/.gitkeep`, `lib/ai/.gitkeep`, `lib/auth/.gitkeep`, `lib/domain/.gitkeep`, `lib/metrics/.gitkeep`, `lib/repositories/.gitkeep`, `lib/services/.gitkeep`, `lib/supabase/.gitkeep`, `lib/validation/.gitkeep`, and `lib/dates/.gitkeep`
+- [X] T007 [P] Create Supabase migration and test directories in `supabase/migrations/.gitkeep`, `supabase/tests/.gitkeep`, and `supabase/seed.sql`
 
 ## Phase 2: Foundational
 
