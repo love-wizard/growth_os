@@ -7,14 +7,14 @@
 
 ## Summary
 
-Build Growth OS v0.1 as the first beachhead of a broader family companionship system. The long-term product can support early childhood, school-age, and adolescent companionship; v0.1 focuses on parents of 3-8 year-old children with one family, one child, two parent accounts, weekly growth planning, interest participation records, growth archive, and an AI growth coach. The immediate product wedge is today's companionship decision: help a parent turn a real friction into one child-specific action, then save or record the result. The implementation will use a Next.js TypeScript app backed by Supabase Auth, Postgres, Row Level Security, Supabase Storage, and server-side OpenAI Responses API calls with structured outputs for AI coach modes and weekly plan drafts. If WeChat Mini Program is selected for the China private beta, it should be implemented as a channel/client layer that reuses the same server-side family, AI, metrics, and storage contracts.
+Build Growth OS v0.1 as the first beachhead of a broader family companionship system. The long-term product can support early childhood, school-age, and adolescent companionship; v0.1 focuses on parents of 3-8 year-old children with one family, one child, two parent accounts, weekly growth planning, interest participation records, growth archive, and an AI growth coach. The immediate product wedge is today's companionship decision: help a parent turn a real friction into one child-specific action, then save or record the result. The implementation will use a Next.js TypeScript app backed by Supabase Auth, Postgres, Row Level Security, Supabase Storage, and a server-side LLM provider layer that supports DeepSeek, Qwen/DashScope, OpenAI, and generic OpenAI-compatible Chat Completions endpoints with JSON outputs for AI coach modes and weekly plan drafts. If WeChat Mini Program is selected for the China private beta, it should be implemented as a channel/client layer that reuses the same server-side family, AI, metrics, and storage contracts.
 
 The core architecture keeps family data private by default, enforces father/mother access through family membership rows, stores photos/videos for display only, excludes deleted records and media contents from AI context, and requires parent confirmation before AI-generated weekly plan drafts become official plans. The product experience prioritizes getting parents to a useful "what should I do today?" answer before full setup is complete, uses current challenge and child traits to create an Aha moment, then measures whether families accept the suggestion, complete at least one high-quality companionship action, create a lightweight record, and return the next week. Optional warm reminders, WeChat channel loops, and expert quality review are validation layers for frequency, entry, family activation, and trust; they must not become pressure mechanics, public social sharing, lead generation, or real-time consulting workflows. The v0.1 pilot is judged by the investment validation scorecard: 30 high-pain families, 14 days, organic vs reminder-driven return, generic-AI comparison, WeChat channel attribution if used, and payment-intent signals.
 
 ## Technical Context
 
 **Language/Version**: TypeScript 5.x, Node.js 20 LTS  
-**Primary Dependencies**: Next.js App Router, React, Tailwind CSS, shadcn/ui, Supabase JS/SSR client, OpenAI SDK, Zod, React Hook Form, date-fns  
+**Primary Dependencies**: Next.js App Router, React, Tailwind CSS, shadcn/ui, Supabase JS/SSR client, OpenAI-compatible SDK for configurable LLM providers, Zod, React Hook Form, date-fns
 **Storage**: Supabase Postgres for structured data; Supabase Storage private bucket for growth photos/videos  
 **Testing**: Vitest for unit tests, React Testing Library for component tests, Playwright for primary user journeys, Supabase local CLI for database/RLS integration tests  
 **Target Platform**: Responsive web app, deployed as a server-rendered Next.js application with Supabase managed backend; optional WeChat Mini Program client for China private beta channel validation  
@@ -143,7 +143,7 @@ Key decisions:
 
 - Use Next.js App Router with server-side Supabase access for authenticated data reads/mutations.
 - Use Supabase RLS on every exposed table and private Storage policies for growth media.
-- Use OpenAI Responses API with structured JSON schemas for AI coach outputs.
+- Use the server-only configurable LLM layer with JSON outputs and Zod validation for AI coach outputs.
 - Use structured first-guidance and AI coach outputs that make child-specific context, interpretation, action, and fallback reviewable.
 - Store AI conversations and generated insights, but assemble AI context server-side from canonical child/family data.
 - Use soft deletion with `deleted_at` and `restore_until` for restorable records.

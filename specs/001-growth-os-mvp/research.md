@@ -64,9 +64,9 @@
 - Client sends context directly: rejected because it can leak or omit data and makes permissions harder to enforce.
 - Store long model memory as source of truth: rejected because product truth must remain in canonical family records and plans.
 
-## Decision: Use OpenAI Responses API with structured outputs
+## Decision: Use a server-side configurable LLM provider layer with JSON outputs
 
-**Rationale**: AI coach modes have structured outputs: parenting advice, activity suggestions, growth analysis, and weekly plan drafts. The OpenAI Responses API supports model responses, tool/function patterns, and structured outputs with JSON schemas, making outputs easier to validate before display or plan confirmation.
+**Rationale**: AI coach modes have structured outputs: parenting advice, activity suggestions, growth analysis, and weekly plan drafts. The app should not couple product logic to one model vendor. The server-side LLM layer supports DeepSeek, Qwen/DashScope, OpenAI, and generic OpenAI-compatible Chat Completions endpoints. The app prompts for schema-conformant JSON and validates every response with Zod before display or plan confirmation.
 
 **Alternatives considered**:
 
@@ -111,6 +111,8 @@
 
 ## Source Notes
 
-- OpenAI Responses API reference: https://platform.openai.com/docs/api-reference/responses
+- DeepSeek API reference: https://api-docs.deepseek.com/
+- DeepSeek JSON output guide: https://api-docs.deepseek.com/guides/json_mode
+- Alibaba Cloud DashScope OpenAI-compatible usage: https://www.alibabacloud.com/help/en/model-studio/developer-reference/use-qwen-by-calling-api
 - Supabase Row Level Security guide: https://supabase.com/docs/guides/database/postgres/row-level-security
 - Supabase Storage access control guide: https://supabase.com/docs/guides/storage/security/access-control

@@ -5,7 +5,7 @@
 - Node.js 20 LTS
 - npm, pnpm, or bun
 - Supabase project or local Supabase CLI
-- OpenAI API key
+- Server-side LLM API key. v0.1 supports `deepseek`, `qwen`, `openai`, and generic `openai_compatible` providers.
 
 ## Environment Variables
 
@@ -15,7 +15,11 @@ Create `.env.local`:
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
-OPENAI_API_KEY=
+LLM_PROVIDER=deepseek
+LLM_API_KEY=
+LLM_MODEL=deepseek-v4-flash
+LLM_BASE_URL=https://api.deepseek.com
+LLM_JSON_MODE=true
 ```
 
 Rules:
@@ -96,7 +100,7 @@ Implementation notes:
 
 - `npm run test:e2e` requires Playwright browsers to be installed with `npx playwright install chromium`.
 - Local builds can run without Supabase/OpenAI credentials; protected API flows still require real Supabase Auth and project env vars.
-- AI coach uses OpenAI Responses API when `OPENAI_API_KEY` is configured and falls back to deterministic structured guidance in local test environments.
+- AI coach uses the server-side LLM provider configured by `LLM_PROVIDER` and falls back to deterministic structured guidance in local test environments. Use `LLM_PROVIDER=deepseek` for DeepSeek, `LLM_PROVIDER=qwen` for Alibaba Qwen/DashScope, or `LLM_PROVIDER=openai_compatible` for another compatible endpoint.
 - WeChat Mini Program files under `miniprogram/` are channel fixtures for private beta validation and reuse the same server API contracts.
 
 Expected test coverage:

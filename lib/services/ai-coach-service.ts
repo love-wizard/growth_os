@@ -1,6 +1,11 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { assembleAIContext, type AIContextSnapshot } from "@/lib/ai/context";
-import { createOpenAIClient, createStructuredResponse, parseResponseJson } from "@/lib/ai/openai-client";
+import {
+  createLLMClient,
+  createStructuredLLMCompletion,
+  hasConfiguredLLM,
+  parseLLMCompletionJson
+} from "@/lib/ai/llm-client";
 import {
   buildActivityGenerationPrompt,
   createActivityGenerationFallback,
@@ -113,9 +118,9 @@ export async function generateAICoachResponse(
     };
   }
 
-  if (process.env.OPENAI_API_KEY) {
+  if (hasConfiguredLLM()) {
     try {
-      return await generateWithOpenAI(mode, message, context);
+      return await generateWithLLM(mode, message, context);
     } catch {
       return generateLocalResponse(mode, message, context);
     }
@@ -144,20 +149,20 @@ export function generateLocalResponse(
   return createParentingQAFallback(context, message);
 }
 
-async function generateWithOpenAI(
+async function generateWithLLM(
   mode: AICoachMode,
   message: string,
   context: AIContextSnapshot
 ) {
   const request = getModeRequest(mode, message, context);
-  const response = await createStructuredResponse(createOpenAIClient(), {
+  const completion = await createStructuredLLMCompletion(createLLMClient(), {
     instructions: coachInstructions,
     input: request.prompt,
     schemaName: request.schemaName,
     jsonSchema: request.jsonSchema
   });
 
-  return request.schema.parse(parseResponseJson(response)) as AICoachResponse;
+  return request.schema.parse(parseLLMCompletionJson(completion)) as AICoachResponse;
 }
 
 function getModeRequest(

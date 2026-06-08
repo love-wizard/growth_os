@@ -21,12 +21,12 @@
 
 ## Phase 1: Setup
 
-**Purpose**: Initialize the Next.js/Supabase/OpenAI workspace described in `plan.md`.
+**Purpose**: Initialize the Next.js/Supabase/configurable LLM workspace described in `plan.md`.
 
 - [X] T001 Create Next.js TypeScript project scaffold with App Router in `package.json`, `next.config.mjs`, `tsconfig.json`, and `app/layout.tsx`
 - [X] T002 [P] Configure Tailwind and shadcn/ui foundations in `tailwind.config.ts`, `postcss.config.mjs`, `components.json`, and `app/globals.css`
 - [X] T003 [P] Configure linting, formatting, and test scripts in `package.json`, `eslint.config.mjs`, `vitest.config.ts`, and `playwright.config.ts`
-- [X] T004 [P] Create environment template for Supabase and OpenAI settings in `.env.example`
+- [X] T004 [P] Create environment template for Supabase and configurable LLM settings in `.env.example`
 - [X] T005 Create application route groups and module directories in `app/(app)/dashboard/page.tsx`, `app/(app)/weekly-plan/page.tsx`, `app/(app)/archive/page.tsx`, `app/(app)/ai-coach/page.tsx`, `app/(app)/profile/page.tsx`, `app/onboarding/page.tsx`, and `app/invite/page.tsx`
 - [X] T006 [P] Create shared source directories in `components/app-shell/.gitkeep`, `components/dashboard/.gitkeep`, `components/weekly-plan/.gitkeep`, `components/growth-archive/.gitkeep`, `components/ai-coach/.gitkeep`, `components/onboarding/.gitkeep`, `components/profile/.gitkeep`, `lib/ai/.gitkeep`, `lib/auth/.gitkeep`, `lib/domain/.gitkeep`, `lib/metrics/.gitkeep`, `lib/repositories/.gitkeep`, `lib/services/.gitkeep`, `lib/supabase/.gitkeep`, `lib/validation/.gitkeep`, and `lib/dates/.gitkeep`
 - [X] T007 [P] Create Supabase migration and test directories in `supabase/migrations/.gitkeep`, `supabase/tests/.gitkeep`, and `supabase/seed.sql`
@@ -47,7 +47,7 @@
 - [X] T017 [P] Add database tests for soft deletion, restore window, and AI context exclusion in `supabase/tests/soft_delete_restore.test.sql`
 - [X] T018 Implement product metric event service with no child ranking or social comparison in `lib/metrics/product-events.ts`
 - [X] T019 Implement investment validation event names and property helpers in `lib/metrics/validation-scorecard.ts`
-- [X] T020 Implement OpenAI Responses API client wrapper and structured-output parser in `lib/ai/openai-client.ts`
+- [X] T020 Implement server-only configurable LLM Chat Completions wrapper and structured-output parser in `lib/ai/llm-client.ts`
 - [X] T021 Implement server-side AI context assembly with 4-week plan and 90-day record windows in `lib/ai/context.ts`
 - [X] T022 [P] Add unit tests for AI context assembly, deleted-record filtering, and media exclusion in `tests/unit/ai-context.test.ts`
 - [X] T023 [P] Add unit tests for weekly completion calculation in `tests/unit/weekly-completion.test.ts`
