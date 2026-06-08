@@ -35,11 +35,11 @@
 
 **Purpose**: Build the shared platform every user story depends on. Complete before any story implementation.
 
-- [ ] T008 Define shared TypeScript domain enums and IDs in `lib/domain/types.ts`
-- [ ] T009 Create Supabase browser and server clients in `lib/supabase/client.ts` and `lib/supabase/server.ts`
-- [ ] T010 Implement family membership authorization helpers in `lib/auth/family-access.ts`
-- [ ] T011 Implement authenticated app middleware in `middleware.ts`
-- [ ] T012 [P] Add Zod schemas for onboarding, first guidance, weekly plans, records, reminders, product events, and WeChat events in `lib/validation/schemas.ts`
+- [X] T008 Define shared TypeScript domain enums and IDs in `lib/domain/types.ts`
+- [X] T009 Create Supabase browser and server clients in `lib/supabase/client.ts` and `lib/supabase/server.ts`
+- [X] T010 Implement family membership authorization helpers in `lib/auth/family-access.ts`
+- [X] T011 Implement authenticated app proxy middleware in `proxy.ts`
+- [X] T012 [P] Add Zod schemas for onboarding, first guidance, weekly plans, records, reminders, product events, and WeChat events in `lib/validation/schemas.ts`
 - [ ] T013 Create initial Supabase tables for families, family members, internal reviewers, WeChat identity bindings, child profiles, interests, goals, monthly themes, weekly plans, weekly tasks, records, AI history, reminders, expert reviews, payment intent, WeChat attribution, and product events in `supabase/migrations/001_initial_schema.sql`
 - [ ] T014 Add Row Level Security policies for family-scoped reads/writes, internal reviewer access, and WeChat identity binding checks in `supabase/migrations/002_rls_policies.sql`
 - [ ] T015 Add private storage bucket and policies for growth media in `supabase/migrations/003_storage_policies.sql`
