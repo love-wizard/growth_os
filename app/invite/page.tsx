@@ -1,4 +1,12 @@
-export default function InvitePage() {
+import { InviteAcceptPanel } from "@/components/onboarding/InviteAcceptPanel";
+
+export default async function InvitePage({
+  searchParams
+}: {
+  searchParams: Promise<{ inviteId?: string }>;
+}) {
+  const { inviteId } = await searchParams;
+
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-3xl flex-col gap-6 px-5 py-8">
       <section>
@@ -9,6 +17,7 @@ export default function InvitePage() {
         <p className="text-sm text-muted-foreground">
           受邀家长会加入已有家庭，不会创建重复的孩子档案。
         </p>
+        <InviteAcceptPanel initialInviteId={inviteId ?? ""} />
       </section>
     </main>
   );

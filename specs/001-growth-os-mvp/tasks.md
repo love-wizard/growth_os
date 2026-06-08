@@ -79,17 +79,17 @@
 
 **Independent Test**: Complete onboarding for one child and verify annual goals, current theme, supportive progress signal, today tasks, and second-parent invitation.
 
-- [ ] T038 [P] [US2] Add onboarding API contract tests in `tests/integration/onboarding.api.test.ts`
-- [ ] T039 [P] [US2] Add family invite API contract tests in `tests/integration/family-invite.api.test.ts`
-- [ ] T040 [P] [US2] Add Playwright onboarding and invite journey test in `tests/e2e/onboarding-invite.spec.ts`
-- [ ] T041 [US2] Implement family, member, child profile, interest, and annual goal repositories in `lib/repositories/family-repo.ts`, `lib/repositories/child-repo.ts`, and `lib/repositories/goals-repo.ts`
-- [ ] T042 [US2] Implement initial growth system generator for annual plan, monthly themes, and current-week tasks in `lib/services/growth-system-service.ts`
-- [ ] T043 [US2] Implement second-parent invite service with father/mother role assignment in `lib/services/invite-service.ts`
-- [ ] T044 [US2] Implement `POST /api/onboarding` route handler in `app/api/onboarding/route.ts`
-- [ ] T045 [US2] Implement `POST /api/family/invite` route handler in `app/api/family/invite/route.ts`
-- [ ] T046 [US2] Implement invite acceptance page and handler in `app/invite/page.tsx` and `app/api/family/invite/[inviteId]/accept/route.ts`
-- [ ] T047 [US2] Build full child profile, interests, annual goals, and invitation forms in `components/onboarding/FullOnboardingForm.tsx` and `components/onboarding/InviteSecondParentForm.tsx`
-- [ ] T048 [US2] Prevent duplicate family or child profile creation in onboarding service in `lib/services/onboarding-service.ts`
+- [X] T038 [P] [US2] Add onboarding API contract tests in `tests/integration/onboarding.api.test.ts`
+- [X] T039 [P] [US2] Add family invite API contract tests in `tests/integration/family-invite.api.test.ts`
+- [X] T040 [P] [US2] Add Playwright onboarding and invite journey test in `tests/e2e/onboarding-invite.spec.ts`
+- [X] T041 [US2] Implement family, member, child profile, interest, and annual goal repositories in `lib/repositories/family-repo.ts`, `lib/repositories/child-repo.ts`, and `lib/repositories/goals-repo.ts`
+- [X] T042 [US2] Implement initial growth system generator for annual plan, monthly themes, and current-week tasks in `lib/services/growth-system-service.ts`
+- [X] T043 [US2] Implement second-parent invite service with father/mother role assignment in `lib/services/invite-service.ts`
+- [X] T044 [US2] Implement `POST /api/onboarding` route handler in `app/api/onboarding/route.ts`
+- [X] T045 [US2] Implement `POST /api/family/invite` route handler in `app/api/family/invite/route.ts`
+- [X] T046 [US2] Implement invite acceptance page and handler in `app/invite/page.tsx` and `app/api/family/invite/[inviteId]/accept/route.ts`
+- [X] T047 [US2] Build full child profile, interests, annual goals, and invitation forms in `components/onboarding/FullOnboardingForm.tsx` and `components/onboarding/InviteSecondParentForm.tsx`
+- [X] T048 [US2] Prevent duplicate family or child profile creation in onboarding service in `lib/services/onboarding-service.ts`
 
 ## Phase 5: User Story 3 - See Today's Parent Guidance (P1)
 

@@ -1,0 +1,59 @@
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { ParentRole, UUID } from "@/lib/domain/types";
+
+export async function getAcceptedFamilyMembership(
+  supabase: SupabaseClient,
+  userId: UUID
+) {
+  const { data, error } = await supabase
+    .from("family_members")
+    .select("family_id,role")
+    .eq("user_id", userId)
+    .eq("invitation_status", "accepted")
+    .maybeSingle();
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+}
+
+export async function createFamily(
+  supabase: SupabaseClient,
+  input: { name: string; createdByUserId: UUID }
+) {
+  const { data, error } = await supabase
+    .from("families")
+    .insert({
+      name: input.name,
+      created_by_user_id: input.createdByUserId
+    })
+    .select("id")
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  return data.id as UUID;
+}
+
+export async function createAcceptedFamilyMember(
+  supabase: SupabaseClient,
+  input: { familyId: UUID; userId: UUID; role: ParentRole; invitedByUserId?: UUID }
+) {
+  const { error } = await supabase.from("family_members").insert({
+    family_id: input.familyId,
+    user_id: input.userId,
+    role: input.role,
+    invitation_status: "accepted",
+    invited_by_user_id: input.invitedByUserId ?? input.userId,
+    invited_at: new Date().toISOString(),
+    accepted_at: new Date().toISOString()
+  });
+
+  if (error) {
+    throw error;
+  }
+}
