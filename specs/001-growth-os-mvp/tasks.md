@@ -97,15 +97,15 @@
 
 **Independent Test**: After onboarding, open dashboard and identify today's guidance, annual goals, weekly theme, supportive progress, AI coach entry, and father/mother/family tasks.
 
-- [ ] T049 [P] [US3] Add dashboard API integration tests in `tests/integration/dashboard.api.test.ts`
-- [ ] T050 [P] [US3] Add Playwright dashboard primary-guidance test in `tests/e2e/dashboard.spec.ts`
-- [ ] T051 [US3] Implement dashboard query service in `lib/services/dashboard-service.ts`
-- [ ] T052 [US3] Implement supportive weekly progress calculation and wording in `lib/services/progress-copy-service.ts`
-- [ ] T053 [US3] Implement `GET /api/dashboard` route handler in `app/api/dashboard/route.ts`
-- [ ] T054 [US3] Build primary today's guidance section in `components/dashboard/TodayGuidancePanel.tsx`
-- [ ] T055 [US3] Build annual goals, weekly theme, progress, AI coach entry, and today task sections in `components/dashboard/AnnualGoalCards.tsx`, `components/dashboard/WeeklyThemePanel.tsx`, `components/dashboard/SupportiveProgress.tsx`, `components/dashboard/AICoachEntry.tsx`, and `components/dashboard/TodayTasks.tsx`
-- [ ] T056 [US3] Compose dashboard page in `app/(app)/dashboard/page.tsx`
-- [ ] T057 [US3] Add non-punitive progress language tests in `tests/unit/progress-copy.test.ts`
+- [X] T049 [P] [US3] Add dashboard API integration tests in `tests/integration/dashboard.api.test.ts`
+- [X] T050 [P] [US3] Add Playwright dashboard primary-guidance test in `tests/e2e/dashboard.spec.ts`
+- [X] T051 [US3] Implement dashboard query service in `lib/services/dashboard-service.ts`
+- [X] T052 [US3] Implement supportive weekly progress calculation and wording in `lib/services/progress-copy-service.ts`
+- [X] T053 [US3] Implement `GET /api/dashboard` route handler in `app/api/dashboard/route.ts`
+- [X] T054 [US3] Build primary today's guidance section in `components/dashboard/TodayGuidancePanel.tsx`
+- [X] T055 [US3] Build annual goals, weekly theme, progress, AI coach entry, and today task sections in `components/dashboard/AnnualGoalCards.tsx`, `components/dashboard/WeeklyThemePanel.tsx`, `components/dashboard/SupportiveProgress.tsx`, `components/dashboard/AICoachEntry.tsx`, and `components/dashboard/TodayTasks.tsx`
+- [X] T056 [US3] Compose dashboard page in `app/(app)/dashboard/page.tsx`
+- [X] T057 [US3] Add non-punitive progress language tests in `tests/unit/progress-copy.test.ts`
 
 ## Phase 6: User Story 4 - Manage the Weekly Growth Plan (P1)
 
