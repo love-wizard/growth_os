@@ -241,3 +241,58 @@ page {
 .safe-bottom {
   padding-bottom: env(safe-area-inset-bottom);
 }
+
+.profile-card {
+  padding: 28rpx 32rpx;
+}
+
+.profile-row {
+  gap: 24rpx;
+  justify-content: flex-start;
+}
+
+.avatar-button {
+  align-items: center;
+  background: #f1eee8;
+  border: 0;
+  border-radius: 50%;
+  display: flex;
+  flex: 0 0 auto;
+  height: 112rpx;
+  justify-content: center;
+  line-height: 112rpx;
+  margin: 0;
+  overflow: hidden;
+  padding: 0;
+  width: 112rpx;
+}
+
+.avatar-button::after {
+  border: 0;
+}
+
+.avatar-image {
+  height: 112rpx;
+  width: 112rpx;
+}
+
+.avatar-placeholder {
+  color: #3f8f6b;
+  font-size: 42rpx;
+  font-weight: 600;
+}
+
+.profile-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.nickname-input {
+  color: #25211c;
+  font-size: 34rpx;
+  font-weight: 600;
+  height: 52rpx;
+  line-height: 52rpx;
+  margin-bottom: 8rpx;
+  padding: 0;
+}

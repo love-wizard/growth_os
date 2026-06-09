@@ -13,6 +13,26 @@
     <button wx:else class="button-secondary" bindtap="logout">退出当前身份</button>
   </view>
 
+  <view wx:if="{{isLoggedIn}}" class="section card profile-card">
+    <view class="row profile-row">
+      <button class="avatar-button" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
+        <image wx:if="{{parentProfile.avatarUrl}}" class="avatar-image" src="{{parentProfile.avatarUrl}}" mode="aspectFill" />
+        <view wx:else class="avatar-placeholder">{{parentProfile.nicknameInitial}}</view>
+      </button>
+      <view class="profile-main">
+        <input
+          class="nickname-input"
+          type="nickname"
+          placeholder="填写微信昵称"
+          value="{{parentProfile.nickname}}"
+          bindinput="onNicknameInput"
+          bindblur="saveParentProfile"
+        />
+        <view class="muted">家长身份资料，仅用于家庭空间展示。</view>
+      </view>
+    </view>
+  </view>
+
   <view class="section card primary-card">
     <view class="title">{{child.nickname}}</view>
     <view class="muted">{{child.age}}，当前重点是轻量陪伴和习惯建立。</view>
