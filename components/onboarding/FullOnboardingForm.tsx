@@ -34,7 +34,13 @@ export function FullOnboardingForm() {
       })
     });
 
-    setStatus(response.ok ? "成长系统已生成" : "暂时无法生成成长系统");
+    if (response.ok) {
+      setStatus("成长系统已生成");
+      return;
+    }
+
+    const data = (await response.json().catch(() => null)) as { error?: string } | null;
+    setStatus(data?.error ?? "暂时无法生成成长系统");
   }
 
   return (
