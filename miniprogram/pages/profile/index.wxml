@@ -4,6 +4,15 @@
     <view class="page-title">家庭成长空间</view>
   </view>
 
+  <view class="section card warm-card stack">
+    <view>
+      <view class="title">微信登录</view>
+      <view class="muted">{{loginStatus}}</view>
+    </view>
+    <button wx:if="{{!isLoggedIn}}" class="button-primary" bindtap="login">微信一键登录</button>
+    <button wx:else class="button-secondary" bindtap="logout">退出当前身份</button>
+  </view>
+
   <view class="section card primary-card">
     <view class="title">{{child.nickname}}</view>
     <view class="muted">{{child.age}}，当前重点是轻量陪伴和习惯建立。</view>
@@ -20,6 +29,12 @@
       </view>
     </view>
     <button class="button-secondary" bindtap="openInvite">邀请另一位家长</button>
+  </view>
+
+  <view class="section card">
+    <view class="title">首次配置</view>
+    <view class="muted">用分步方式补充孩子信息，先得到一个今天能做的小建议。</view>
+    <button class="button-secondary" bindtap="openSetup">打开配置流程</button>
   </view>
 
   <view class="section card">

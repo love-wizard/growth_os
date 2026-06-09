@@ -1,0 +1,74 @@
+<view class="page">
+  <view>
+    <view class="caption">首次配置</view>
+    <view class="page-title">先得到今晚能做的一件事</view>
+    <view class="step-dot-row">
+      <view class="step-dot {{step >= 1 ? 'step-dot-active' : ''}}"></view>
+      <view class="step-dot {{step >= 2 ? 'step-dot-active' : ''}}"></view>
+      <view class="step-dot {{step >= 3 ? 'step-dot-active' : ''}}"></view>
+      <view class="step-dot {{step >= 4 ? 'step-dot-active' : ''}}"></view>
+    </view>
+  </view>
+
+  <view wx:if="{{step === 1}}" class="section card stack">
+    <view>
+      <view class="title">孩子基本信息</view>
+      <view class="muted">先用最少信息生成建议，完整目标可以之后再补。</view>
+    </view>
+    <view class="input-box">昵称：{{nickname}}</view>
+    <view class="input-box">出生日期：{{birthDate}}</view>
+    <button class="button-primary" bindtap="nextStep">下一步</button>
+  </view>
+
+  <view wx:if="{{step === 2}}" class="section card stack">
+    <view>
+      <view class="title">最近想关注什么？</view>
+      <view class="muted">选2-3个方向就够了。</view>
+    </view>
+    <view class="chip-row">
+      <view class="chip {{item.selected ? 'chip-active' : ''}}" wx:for="{{focusOptions}}" wx:key="label">{{item.label}}</view>
+    </view>
+    <view class="row">
+      <button class="button-secondary" bindtap="prevStep">上一步</button>
+      <button class="button-primary" bindtap="nextStep">下一步</button>
+    </view>
+  </view>
+
+  <view wx:if="{{step === 3}}" class="section card stack">
+    <view>
+      <view class="title">今天最需要解决什么？</view>
+      <view class="muted">AI建议会围绕这个具体场景生成。</view>
+    </view>
+    <view class="chip-row">
+      <view
+        class="chip {{selectedChallenge === item ? 'chip-active' : ''}}"
+        data-value="{{item}}"
+        bindtap="chooseChallenge"
+        wx:for="{{challengeOptions}}"
+        wx:key="*this"
+      >
+        {{item}}
+      </view>
+    </view>
+    <view class="row">
+      <button class="button-secondary" bindtap="prevStep">上一步</button>
+      <button class="button-primary" bindtap="nextStep">生成建议</button>
+    </view>
+  </view>
+
+  <view wx:if="{{step === 4}}" class="section card primary-card stack">
+    <view>
+      <view class="caption">基于 {{nickname}} / {{selectedChallenge}}</view>
+      <view class="title">{{suggestion.title}}</view>
+    </view>
+    <view class="chip-row">
+      <view class="chip chip-active">{{suggestion.minutes}}</view>
+      <view class="chip" wx:for="{{selectedTraits}}" wx:key="*this">{{item}}</view>
+    </view>
+    <view class="muted">{{suggestion.action}}</view>
+    <view class="row">
+      <button class="button-secondary" bindtap="prevStep">调整一下</button>
+      <button class="button-primary" bindtap="finishSetup">加入首页</button>
+    </view>
+  </view>
+</view>

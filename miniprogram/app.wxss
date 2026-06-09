@@ -221,6 +221,23 @@ page {
   padding: 24rpx;
 }
 
+.step-dot-row {
+  display: flex;
+  gap: 12rpx;
+  margin-top: 24rpx;
+}
+
+.step-dot {
+  background: #e7e0d7;
+  border-radius: 999rpx;
+  height: 8rpx;
+  width: 40rpx;
+}
+
+.step-dot-active {
+  background: #3f8f6b;
+}
+
 .safe-bottom {
   padding-bottom: env(safe-area-inset-bottom);
 }

@@ -5,6 +5,7 @@
     "pages/archive/index",
     "pages/ai-coach/index",
     "pages/profile/index",
+    "pages/setup/index",
     "pages/first-guidance/index",
     "pages/invite/index",
     "pages/record-preview/index"
