@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { UUID } from "@/lib/domain/types";
 import { getSupportiveProgressCopy } from "@/lib/services/progress-copy-service";
+import { getCurrentWeeklyPlanForFamily } from "@/lib/services/weekly-plan-service";
 
 export async function getDashboardData(supabase: SupabaseClient, familyId: UUID) {
   const child = await getChild(supabase, familyId);
@@ -18,7 +19,7 @@ export async function getDashboardData(supabase: SupabaseClient, familyId: UUID)
 
   const [annualGoals, weeklyPlan] = await Promise.all([
     getAnnualGoals(supabase, child.id),
-    getCurrentWeeklyPlan(supabase, child.id)
+    getCurrentWeeklyPlanForFamily(supabase, familyId)
   ]);
   const todayTasks = weeklyPlan?.weekly_tasks ?? [];
 
@@ -83,25 +84,6 @@ async function getAnnualGoals(supabase: SupabaseClient, childId: UUID) {
   return (data ?? []) as DashboardAnnualGoal[];
 }
 
-async function getCurrentWeeklyPlan(supabase: SupabaseClient, childId: UUID) {
-  const { data, error } = await supabase
-    .from("weekly_plans")
-    .select(
-      "id,theme,week_start_date,week_end_date,reading_recommendation,english_recommendation,weekend_activity,weekly_tasks(id,assignee_type,title,planned_count,completed_count,status)"
-    )
-    .eq("child_id", childId)
-    .eq("status", "active")
-    .order("week_start_date", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-
-  if (error) {
-    throw error;
-  }
-
-  return data as DashboardWeeklyPlan | null;
-}
-
 interface DashboardChild {
   id: UUID;
   nickname: string;
@@ -130,5 +112,6 @@ interface DashboardWeeklyPlan {
   theme: string;
   week_start_date: string;
   week_end_date: string;
+  groupedTasks?: unknown;
   weekly_tasks: DashboardTask[];
 }
