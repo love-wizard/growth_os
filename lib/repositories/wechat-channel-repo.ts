@@ -63,3 +63,22 @@ export async function upsertWeChatIdentityBinding(
 
   return data;
 }
+
+export async function getActiveWeChatIdentityBinding(
+  supabase: SupabaseClient,
+  input: { wechatOpenId: string; miniProgramAppId: string }
+) {
+  const { data, error } = await supabase
+    .from("wechat_identity_bindings")
+    .select("id,user_id,wechat_open_id,binding_status")
+    .eq("wechat_open_id", input.wechatOpenId)
+    .eq("mini_program_app_id", input.miniProgramAppId)
+    .eq("binding_status", "active")
+    .maybeSingle();
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+}
