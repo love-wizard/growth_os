@@ -25,15 +25,22 @@
       <view class="title">{{answer.title}}</view>
     </view>
     <view class="muted">{{answer.text}}</view>
+    <view class="task-row" wx:for="{{answer.actions}}" wx:key="*this">
+      <view class="progress-pill">{{index + 1}}</view>
+      <view class="task-main">
+        <view class="task-title">{{item}}</view>
+      </view>
+    </view>
     <view class="note-box">
       <view class="caption">温和备选</view>
       <view class="muted">{{answer.fallback}}</view>
     </view>
-    <button class="button-primary" bindtap="askCoach">生成新的建议</button>
+    <view wx:if="{{errorMessage}}" class="muted">{{errorMessage}}</view>
+    <button class="button-primary" loading="{{isLoading}}" bindtap="askCoach">生成新的建议</button>
   </view>
 
   <view class="section card">
     <view class="title">自由提问</view>
-    <input class="input-box" placeholder="请输入育儿问题" />
+    <input class="input-box" placeholder="请输入育儿问题" value="{{freeQuestion}}" bindinput="onQuestionInput" />
   </view>
 </view>
