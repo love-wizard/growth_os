@@ -28,7 +28,63 @@ function parseUploadResponse(response) {
   return data;
 }
 
-function requestJson(method, path, data) {
+function refreshMiniProgramSession() {
+  return new Promise((resolve, reject) => {
+    wx.login({
+      success(loginResponse) {
+        if (!loginResponse.code) {
+          reject(new Error("WeChat login code is missing"));
+          return;
+        }
+
+        wx.request({
+          url: `${apiBaseUrl}/api/wechat/login`,
+          method: "POST",
+          data: { code: loginResponse.code },
+          timeout: 10000,
+          header: {
+            "content-type": "application/json"
+          },
+          success(response) {
+            const data = response.data || {};
+            if (response.statusCode && response.statusCode >= 400) {
+              reject(new Error(data.error || "Unable to refresh session"));
+              return;
+            }
+
+            if (data.accessToken) {
+              setSession({ accessToken: data.accessToken });
+            }
+
+            resolve(data);
+          },
+          fail: reject
+        });
+      },
+      fail: reject
+    });
+  });
+}
+
+function shouldRetryAuth(response) {
+  const errorMessage =
+    response &&
+    response.data &&
+    response.data.error
+      ? String(response.data.error).toLowerCase()
+      : "";
+
+  return (
+    response &&
+    response.statusCode === 401 &&
+    (errorMessage.includes("authentication is required") ||
+      errorMessage.includes("invalid jwt") ||
+      errorMessage.includes("token is expired"))
+  );
+}
+
+function requestJson(method, path, data, options) {
+  const retryOnAuth = !options || options.retryOnAuth !== false;
   return new Promise((resolve, reject) => {
     wx.request({
       url: `${apiBaseUrl}${path}`,
@@ -40,6 +96,23 @@ function requestJson(method, path, data) {
         ...getAuthHeader()
       },
       success(response) {
+        if (shouldRetryAuth(response) && retryOnAuth) {
+          refreshMiniProgramSession()
+            .then(() => requestJson(method, path, data, { retryOnAuth: false }))
+            .then(resolve)
+            .catch(() => {
+              reject({
+                statusCode: response.statusCode,
+                data: response.data,
+                error:
+                  response.data && response.data.error
+                    ? response.data.error
+                    : "Authentication is required"
+              });
+            });
+          return;
+        }
+
         if (response.statusCode && response.statusCode >= 400) {
           reject({
             statusCode: response.statusCode,

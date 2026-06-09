@@ -15,6 +15,10 @@ type UploadResponse = {
   data?: unknown;
 };
 
+type RequestOptions = {
+  retryOnAuth?: boolean;
+};
+
 function getAuthHeader() {
   const session = wx.getStorageSync(sessionStorageKey) as GrowthOSSession | undefined;
 
@@ -27,7 +31,62 @@ function getAuthHeader() {
   } as Record<string, string>;
 }
 
-function requestJson<T = unknown>(method: string, path: string, data?: unknown) {
+function refreshMiniProgramSession() {
+  return new Promise<{ accessToken?: string }>((resolve, reject) => {
+    wx.login({
+      success: ({ code }) => {
+        if (!code) {
+          reject(new Error("WeChat login code is missing"));
+          return;
+        }
+
+        wx.request({
+          url: `${apiBaseUrl}/api/wechat/login`,
+          method: "POST",
+          data: { code },
+          timeout: 10000,
+          header: {
+            "content-type": "application/json"
+          },
+          success: (response: RequestResponse) => {
+            const data = (response.data as { accessToken?: string; error?: string } | undefined) ?? {};
+            if (response.statusCode && response.statusCode >= 400) {
+              reject(new Error(data.error ?? "Unable to refresh session"));
+              return;
+            }
+
+            if (data.accessToken) {
+              setSession({ accessToken: data.accessToken });
+            }
+
+            resolve(data);
+          },
+          fail: reject
+        });
+      },
+      fail: reject
+    });
+  });
+}
+
+function shouldRetryAuth(response: RequestResponse) {
+  const data = response.data as { error?: string } | undefined;
+  const errorMessage = (data?.error ?? "").toLowerCase();
+
+  return (
+    response.statusCode === 401 &&
+    (errorMessage.includes("authentication is required") ||
+      errorMessage.includes("invalid jwt") ||
+      errorMessage.includes("token is expired"))
+  );
+}
+
+function requestJson<T = unknown>(
+  method: string,
+  path: string,
+  data?: unknown,
+  options?: RequestOptions
+) {
   return new Promise<T>((resolve, reject) => {
     wx.request({
       url: `${apiBaseUrl}${path}`,
@@ -39,6 +98,21 @@ function requestJson<T = unknown>(method: string, path: string, data?: unknown) 
         ...getAuthHeader()
       },
       success: (response: RequestResponse) => {
+        if (shouldRetryAuth(response) && options?.retryOnAuth !== false) {
+          void refreshMiniProgramSession()
+            .then(() => requestJson<T>(method, path, data, { retryOnAuth: false }))
+            .then(resolve)
+            .catch(() => {
+              const data = response.data as { error?: string } | undefined;
+              reject({
+                statusCode: response.statusCode,
+                data: response.data,
+                error: data?.error ?? "Authentication is required"
+              });
+            });
+          return;
+        }
+
         if (response.statusCode && response.statusCode >= 400) {
           const data = response.data as { error?: string } | undefined;
           reject({

@@ -32,7 +32,10 @@ function isAuthSessionMissingError(error: unknown) {
   return (
     error instanceof Error &&
     (error.name === "AuthSessionMissingError" ||
-      error.message.toLowerCase().includes("auth session missing"))
+      error.message.toLowerCase().includes("auth session missing") ||
+      error.message.toLowerCase().includes("invalid jwt") ||
+      error.message.toLowerCase().includes("token is expired") ||
+      error.message.toLowerCase().includes("bad_jwt"))
   );
 }
 
