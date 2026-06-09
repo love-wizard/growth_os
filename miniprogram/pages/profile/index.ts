@@ -179,6 +179,9 @@ Page({
   openInvite() {
     wx.navigateTo({ url: "/pages/invite/index" });
   },
+  openInterests() {
+    wx.navigateTo({ url: "/pages/interests/index" });
+  },
   openSetup() {
     wx.navigateTo({ url: "/pages/setup/index" });
   }

@@ -9,6 +9,7 @@
     "pages/setup/index",
     "pages/first-guidance/index",
     "pages/invite/index",
+    "pages/interests/index",
     "pages/record-preview/index"
   ],
   "window": {

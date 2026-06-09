@@ -54,6 +54,12 @@
   </view>
 
   <view class="section card">
+    <view class="title">兴趣班管理</view>
+    <view class="muted">记录钢琴、游泳、英语等真实参与情况，给 AI 成长分析更多上下文。</view>
+    <button class="button-secondary" bindtap="openInterests">打开兴趣班记录</button>
+  </view>
+
+  <view class="section card">
     <view class="title">首次配置</view>
     <view class="muted">用分步方式补充孩子信息，先得到一个今天能做的小建议。</view>
     <button class="button-secondary" bindtap="openSetup">打开配置流程</button>

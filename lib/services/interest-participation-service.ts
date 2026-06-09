@@ -4,6 +4,8 @@ import { getFamilyChildId } from "@/lib/repositories/weekly-plan-repo";
 import {
   createInterestParticipationRecord,
   getInterestParticipationRecordForFamily,
+  listChildInterests,
+  listRecentInterestParticipationRecords,
   restoreInterestParticipationRecord,
   softDeleteInterestParticipationRecord
 } from "@/lib/repositories/interest-participation-repo";
@@ -20,6 +22,27 @@ export class InterestParticipationError extends Error {
 export type InterestParticipationInput = z.infer<
   typeof interestParticipationRecordInputSchema
 >;
+
+export async function listInterestParticipationSnapshot(
+  supabase: SupabaseClient,
+  input: { familyId: UUID }
+) {
+  const childId = await getFamilyChildId(supabase, input.familyId);
+
+  if (!childId) {
+    return {
+      interests: [],
+      records: []
+    };
+  }
+
+  const [interests, records] = await Promise.all([
+    listChildInterests(supabase, childId),
+    listRecentInterestParticipationRecords(supabase, childId)
+  ]);
+
+  return { interests, records };
+}
 
 export async function recordInterestParticipation(
   supabase: SupabaseClient,

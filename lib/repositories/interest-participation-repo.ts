@@ -62,11 +62,27 @@ export async function listRecentInterestParticipationRecords(
 ) {
   const { data, error } = await supabase
     .from("interest_participation_records")
-    .select("id,happened_on,participation_outcome,duration_minutes,count,notes")
+    .select(
+      "id,happened_on,participation_outcome,duration_minutes,count,notes,interest_id,child_interests(id,name,source)"
+    )
     .eq("child_id", childId)
     .is("deleted_at", null)
     .order("happened_on", { ascending: false })
     .limit(10);
+
+  if (error) {
+    throw error;
+  }
+
+  return data ?? [];
+}
+
+export async function listChildInterests(supabase: SupabaseClient, childId: UUID) {
+  const { data, error } = await supabase
+    .from("child_interests")
+    .select("id,name,source")
+    .eq("child_id", childId)
+    .order("created_at", { ascending: true });
 
   if (error) {
     throw error;
@@ -120,4 +136,9 @@ export interface InterestParticipationRecord {
   notes: string | null;
   deleted_at: string | null;
   restore_until: string | null;
+  child_interests?: {
+    id: UUID;
+    name: string;
+    source: string;
+  } | null;
 }
