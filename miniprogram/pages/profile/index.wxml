@@ -67,12 +67,18 @@
 
   <view class="section card">
     <view class="title">温和提醒</view>
-    <view class="task-row" wx:for="{{reminders}}" wx:key="title">
+    <view wx:if="{{reminderStatus}}" class="muted reminder-status">{{reminderStatus}}</view>
+    <view class="task-row" wx:for="{{reminders}}" wx:key="type">
       <view class="task-main">
         <view class="task-title">{{item.title}}</view>
-        <view class="caption">只提醒陪伴，不提醒失败</view>
+        <view class="caption">{{item.description}}</view>
       </view>
-      <view class="progress-pill">{{item.enabled ? '已开启' : '未开启'}}</view>
+      <switch
+        checked="{{item.enabled}}"
+        color="#3F8F6B"
+        data-type="{{item.type}}"
+        bindchange="toggleReminder"
+      />
     </view>
   </view>
 

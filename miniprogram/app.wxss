@@ -302,6 +302,10 @@ page {
   padding: 0 24rpx;
 }
 
+.reminder-status {
+  margin-bottom: 20rpx;
+}
+
 .avatar-button {
   align-items: center;
   background: #f1eee8;

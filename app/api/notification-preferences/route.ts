@@ -2,11 +2,41 @@ import { NextResponse, type NextRequest } from "next/server";
 import { requireAuthenticatedUser } from "@/lib/auth/family-access";
 import { getAcceptedFamilyMembership } from "@/lib/repositories/family-repo";
 import {
+  getWarmReminderPreferences,
   ReminderPreferenceError,
   updateWarmReminderPreference
 } from "@/lib/services/reminder-service";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { notificationPreferenceRequestSchema } from "@/lib/validation/schemas";
+
+export async function GET() {
+  const supabase = await createServerSupabaseClient();
+
+  try {
+    const user = await requireAuthenticatedUser(supabase);
+    const membership = await getAcceptedFamilyMembership(supabase, user.id);
+
+    if (!membership) {
+      return NextResponse.json({ error: "Family workspace is required" }, { status: 409 });
+    }
+
+    const preferences = await getWarmReminderPreferences(supabase, {
+      familyId: membership.family_id,
+      userId: user.id
+    });
+
+    return NextResponse.json({ preferences });
+  } catch (error) {
+    if (error instanceof Error && error.name === "AuthRequiredError") {
+      return NextResponse.json({ error: "Authentication is required" }, { status: 401 });
+    }
+
+    return NextResponse.json(
+      { error: "Unable to load notification preferences" },
+      { status: 400 }
+    );
+  }
+}
 
 export async function PATCH(request: NextRequest) {
   const supabase = await createServerSupabaseClient();

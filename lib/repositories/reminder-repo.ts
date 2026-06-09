@@ -32,3 +32,24 @@ export async function upsertWarmReminderPreference(
 
   return data;
 }
+
+export async function listWarmReminderPreferences(
+  supabase: SupabaseClient,
+  input: {
+    familyId: UUID;
+    userId: UUID;
+  }
+) {
+  const { data, error } = await supabase
+    .from("warm_reminder_preferences")
+    .select("id,reminder_type,enabled,preferred_window")
+    .eq("family_id", input.familyId)
+    .eq("user_id", input.userId)
+    .order("created_at", { ascending: true });
+
+  if (error) {
+    throw error;
+  }
+
+  return data ?? [];
+}

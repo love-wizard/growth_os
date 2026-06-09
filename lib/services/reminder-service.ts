@@ -1,7 +1,10 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { ReminderType, UUID } from "@/lib/domain/types";
 import { recordWarmReminderEnabled } from "@/lib/metrics/engagement-trust-events";
-import { upsertWarmReminderPreference } from "@/lib/repositories/reminder-repo";
+import {
+  listWarmReminderPreferences,
+  upsertWarmReminderPreference
+} from "@/lib/repositories/reminder-repo";
 import type { z } from "zod";
 import { notificationPreferenceRequestSchema } from "@/lib/validation/schemas";
 
@@ -44,6 +47,16 @@ export async function updateWarmReminderPreference(
   }
 
   return saved;
+}
+
+export async function getWarmReminderPreferences(
+  supabase: SupabaseClient,
+  input: {
+    familyId: UUID;
+    userId: UUID;
+  }
+) {
+  return listWarmReminderPreferences(supabase, input);
 }
 
 export function normalizeReminderPreference(

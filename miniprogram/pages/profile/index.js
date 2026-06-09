@@ -4,9 +4,26 @@ const {
   loginWithWeChat,
   logoutMiniProgram
 } = require("../../services/session");
-const { getJson } = require("../../services/api");
+const { getJson, patchJson } = require("../../services/api");
 
 const parentProfileStorageKey = "growth_os_parent_profile";
+const reminderDefinitions = [
+  {
+    type: "evening_companionship",
+    title: "晚上陪伴提醒",
+    description: "只提醒留一点陪伴时间"
+  },
+  {
+    type: "weekend_planning",
+    title: "周末活动提醒",
+    description: "周末前提醒安排一个轻量活动"
+  },
+  {
+    type: "weekly_reset",
+    title: "周计划重置提醒",
+    description: "新的一周从一件最容易的小事开始"
+  }
+];
 
 function buildParentProfile(profile) {
   const nickname = profile && profile.nickname ? profile.nickname : "微信家长";
@@ -44,6 +61,20 @@ function calculateAge(birthDate) {
   return `${Math.max(age, 0)}岁`;
 }
 
+function buildReminders(preferences) {
+  const byType = {};
+  (preferences || []).forEach((item) => {
+    byType[item.reminder_type] = item;
+  });
+
+  return reminderDefinitions.map((item) => ({
+    type: item.type,
+    title: item.title,
+    description: item.description,
+    enabled: Boolean(byType[item.type] && byType[item.type].enabled)
+  }));
+}
+
 Page({
   data: {
     isLoggedIn: false,
@@ -56,11 +87,8 @@ Page({
       age: "",
       goals: []
     },
-    reminders: [
-      { title: "晚上陪伴提醒", enabled: true },
-      { title: "周末活动提醒", enabled: false },
-      { title: "周计划重置提醒", enabled: true }
-    ]
+    reminders: buildReminders(),
+    reminderStatus: ""
   },
   onShow() {
     const isLoggedIn = hasMiniProgramSession();
@@ -71,6 +99,7 @@ Page({
     });
     if (isLoggedIn) {
       this.loadFamilyProfile();
+      this.loadReminderPreferences();
     }
   },
   loadFamilyProfile() {
@@ -106,6 +135,28 @@ Page({
         });
       });
   },
+  loadReminderPreferences() {
+    this.setData({ reminderStatus: "" });
+    getJson("/api/notification-preferences")
+      .then((response) => {
+        this.setData({
+          reminders: buildReminders(response.preferences || []),
+          reminderStatus: ""
+        });
+      })
+      .catch((error) => {
+        if (error.statusCode === 409) {
+          this.setData({
+            reminderStatus: "请先完成首次配置"
+          });
+          return;
+        }
+
+        this.setData({
+          reminderStatus: error.error || "提醒设置加载失败"
+        });
+      });
+  },
   login() {
     wx.showToast({ title: "正在登录", icon: "loading" });
     loginWithWeChat().then((result) => {
@@ -130,6 +181,7 @@ Page({
         parentProfile: loadParentProfile()
       });
       this.loadFamilyProfile();
+      this.loadReminderPreferences();
       wx.showToast({ title: "已登录", icon: "success" });
     }).catch((error) => {
       console.warn("GrowthOS mini program login unexpected error", error);
@@ -151,7 +203,9 @@ Page({
         nickname: "还未创建孩子档案",
         age: "",
         goals: []
-      }
+      },
+      reminders: buildReminders(),
+      reminderStatus: ""
     });
   },
   onChooseAvatar(event) {
@@ -172,6 +226,33 @@ Page({
   },
   saveParentProfile() {
     persistParentProfile(this.data.parentProfile);
+  },
+  toggleReminder(event) {
+    const reminderType = event.currentTarget.dataset.type;
+    const enabled = event.detail.value;
+
+    this.setData({
+      reminders: this.data.reminders.map((item) =>
+        item.type === reminderType ? { ...item, enabled } : item
+      )
+    });
+
+    patchJson("/api/notification-preferences", {
+      reminderType,
+      enabled
+    })
+      .then(() => {
+        wx.showToast({ title: enabled ? "已开启" : "已关闭", icon: "success" });
+      })
+      .catch((error) => {
+        this.setData({
+          reminders: this.data.reminders.map((item) =>
+            item.type === reminderType ? { ...item, enabled: !enabled } : item
+          ),
+          reminderStatus: error.error || "提醒设置失败"
+        });
+        wx.showToast({ title: "设置失败", icon: "none" });
+      });
   },
   openInvite() {
     wx.navigateTo({ url: "/pages/invite/index" });
