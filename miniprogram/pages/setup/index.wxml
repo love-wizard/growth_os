@@ -15,8 +15,12 @@
       <view class="title">孩子基本信息</view>
       <view class="muted">先用最少信息生成建议，完整目标可以之后再补。</view>
     </view>
-    <view class="input-box">昵称：{{nickname}}</view>
-    <view class="input-box">出生日期：{{birthDate}}</view>
+    <input class="input-box" placeholder="孩子昵称" value="{{nickname}}" bindinput="onNicknameInput" />
+    <input class="input-box" placeholder="出生日期 YYYY-MM-DD" value="{{birthDate}}" bindinput="onBirthDateInput" />
+    <view class="chip-row">
+      <view class="chip {{gender === 'female' ? 'chip-active' : ''}}" data-value="female" bindtap="chooseGender">女孩</view>
+      <view class="chip {{gender === 'male' ? 'chip-active' : ''}}" data-value="male" bindtap="chooseGender">男孩</view>
+    </view>
     <button class="button-primary" bindtap="nextStep">下一步</button>
   </view>
 
@@ -26,7 +30,15 @@
       <view class="muted">选2-3个方向就够了。</view>
     </view>
     <view class="chip-row">
-      <view class="chip {{item.selected ? 'chip-active' : ''}}" wx:for="{{focusOptions}}" wx:key="label">{{item.label}}</view>
+      <view
+        class="chip {{item.selected ? 'chip-active' : ''}}"
+        data-value="{{item.label}}"
+        bindtap="toggleFocus"
+        wx:for="{{focusOptions}}"
+        wx:key="label"
+      >
+        {{item.label}}
+      </view>
     </view>
     <view class="row">
       <button class="button-secondary" bindtap="prevStep">上一步</button>
@@ -68,7 +80,7 @@
     <view class="muted">{{suggestion.action}}</view>
     <view class="row">
       <button class="button-secondary" bindtap="prevStep">调整一下</button>
-      <button class="button-primary" bindtap="finishSetup">加入首页</button>
+      <button class="button-primary" loading="{{isSubmitting}}" bindtap="finishSetup">加入首页</button>
     </view>
   </view>
 </view>

@@ -4,6 +4,14 @@
     <view class="page-title">{{childNickname}}今天可以这样开始</view>
   </view>
 
+  <view wx:if="{{errorMessage}}" class="section card warm-card stack">
+    <view>
+      <view class="title">{{errorMessage}}</view>
+      <view class="muted">先完成首次配置，系统会生成本周主题和陪伴任务。</view>
+    </view>
+    <button wx:if="{{setupRequired}}" class="button-primary" bindtap="openSetup">去创建成长系统</button>
+  </view>
+
   <view class="section card primary-card stack">
     <view>
       <view class="title">{{todayAction.title}}</view>
@@ -25,9 +33,9 @@
     <view class="row">
       <view>
         <view class="title">本周主题</view>
-        <view class="muted">《建立阅读习惯》</view>
+        <view class="muted">《{{weeklyTheme}}》</view>
       </view>
-      <view class="progress-pill">3件小事</view>
+      <view class="progress-pill">{{taskCount}}</view>
     </view>
   </view>
 

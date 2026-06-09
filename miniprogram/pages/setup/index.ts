@@ -1,3 +1,5 @@
+import { postJson } from "../../services/api";
+
 const focusOptions = [
   { label: "阅读习惯", selected: true },
   { label: "英语启蒙", selected: true },
@@ -13,8 +15,10 @@ Page({
   data: {
     step: 1,
     totalSteps: 4,
+    isSubmitting: false,
     nickname: "小钟",
     birthDate: "2021-06-01",
+    gender: "female",
     focusOptions,
     challengeOptions,
     traitOptions,
@@ -34,11 +38,59 @@ Page({
     const prev = Math.max(this.data.step - 1, 1);
     this.setData({ step: prev });
   },
+  onNicknameInput(event: { detail: { value: string } }) {
+    this.setData({ nickname: event.detail.value });
+  },
+  onBirthDateInput(event: { detail: { value: string } }) {
+    this.setData({ birthDate: event.detail.value });
+  },
+  chooseGender(event: { currentTarget: { dataset: { value: string } } }) {
+    this.setData({ gender: event.currentTarget.dataset.value });
+  },
+  toggleFocus(event: { currentTarget: { dataset: { value: string } } }) {
+    const label = event.currentTarget.dataset.value;
+    const focusOptions = this.data.focusOptions.map((item: { label: string; selected: boolean }) =>
+      item.label === label ? { ...item, selected: !item.selected } : item
+    );
+    this.setData({ focusOptions });
+  },
   chooseChallenge(event: { currentTarget: { dataset: { value: string } } }) {
     this.setData({ selectedChallenge: event.currentTarget.dataset.value });
   },
   finishSetup() {
-    wx.showToast({ title: "已生成建议", icon: "success" });
-    wx.switchTab({ url: "/pages/home/index" });
+    const selectedFocus = this.data.focusOptions.filter((item: { selected: boolean }) => item.selected);
+    if (!this.data.nickname || !this.data.birthDate || selectedFocus.length === 0) {
+      wx.showToast({ title: "请补充信息", icon: "none" });
+      return;
+    }
+
+    this.setData({ isSubmitting: true });
+    void postJson("/api/onboarding", {
+      childProfile: {
+        name: this.data.nickname,
+        nickname: this.data.nickname,
+        birthDate: this.data.birthDate,
+        gender: this.data.gender
+      },
+      interests: selectedFocus.map((item: { label: string }) => item.label),
+      annualGoals: selectedFocus.map((item: { label: string }) => ({
+        title: item.label,
+        category: item.label
+      }))
+    })
+      .then(() => {
+        wx.showToast({ title: "已生成成长系统", icon: "success" });
+        wx.switchTab({ url: "/pages/home/index" });
+      })
+      .catch((error) => {
+        if (error.statusCode === 409) {
+          wx.switchTab({ url: "/pages/home/index" });
+          return;
+        }
+        wx.showToast({ title: error.error || "创建失败", icon: "none" });
+      })
+      .finally(() => {
+        this.setData({ isSubmitting: false });
+      });
   }
 });

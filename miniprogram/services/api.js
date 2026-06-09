@@ -27,7 +27,11 @@ function requestJson(method, path, data) {
       },
       success(response) {
         if (response.statusCode && response.statusCode >= 400) {
-          reject(response.data);
+          reject({
+            statusCode: response.statusCode,
+            data: response.data,
+            error: response.data && response.data.error ? response.data.error : "Request failed"
+          });
           return;
         }
         resolve(response.data);
@@ -39,6 +43,10 @@ function requestJson(method, path, data) {
 
 function postJson(path, data) {
   return requestJson("POST", path, data);
+}
+
+function patchJson(path, data) {
+  return requestJson("PATCH", path, data);
 }
 
 function getJson(path) {
@@ -61,6 +69,7 @@ module.exports = {
   clearSession,
   getJson,
   getSession,
+  patchJson,
   postJson,
   setSession
 };

@@ -1,4 +1,6 @@
 /* global Page, wx */
+const { postJson } = require("../../services/api");
+
 const focusOptions = [
   { label: "阅读习惯", selected: true },
   { label: "英语启蒙", selected: true },
@@ -14,8 +16,10 @@ Page({
   data: {
     step: 1,
     totalSteps: 4,
+    isSubmitting: false,
     nickname: "小钟",
     birthDate: "2021-06-01",
+    gender: "female",
     focusOptions,
     challengeOptions,
     traitOptions,
@@ -35,11 +39,59 @@ Page({
     const prev = Math.max(this.data.step - 1, 1);
     this.setData({ step: prev });
   },
+  onNicknameInput(event) {
+    this.setData({ nickname: event.detail.value });
+  },
+  onBirthDateInput(event) {
+    this.setData({ birthDate: event.detail.value });
+  },
+  chooseGender(event) {
+    this.setData({ gender: event.currentTarget.dataset.value });
+  },
+  toggleFocus(event) {
+    const label = event.currentTarget.dataset.value;
+    const focusOptions = this.data.focusOptions.map((item) =>
+      item.label === label ? { ...item, selected: !item.selected } : item
+    );
+    this.setData({ focusOptions });
+  },
   chooseChallenge(event) {
     this.setData({ selectedChallenge: event.currentTarget.dataset.value });
   },
   finishSetup() {
-    wx.showToast({ title: "已生成建议", icon: "success" });
-    wx.switchTab({ url: "/pages/home/index" });
+    const selectedFocus = this.data.focusOptions.filter((item) => item.selected);
+    if (!this.data.nickname || !this.data.birthDate || selectedFocus.length === 0) {
+      wx.showToast({ title: "请补充信息", icon: "none" });
+      return;
+    }
+
+    this.setData({ isSubmitting: true });
+    postJson("/api/onboarding", {
+      childProfile: {
+        name: this.data.nickname,
+        nickname: this.data.nickname,
+        birthDate: this.data.birthDate,
+        gender: this.data.gender
+      },
+      interests: selectedFocus.map((item) => item.label),
+      annualGoals: selectedFocus.map((item) => ({
+        title: item.label,
+        category: item.label
+      }))
+    })
+      .then(() => {
+        wx.showToast({ title: "已生成成长系统", icon: "success" });
+        wx.switchTab({ url: "/pages/home/index" });
+      })
+      .catch((error) => {
+        if (error.statusCode === 409) {
+          wx.switchTab({ url: "/pages/home/index" });
+          return;
+        }
+        wx.showToast({ title: error.error || "创建失败", icon: "none" });
+      })
+      .finally(() => {
+        this.setData({ isSubmitting: false });
+      });
   }
 });

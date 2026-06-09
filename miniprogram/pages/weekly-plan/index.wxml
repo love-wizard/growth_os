@@ -7,7 +7,12 @@
 
   <view class="section card blue-card">
     <view class="title">周末活动</view>
-    <view class="muted">选择一个公园或小区角落，和孩子一起找三种不同形状的叶子。</view>
+    <view class="muted">{{weekendActivity}}</view>
+  </view>
+
+  <view wx:if="{{errorMessage}}" class="section card warm-card">
+    <view class="title">{{errorMessage}}</view>
+    <view class="muted">完成首次配置后会自动生成本周任务。</view>
   </view>
 
   <view class="section card">
@@ -18,7 +23,7 @@
         <view class="task-title">{{item.title}}</view>
         <view class="caption">{{item.note}}</view>
       </view>
-      <button class="progress-pill" data-title="{{item.title}}" bindtap="completeTask">{{item.progress}}</button>
+      <button class="progress-pill" data-task-id="{{item.id}}" data-completed-count="{{item.completedCount}}" data-planned-count="{{item.plannedCount}}" bindtap="completeTask">{{item.progress}}</button>
     </view>
   </view>
 
@@ -30,7 +35,7 @@
         <view class="task-title">{{item.title}}</view>
         <view class="caption">{{item.note}}</view>
       </view>
-      <button class="progress-pill" data-title="{{item.title}}" bindtap="completeTask">{{item.progress}}</button>
+      <button class="progress-pill" data-task-id="{{item.id}}" data-completed-count="{{item.completedCount}}" data-planned-count="{{item.plannedCount}}" bindtap="completeTask">{{item.progress}}</button>
     </view>
   </view>
 
@@ -42,7 +47,19 @@
         <view class="task-title">{{item.title}}</view>
         <view class="caption">{{item.note}}</view>
       </view>
-      <button class="progress-pill" data-title="{{item.title}}" bindtap="completeTask">{{item.progress}}</button>
+      <button class="progress-pill" data-task-id="{{item.id}}" data-completed-count="{{item.completedCount}}" data-planned-count="{{item.plannedCount}}" bindtap="completeTask">{{item.progress}}</button>
+    </view>
+  </view>
+
+  <view class="section card">
+    <view class="title">孩子任务</view>
+    <view class="task-row" wx:for="{{childTasks}}" wx:key="id">
+      <view class="role-badge role-family">孩子</view>
+      <view class="task-main">
+        <view class="task-title">{{item.title}}</view>
+        <view class="caption">{{item.note}}</view>
+      </view>
+      <button class="progress-pill" data-task-id="{{item.id}}" data-completed-count="{{item.completedCount}}" data-planned-count="{{item.plannedCount}}" bindtap="completeTask">{{item.progress}}</button>
     </view>
   </view>
 </view>

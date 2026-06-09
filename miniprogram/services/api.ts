@@ -18,15 +18,15 @@ function getAuthHeader() {
   }
 
   return {
-    authorization: `Bearer ${session.accessToken}`
+    Authorization: `Bearer ${session.accessToken}`
   } as Record<string, string>;
 }
 
-export function postJson<T = unknown>(path: string, data: unknown) {
+function requestJson<T = unknown>(method: string, path: string, data?: unknown) {
   return new Promise<T>((resolve, reject) => {
     wx.request({
       url: `${apiBaseUrl}${path}`,
-      method: "POST",
+      method,
       data,
       timeout: 10000,
       header: {
@@ -35,7 +35,12 @@ export function postJson<T = unknown>(path: string, data: unknown) {
       },
       success: (response: RequestResponse) => {
         if (response.statusCode && response.statusCode >= 400) {
-          reject(response.data);
+          const data = response.data as { error?: string } | undefined;
+          reject({
+            statusCode: response.statusCode,
+            data: response.data,
+            error: data?.error ?? "Request failed"
+          });
           return;
         }
         resolve(response.data as T);
@@ -45,26 +50,16 @@ export function postJson<T = unknown>(path: string, data: unknown) {
   });
 }
 
+export function postJson<T = unknown>(path: string, data: unknown) {
+  return requestJson<T>("POST", path, data);
+}
+
+export function patchJson<T = unknown>(path: string, data: unknown) {
+  return requestJson<T>("PATCH", path, data);
+}
+
 export function getJson<T = unknown>(path: string) {
-  return new Promise<T>((resolve, reject) => {
-    wx.request({
-      url: `${apiBaseUrl}${path}`,
-      method: "GET",
-      timeout: 10000,
-      header: {
-        "content-type": "application/json",
-        ...getAuthHeader()
-      },
-      success: (response: RequestResponse) => {
-        if (response.statusCode && response.statusCode >= 400) {
-          reject(response.data);
-          return;
-        }
-        resolve(response.data as T);
-      },
-      fail: reject
-    });
-  });
+  return requestJson<T>("GET", path);
 }
 
 export function getSession() {
