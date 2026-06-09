@@ -79,12 +79,18 @@ export function getJson<T = unknown>(path: string) {
   return requestJson<T>("GET", path);
 }
 
-export function uploadFile<T = unknown>(path: string, filePath: string, name = "file") {
+export function uploadFile<T = unknown>(
+  path: string,
+  filePath: string,
+  name = "file",
+  formData?: Record<string, string>
+) {
   return new Promise<T>((resolve, reject) => {
     wx.uploadFile({
       url: `${apiBaseUrl}${path}`,
       filePath,
       name,
+      formData,
       timeout: 20000,
       header: getAuthHeader(),
       success: (response: UploadResponse) => {

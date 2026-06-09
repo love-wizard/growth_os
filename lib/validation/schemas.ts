@@ -142,6 +142,10 @@ export const wechatRecordSharePreviewRequestSchema = z.object({
   recordId: uuid
 });
 
+export const parentProfileRequestSchema = z.object({
+  displayName: nonEmptyText.max(40)
+});
+
 export type ChildProfileInput = z.infer<typeof childProfileInputSchema>;
 export type AnnualGoalInput = z.infer<typeof annualGoalInputSchema>;
 export type OnboardingRequest = z.infer<typeof onboardingRequestSchema>;

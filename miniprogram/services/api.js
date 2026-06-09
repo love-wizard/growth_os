@@ -67,12 +67,13 @@ function getJson(path) {
   return requestJson("GET", path);
 }
 
-function uploadFile(path, filePath, name) {
+function uploadFile(path, filePath, name, formData) {
   return new Promise((resolve, reject) => {
     wx.uploadFile({
       url: `${apiBaseUrl}${path}`,
       filePath,
       name: name || "file",
+      formData,
       timeout: 20000,
       header: getAuthHeader(),
       success(response) {

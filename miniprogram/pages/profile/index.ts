@@ -1,5 +1,5 @@
 import { hasMiniProgramSession, loginWithWeChat, logoutMiniProgram } from "../../services/session";
-import { getJson, patchJson } from "../../services/api";
+import { getJson, patchJson, uploadFile } from "../../services/api";
 
 const parentProfileStorageKey = "growth_os_parent_profile";
 const reminderDefinitions = [
@@ -42,6 +42,17 @@ function persistParentProfile(profile: ParentProfile) {
   wx.setStorageSync(parentProfileStorageKey, {
     avatarUrl: profile.avatarUrl || "",
     nickname: profile.nickname || ""
+  });
+}
+
+function normalizeParentProfile(profile?: {
+  avatarUrl?: string;
+  displayName?: string;
+  nickname?: string;
+}) {
+  return buildParentProfile({
+    avatarUrl: profile?.avatarUrl || "",
+    nickname: profile?.displayName || profile?.nickname || "微信家长"
   });
 }
 
@@ -102,7 +113,22 @@ Page({
     if (isLoggedIn) {
       this.loadFamilyProfile();
       this.loadReminderPreferences();
+      this.loadParentProfile();
     }
+  },
+  loadParentProfile() {
+    void getJson<{
+      profile: {
+        displayName: string;
+        avatarUrl: string;
+      };
+    }>("/api/me/profile")
+      .then((response) => {
+        const parentProfile = normalizeParentProfile(response.profile);
+        this.setData({ parentProfile });
+        persistParentProfile(parentProfile);
+      })
+      .catch(() => {});
   },
   loadFamilyProfile() {
     this.setData({ profileStatus: "", setupRequired: false });
@@ -192,6 +218,7 @@ Page({
       });
       this.loadFamilyProfile();
       this.loadReminderPreferences();
+      this.loadParentProfile();
       wx.showToast({ title: "已登录", icon: "success" });
     }).catch((error) => {
       console.warn("GrowthOS mini program login unexpected error", error);
@@ -219,12 +246,36 @@ Page({
     });
   },
   onChooseAvatar(event: { detail: { avatarUrl: string } }) {
+    const previousProfile = this.data.parentProfile;
     const parentProfile = buildParentProfile({
       ...this.data.parentProfile,
       avatarUrl: event.detail.avatarUrl
     });
     this.setData({ parentProfile });
     persistParentProfile(parentProfile);
+
+    if (!this.data.isLoggedIn) {
+      return;
+    }
+
+    void uploadFile<{
+      profile: {
+        displayName: string;
+        avatarUrl: string;
+      };
+    }>("/api/me/profile/avatar", event.detail.avatarUrl, "file", {
+      displayName: parentProfile.nickname
+    })
+      .then((response) => {
+        const syncedProfile = normalizeParentProfile(response.profile);
+        this.setData({ parentProfile: syncedProfile });
+        persistParentProfile(syncedProfile);
+      })
+      .catch((error) => {
+        this.setData({ parentProfile: previousProfile });
+        persistParentProfile(previousProfile);
+        wx.showToast({ title: error.error || "头像同步失败", icon: "none" });
+      });
   },
   onNicknameInput(event: { detail: { value: string } }) {
     const parentProfile = buildParentProfile({
@@ -236,6 +287,27 @@ Page({
   },
   saveParentProfile() {
     persistParentProfile(this.data.parentProfile);
+
+    if (!this.data.isLoggedIn) {
+      return;
+    }
+
+    void patchJson<{
+      profile: {
+        displayName: string;
+        avatarUrl: string;
+      };
+    }>("/api/me/profile", {
+      displayName: this.data.parentProfile.nickname
+    })
+      .then((response) => {
+        const parentProfile = normalizeParentProfile(response.profile);
+        this.setData({ parentProfile });
+        persistParentProfile(parentProfile);
+      })
+      .catch((error) => {
+        wx.showToast({ title: error.error || "昵称同步失败", icon: "none" });
+      });
   },
   toggleReminder(event: { currentTarget: { dataset: { type: string } }; detail: { value: boolean } }) {
     const reminderType = event.currentTarget.dataset.type;

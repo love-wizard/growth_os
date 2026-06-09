@@ -16,6 +16,7 @@ declare const wx: {
     url: string;
     filePath: string;
     name: string;
+    formData?: Record<string, string>;
     timeout?: number;
     header?: Record<string, string>;
     success?: (response: { statusCode?: number; data?: unknown }) => void;
