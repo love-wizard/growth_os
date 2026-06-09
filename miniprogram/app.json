@@ -1,5 +1,6 @@
 {
   "pages": [
+    "pages/index/index",
     "pages/home/index",
     "pages/weekly-plan/index",
     "pages/archive/index",
