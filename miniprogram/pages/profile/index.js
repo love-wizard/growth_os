@@ -4,6 +4,7 @@ const {
   loginWithWeChat,
   logoutMiniProgram
 } = require("../../services/session");
+const { getJson } = require("../../services/api");
 
 const parentProfileStorageKey = "growth_os_parent_profile";
 
@@ -27,15 +28,33 @@ function persistParentProfile(profile) {
   });
 }
 
+function calculateAge(birthDate) {
+  if (!birthDate) {
+    return "";
+  }
+
+  const birth = new Date(`${birthDate}T00:00:00Z`);
+  const now = new Date();
+  let age = now.getUTCFullYear() - birth.getUTCFullYear();
+  const monthDelta = now.getUTCMonth() - birth.getUTCMonth();
+  if (monthDelta < 0 || (monthDelta === 0 && now.getUTCDate() < birth.getUTCDate())) {
+    age -= 1;
+  }
+
+  return `${Math.max(age, 0)}岁`;
+}
+
 Page({
   data: {
     isLoggedIn: false,
     loginStatus: "微信身份还未绑定",
+    profileStatus: "",
+    setupRequired: false,
     parentProfile: buildParentProfile(),
     child: {
-      nickname: "小钟",
-      age: "5岁",
-      goals: ["阅读习惯", "英语启蒙", "保持钢琴兴趣"]
+      nickname: "还未创建孩子档案",
+      age: "",
+      goals: []
     },
     reminders: [
       { title: "晚上陪伴提醒", enabled: true },
@@ -50,6 +69,42 @@ Page({
       loginStatus: isLoggedIn ? "微信身份已绑定" : "微信身份还未绑定",
       parentProfile: loadParentProfile()
     });
+    if (isLoggedIn) {
+      this.loadFamilyProfile();
+    }
+  },
+  loadFamilyProfile() {
+    this.setData({ profileStatus: "", setupRequired: false });
+    getJson("/api/dashboard")
+      .then((dashboard) => {
+        this.setData({
+          child: {
+            nickname: dashboard.child ? dashboard.child.nickname : "还未创建孩子档案",
+            age: dashboard.child ? calculateAge(dashboard.child.birth_date) : "",
+            goals: (dashboard.annualGoals || []).map((goal) => goal.title)
+          },
+          setupRequired: !dashboard.child,
+          profileStatus: ""
+        });
+      })
+      .catch((error) => {
+        if (error.statusCode === 409) {
+          this.setData({
+            setupRequired: true,
+            profileStatus: "还没有创建家庭成长系统",
+            child: {
+              nickname: "还未创建孩子档案",
+              age: "",
+              goals: []
+            }
+          });
+          return;
+        }
+
+        this.setData({
+          profileStatus: error.error || "家庭资料加载失败"
+        });
+      });
   },
   login() {
     wx.showToast({ title: "正在登录", icon: "loading" });
@@ -74,6 +129,7 @@ Page({
         loginStatus: "微信身份已绑定",
         parentProfile: loadParentProfile()
       });
+      this.loadFamilyProfile();
       wx.showToast({ title: "已登录", icon: "success" });
     }).catch((error) => {
       console.warn("GrowthOS mini program login unexpected error", error);
@@ -88,7 +144,14 @@ Page({
     logoutMiniProgram();
     this.setData({
       isLoggedIn: false,
-      loginStatus: "微信身份还未绑定"
+      loginStatus: "微信身份还未绑定",
+      setupRequired: false,
+      profileStatus: "",
+      child: {
+        nickname: "还未创建孩子档案",
+        age: "",
+        goals: []
+      }
     });
   },
   onChooseAvatar(event) {

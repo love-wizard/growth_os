@@ -35,10 +35,12 @@
 
   <view class="section card primary-card">
     <view class="title">{{child.nickname}}</view>
-    <view class="muted">{{child.age}}，当前重点是轻量陪伴和习惯建立。</view>
+    <view wx:if="{{child.age}}" class="muted">{{child.age}}，当前重点是轻量陪伴和习惯建立。</view>
+    <view wx:if="{{profileStatus}}" class="muted">{{profileStatus}}</view>
     <view class="chip-row">
       <view class="chip chip-active" wx:for="{{child.goals}}" wx:key="*this">{{item}}</view>
     </view>
+    <button wx:if="{{setupRequired}}" class="button-secondary section" bindtap="openSetup">去创建成长系统</button>
   </view>
 
   <view class="section card">
