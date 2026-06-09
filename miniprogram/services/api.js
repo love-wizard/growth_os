@@ -14,6 +14,20 @@ function getAuthHeader() {
   };
 }
 
+function parseUploadResponse(response) {
+  let data = response.data;
+
+  if (typeof data === "string") {
+    try {
+      data = JSON.parse(data);
+    } catch {
+      data = { error: "Upload failed" };
+    }
+  }
+
+  return data;
+}
+
 function requestJson(method, path, data) {
   return new Promise((resolve, reject) => {
     wx.request({
@@ -53,6 +67,31 @@ function getJson(path) {
   return requestJson("GET", path);
 }
 
+function uploadFile(path, filePath, name) {
+  return new Promise((resolve, reject) => {
+    wx.uploadFile({
+      url: `${apiBaseUrl}${path}`,
+      filePath,
+      name: name || "file",
+      timeout: 20000,
+      header: getAuthHeader(),
+      success(response) {
+        const data = parseUploadResponse(response);
+        if (response.statusCode && response.statusCode >= 400) {
+          reject({
+            statusCode: response.statusCode,
+            data,
+            error: data && data.error ? data.error : "Upload failed"
+          });
+          return;
+        }
+        resolve(data);
+      },
+      fail: reject
+    });
+  });
+}
+
 function getSession() {
   return wx.getStorageSync(sessionStorageKey);
 }
@@ -71,5 +110,6 @@ module.exports = {
   getSession,
   patchJson,
   postJson,
-  setSession
+  setSession,
+  uploadFile
 };

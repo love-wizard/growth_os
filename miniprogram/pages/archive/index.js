@@ -1,5 +1,5 @@
 /* global Page, wx */
-const { getJson, postJson } = require("../../services/api");
+const { getJson, postJson, uploadFile } = require("../../services/api");
 
 function todayString() {
   return new Date().toISOString().slice(0, 10);
@@ -12,7 +12,10 @@ function formatRecord(record) {
     date: record.happened_on,
     title: tags[0],
     text: record.text,
-    tags
+    tags,
+    photoUrls: (record.growth_record_media || [])
+      .filter((media) => media.media_type === "photo" && media.signed_url)
+      .map((media) => media.signed_url)
   };
 }
 
@@ -23,6 +26,8 @@ Page({
     errorMessage: "",
     recordText: "",
     recordTags: "成长瞬间",
+    selectedPhotoName: "",
+    selectedPhotoPath: "",
     records: []
   },
   onShow() {
@@ -51,6 +56,31 @@ Page({
   onRecordTagsInput(event) {
     this.setData({ recordTags: event.detail.value });
   },
+  choosePhoto() {
+    wx.chooseImage({
+      count: 1,
+      sizeType: ["compressed"],
+      sourceType: ["album", "camera"],
+      success: (response) => {
+        const path = response.tempFilePaths && response.tempFilePaths[0];
+        if (!path) {
+          return;
+        }
+
+        const tempFile = response.tempFiles && response.tempFiles[0];
+        this.setData({
+          selectedPhotoName: path.split("/").pop() || "成长照片.jpg",
+          selectedPhotoPath: tempFile && tempFile.path ? tempFile.path : path
+        });
+      }
+    });
+  },
+  clearPhoto() {
+    this.setData({
+      selectedPhotoName: "",
+      selectedPhotoPath: ""
+    });
+  },
   addRecord() {
     const text = this.data.recordText.trim();
     if (!text) {
@@ -69,11 +99,24 @@ Page({
       text,
       tags: tags.length ? tags : ["成长瞬间"]
     })
+      .then((response) => {
+        if (!this.data.selectedPhotoPath || !response.record || !response.record.id) {
+          return response;
+        }
+
+        return uploadFile(
+          `/api/growth-records/${response.record.id}/media`,
+          this.data.selectedPhotoPath,
+          "file"
+        );
+      })
       .then(() => {
         wx.showToast({ title: "已记录", icon: "success" });
         this.setData({
           recordText: "",
-          recordTags: "成长瞬间"
+          recordTags: "成长瞬间",
+          selectedPhotoName: "",
+          selectedPhotoPath: ""
         });
         this.loadRecords();
       })

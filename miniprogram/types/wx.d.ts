@@ -12,6 +12,25 @@ declare const wx: {
     success?: (response: { statusCode?: number; data?: unknown }) => void;
     fail?: (error: unknown) => void;
   }): void;
+  uploadFile(options: {
+    url: string;
+    filePath: string;
+    name: string;
+    timeout?: number;
+    header?: Record<string, string>;
+    success?: (response: { statusCode?: number; data?: unknown }) => void;
+    fail?: (error: unknown) => void;
+  }): void;
+  chooseImage(options: {
+    count?: number;
+    sizeType?: Array<"original" | "compressed">;
+    sourceType?: Array<"album" | "camera">;
+    success?: (response: {
+      tempFilePaths: string[];
+      tempFiles?: Array<{ path: string; size: number }>;
+    }) => void;
+    fail?: (error: { errMsg?: string }) => void;
+  }): void;
   switchTab(options: { url: string }): void;
   navigateTo(options: { url: string }): void;
   showToast(options: { title: string; icon?: "success" | "error" | "loading" | "none" }): void;

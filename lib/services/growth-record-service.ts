@@ -4,11 +4,17 @@ import { recordGrowthRecordCreated } from "@/lib/metrics/growth-record-events";
 import { getFamilyChildId } from "@/lib/repositories/weekly-plan-repo";
 import {
   createGrowthRecord,
+  createGrowthRecordMedia,
   getGrowthRecordForFamily,
   listRecentGrowthRecords,
   restoreGrowthRecord,
   softDeleteGrowthRecord
 } from "@/lib/repositories/growth-record-repo";
+import {
+  buildGrowthMediaStoragePath,
+  createGrowthMediaSignedReadUrl,
+  growthRecordBucket
+} from "@/lib/services/storage-service";
 import type { z } from "zod";
 import { growthRecordInputSchema } from "@/lib/validation/schemas";
 
@@ -23,6 +29,7 @@ export type GrowthRecordRequest = z.infer<typeof growthRecordInputSchema>;
 
 export async function listGrowthRecordsForFamily(
   supabase: SupabaseClient,
+  storageSupabase: SupabaseClient,
   input: { familyId: UUID }
 ) {
   const childId = await getFamilyChildId(supabase, input.familyId);
@@ -31,7 +38,26 @@ export async function listGrowthRecordsForFamily(
     return [];
   }
 
-  return listRecentGrowthRecords(supabase, childId);
+  const records = await listRecentGrowthRecords(supabase, childId);
+
+  return Promise.all(
+    records.map(async (record) => ({
+      ...record,
+      growth_record_media: await Promise.all(
+        (record.growth_record_media ?? []).map(async (media) => {
+          const signed = await createGrowthMediaSignedReadUrl(
+            storageSupabase,
+            media.storage_path
+          );
+
+          return {
+            ...media,
+            signed_url: signed.signedUrl
+          };
+        })
+      )
+    }))
+  );
 }
 
 export async function saveGrowthRecord(
@@ -95,6 +121,56 @@ export async function restoreGrowthRecordForFamily(
   }
 
   await restoreGrowthRecord(supabase, input.recordId);
+}
+
+export async function attachGrowthRecordPhotoForFamily(
+  supabase: SupabaseClient,
+  storageSupabase: SupabaseClient,
+  input: { familyId: UUID; recordId: UUID; file: File }
+) {
+  const record = await getGrowthRecordForFamily(supabase, {
+    familyId: input.familyId,
+    recordId: input.recordId
+  });
+
+  if (!record) {
+    throw new GrowthRecordError("Growth record was not found");
+  }
+
+  const fileName = input.file.name || `photo-${Date.now()}.jpg`;
+  const storagePath = buildGrowthMediaStoragePath({
+    familyId: input.familyId,
+    childId: record.child_id,
+    recordId: input.recordId,
+    fileName
+  });
+
+  const { error } = await storageSupabase.storage
+    .from(growthRecordBucket)
+    .upload(storagePath, await input.file.arrayBuffer(), {
+      contentType: input.file.type || "image/jpeg",
+      upsert: false
+    });
+
+  if (error) {
+    throw error;
+  }
+
+  const media = await createGrowthRecordMedia(storageSupabase, {
+    growthRecordId: input.recordId,
+    storagePath,
+    mediaType: "photo",
+    fileName,
+    mimeType: input.file.type || "image/jpeg",
+    sizeBytes: input.file.size
+  });
+
+  const signed = await createGrowthMediaSignedReadUrl(storageSupabase, storagePath);
+
+  return {
+    ...media,
+    signed_url: signed.signedUrl
+  };
 }
 
 export function buildRestoreWindow(referenceDate: Date) {

@@ -66,7 +66,7 @@ export async function createGrowthRecordMedia(
       mime_type: input.mimeType,
       size_bytes: input.sizeBytes
     })
-    .select("id,storage_path,media_type,file_name")
+    .select("id,storage_path,media_type,file_name,mime_type,size_bytes")
     .single();
 
   if (error) {
@@ -74,6 +74,15 @@ export async function createGrowthRecordMedia(
   }
 
   return data;
+}
+
+export interface GrowthRecordMedia {
+  id: UUID;
+  storage_path: string;
+  media_type: GrowthRecordMediaType;
+  file_name: string;
+  mime_type: string;
+  size_bytes: number;
 }
 
 export async function getGrowthRecordForFamily(
@@ -99,7 +108,9 @@ export async function getGrowthRecordForFamily(
 export async function listRecentGrowthRecords(supabase: SupabaseClient, childId: UUID) {
   const { data, error } = await supabase
     .from("growth_records")
-    .select("id,happened_on,text,tags,parent_notes,draft_status")
+    .select(
+      "id,happened_on,text,tags,parent_notes,draft_status,growth_record_media(id,storage_path,media_type,file_name,mime_type,size_bytes)"
+    )
     .eq("child_id", childId)
     .is("deleted_at", null)
     .order("happened_on", { ascending: false })
@@ -153,4 +164,5 @@ export interface GrowthRecord {
   draft_status: GrowthRecordDraftStatus | null;
   deleted_at: string | null;
   restore_until: string | null;
+  growth_record_media?: GrowthRecordMedia[];
 }

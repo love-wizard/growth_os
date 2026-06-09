@@ -10,6 +10,11 @@ type RequestResponse = {
   data?: unknown;
 };
 
+type UploadResponse = {
+  statusCode?: number;
+  data?: unknown;
+};
+
 function getAuthHeader() {
   const session = wx.getStorageSync(sessionStorageKey) as GrowthOSSession | undefined;
 
@@ -50,6 +55,18 @@ function requestJson<T = unknown>(method: string, path: string, data?: unknown) 
   });
 }
 
+function parseUploadResponse<T>(response: UploadResponse) {
+  if (typeof response.data === "string") {
+    try {
+      return JSON.parse(response.data) as T;
+    } catch {
+      return { error: "Upload failed" } as T;
+    }
+  }
+
+  return response.data as T;
+}
+
 export function postJson<T = unknown>(path: string, data: unknown) {
   return requestJson<T>("POST", path, data);
 }
@@ -60,6 +77,35 @@ export function patchJson<T = unknown>(path: string, data: unknown) {
 
 export function getJson<T = unknown>(path: string) {
   return requestJson<T>("GET", path);
+}
+
+export function uploadFile<T = unknown>(path: string, filePath: string, name = "file") {
+  return new Promise<T>((resolve, reject) => {
+    wx.uploadFile({
+      url: `${apiBaseUrl}${path}`,
+      filePath,
+      name,
+      timeout: 20000,
+      header: getAuthHeader(),
+      success: (response: UploadResponse) => {
+        const data = parseUploadResponse<T & { error?: string }>(response);
+        if (response.statusCode && response.statusCode >= 400) {
+          reject({
+            statusCode: response.statusCode,
+            data,
+            error:
+              typeof data === "object" && data && "error" in data
+                ? data.error
+                : "Upload failed"
+          });
+          return;
+        }
+
+        resolve(data as T);
+      },
+      fail: reject
+    });
+  });
 }
 
 export function getSession() {

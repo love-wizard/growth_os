@@ -9,10 +9,20 @@
   <view class="section card warm-card stack">
     <view>
       <view class="title">今天有什么值得记下？</view>
-      <view class="muted">一句话就可以，照片和视频以后再补也没关系。</view>
+      <view class="muted">一句话就可以，也可以顺手附上一张照片。</view>
     </view>
     <textarea class="input-box text-area" placeholder="例如：今天第一次主动练琴20分钟。" value="{{recordText}}" bindinput="onRecordTextInput" />
     <input class="input-box" placeholder="标签，用逗号分隔" value="{{recordTags}}" bindinput="onRecordTagsInput" />
+    <view class="stack">
+      <button class="button-secondary" bindtap="choosePhoto">选择一张照片</button>
+      <view wx:if="{{selectedPhotoPath}}" class="photo-preview-card">
+        <image class="photo-preview" src="{{selectedPhotoPath}}" mode="aspectFill" />
+        <view class="row">
+          <view class="muted">{{selectedPhotoName}}</view>
+          <button class="button-secondary compact-button" bindtap="clearPhoto">移除</button>
+        </view>
+      </view>
+    </view>
     <button class="button-primary" loading="{{isSubmitting}}" bindtap="addRecord">记录成长瞬间</button>
   </view>
 
@@ -28,6 +38,16 @@
       <view class="caption">{{item.date}}</view>
       <view class="task-title">{{item.title}}</view>
       <view class="muted">{{item.text}}</view>
+      <view wx:if="{{item.photoUrls && item.photoUrls.length}}" class="timeline-photo-row">
+        <image
+          class="timeline-photo"
+          wx:for="{{item.photoUrls}}"
+          wx:for-item="photoUrl"
+          wx:key="photoUrl"
+          src="{{photoUrl}}"
+          mode="aspectFill"
+        />
+      </view>
       <view class="chip-row">
         <view class="chip" wx:for="{{item.tags}}" wx:for-item="tag" wx:key="tag">{{tag}}</view>
       </view>

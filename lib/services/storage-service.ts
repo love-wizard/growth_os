@@ -1,7 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { GrowthRecordMediaType, UUID } from "@/lib/domain/types";
 
-const growthRecordBucket = "growth-media";
+export const growthRecordBucket = "growth-media";
 
 export function buildGrowthMediaStoragePath(input: {
   familyId: UUID;
@@ -28,6 +28,22 @@ export async function createGrowthMediaUploadUrl(
   const { data, error } = await supabase.storage
     .from(growthRecordBucket)
     .createSignedUploadUrl(storagePath);
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+}
+
+export async function createGrowthMediaSignedReadUrl(
+  supabase: SupabaseClient,
+  storagePath: string,
+  expiresInSeconds = 3600
+) {
+  const { data, error } = await supabase.storage
+    .from(growthRecordBucket)
+    .createSignedUrl(storagePath, expiresInSeconds);
 
   if (error) {
     throw error;

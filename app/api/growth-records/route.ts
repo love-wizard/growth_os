@@ -6,11 +6,12 @@ import {
   listGrowthRecordsForFamily,
   saveGrowthRecord
 } from "@/lib/services/growth-record-service";
-import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { createServerSupabaseClient, createServiceRoleSupabaseClient } from "@/lib/supabase/server";
 import { growthRecordInputSchema } from "@/lib/validation/schemas";
 
 export async function GET() {
   const supabase = await createServerSupabaseClient();
+  const serviceRoleSupabase = createServiceRoleSupabaseClient();
 
   try {
     const user = await requireAuthenticatedUser(supabase);
@@ -20,7 +21,7 @@ export async function GET() {
       return NextResponse.json({ error: "Family workspace is required" }, { status: 409 });
     }
 
-    const records = await listGrowthRecordsForFamily(supabase, {
+    const records = await listGrowthRecordsForFamily(supabase, serviceRoleSupabase, {
       familyId: membership.family_id
     });
 

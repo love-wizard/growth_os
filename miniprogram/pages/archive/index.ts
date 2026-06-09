@@ -1,4 +1,4 @@
-import { getJson, postJson } from "../../services/api";
+import { getJson, postJson, uploadFile } from "../../services/api";
 
 function todayString() {
   return new Date().toISOString().slice(0, 10);
@@ -9,6 +9,10 @@ function formatRecord(record: {
   happened_on: string;
   text: string;
   tags?: string[];
+  growth_record_media?: Array<{
+    media_type: string;
+    signed_url?: string;
+  }>;
 }) {
   const tags = record.tags && record.tags.length ? record.tags : ["成长瞬间"];
   return {
@@ -16,7 +20,10 @@ function formatRecord(record: {
     date: record.happened_on,
     title: tags[0],
     text: record.text,
-    tags
+    tags,
+    photoUrls: (record.growth_record_media || [])
+      .filter((media) => media.media_type === "photo" && media.signed_url)
+      .map((media) => media.signed_url as string)
   };
 }
 
@@ -27,6 +34,8 @@ Page({
     errorMessage: "",
     recordText: "",
     recordTags: "成长瞬间",
+    selectedPhotoName: "",
+    selectedPhotoPath: "",
     records: []
   },
   onShow() {
@@ -40,6 +49,10 @@ Page({
         happened_on: string;
         text: string;
         tags?: string[];
+        growth_record_media?: Array<{
+          media_type: string;
+          signed_url?: string;
+        }>;
       }>;
     }>("/api/growth-records")
       .then((response) => {
@@ -62,6 +75,30 @@ Page({
   onRecordTagsInput(event: { detail: { value: string } }) {
     this.setData({ recordTags: event.detail.value });
   },
+  choosePhoto() {
+    wx.chooseImage({
+      count: 1,
+      sizeType: ["compressed"],
+      sourceType: ["album", "camera"],
+      success: (response) => {
+        const path = response.tempFilePaths?.[0];
+        if (!path) {
+          return;
+        }
+
+        this.setData({
+          selectedPhotoName: path.split("/").pop() || "成长照片.jpg",
+          selectedPhotoPath: response.tempFiles?.[0]?.path || path
+        });
+      }
+    });
+  },
+  clearPhoto() {
+    this.setData({
+      selectedPhotoName: "",
+      selectedPhotoPath: ""
+    });
+  },
   addRecord() {
     const text = this.data.recordText.trim();
     if (!text) {
@@ -75,16 +112,29 @@ Page({
       .filter(Boolean);
 
     this.setData({ isSubmitting: true });
-    void postJson("/api/growth-records", {
+    void postJson<{
+      record?: {
+        id: string;
+      };
+    }>("/api/growth-records", {
       happenedOn: todayString(),
       text,
       tags: tags.length ? tags : ["成长瞬间"]
     })
+      .then((response) => {
+        if (!this.data.selectedPhotoPath || !response.record?.id) {
+          return response;
+        }
+
+        return uploadFile(`/api/growth-records/${response.record.id}/media`, this.data.selectedPhotoPath);
+      })
       .then(() => {
         wx.showToast({ title: "已记录", icon: "success" });
         this.setData({
           recordText: "",
-          recordTags: "成长瞬间"
+          recordTags: "成长瞬间",
+          selectedPhotoName: "",
+          selectedPhotoPath: ""
         });
         this.loadRecords();
       })
