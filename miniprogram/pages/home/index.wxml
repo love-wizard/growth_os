@@ -1,0 +1,53 @@
+<view class="page">
+  <view>
+    <view class="caption">今天的陪伴</view>
+    <view class="page-title">{{childNickname}}今天可以这样开始</view>
+  </view>
+
+  <view class="section card primary-card stack">
+    <view>
+      <view class="title">{{todayAction.title}}</view>
+      <view class="subtitle">{{todayAction.context}}</view>
+    </view>
+    <view class="chip-row">
+      <view class="chip chip-active">{{todayAction.minutes}}</view>
+      <view class="chip">亲子共读</view>
+      <view class="chip">低压力</view>
+    </view>
+    <view class="muted">{{todayAction.why}}</view>
+    <view class="row">
+      <button class="button-primary" bindtap="startAction">开始陪伴</button>
+      <button class="button-secondary" bindtap="openCoach">问AI教练</button>
+    </view>
+  </view>
+
+  <view class="section card">
+    <view class="row">
+      <view>
+        <view class="title">本周主题</view>
+        <view class="muted">《建立阅读习惯》</view>
+      </view>
+      <view class="progress-pill">3件小事</view>
+    </view>
+  </view>
+
+  <view class="section card">
+    <view class="title">今天可推进</view>
+    <view class="task-row" wx:for="{{tasks}}" wx:key="title">
+      <view class="role-badge {{item.roleClass}}">{{item.role}}</view>
+      <view class="task-main">
+        <view class="task-title">{{item.title}}</view>
+        <view class="caption">慢慢来，不需要补任务</view>
+      </view>
+      <view class="progress-pill">{{item.progress}}</view>
+    </view>
+  </view>
+
+  <view class="section card warm-card stack">
+    <view>
+      <view class="title">刚完成一件小事？</view>
+      <view class="muted">顺手记下这个成长瞬间，文字就够了。</view>
+    </view>
+    <button class="button-secondary" bindtap="openArchive">记录成长瞬间</button>
+  </view>
+</view>

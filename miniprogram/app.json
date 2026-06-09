@@ -1,12 +1,46 @@
 {
   "pages": [
+    "pages/home/index",
+    "pages/weekly-plan/index",
+    "pages/archive/index",
+    "pages/ai-coach/index",
+    "pages/profile/index",
     "pages/first-guidance/index",
     "pages/invite/index",
     "pages/record-preview/index"
   ],
   "window": {
     "navigationBarTitleText": "小钟成长 OS",
-    "navigationBarBackgroundColor": "#ffffff",
-    "navigationBarTextStyle": "black"
+    "navigationBarBackgroundColor": "#F8F6F2",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#F8F6F2"
+  },
+  "tabBar": {
+    "color": "#9B9185",
+    "selectedColor": "#3F8F6B",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/home/index",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/weekly-plan/index",
+        "text": "周计划"
+      },
+      {
+        "pagePath": "pages/archive/index",
+        "text": "成长档案"
+      },
+      {
+        "pagePath": "pages/ai-coach/index",
+        "text": "AI教练"
+      },
+      {
+        "pagePath": "pages/profile/index",
+        "text": "我的"
+      }
+    ]
   }
 }

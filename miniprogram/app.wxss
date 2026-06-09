@@ -1,27 +1,226 @@
 page {
-  background: #faf8f3;
-  color: #1f2933;
+  background: #f8f6f2;
+  color: #25211c;
   font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+  font-size: 30rpx;
 }
 
 .page {
-  padding: 32rpx;
+  box-sizing: border-box;
+  min-height: 100vh;
+  padding: 32rpx 32rpx 56rpx;
 }
 
 .card {
   background: #ffffff;
-  border: 1rpx solid #ebe7df;
+  border: 1rpx solid #e7e0d7;
   border-radius: 16rpx;
-  padding: 28rpx;
+  box-sizing: border-box;
+  padding: 32rpx;
+}
+
+.section {
+  margin-top: 32rpx;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
+}
+
+.row {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.page-title {
+  color: #25211c;
+  font-size: 48rpx;
+  font-weight: 600;
+  line-height: 64rpx;
 }
 
 .title {
-  font-size: 40rpx;
+  color: #25211c;
+  font-size: 34rpx;
   font-weight: 600;
+  line-height: 48rpx;
+}
+
+.subtitle {
+  color: #6e665c;
+  font-size: 30rpx;
+  line-height: 48rpx;
+  margin-top: 8rpx;
 }
 
 .muted {
-  color: #6b7280;
-  font-size: 28rpx;
-  line-height: 1.6;
+  color: #6e665c;
+  font-size: 26rpx;
+  line-height: 40rpx;
+}
+
+.caption {
+  color: #9b9185;
+  font-size: 24rpx;
+  line-height: 36rpx;
+}
+
+.primary-card {
+  background: #e4f3ec;
+  border-color: #c9e3d6;
+}
+
+.warm-card {
+  background: #fff0df;
+  border-color: #f3d9b8;
+}
+
+.blue-card {
+  background: #eaf2ff;
+  border-color: #d4e4fa;
+}
+
+.button-primary,
+.button-secondary {
+  align-items: center;
+  border-radius: 16rpx;
+  box-sizing: border-box;
+  display: flex;
+  font-size: 30rpx;
+  font-weight: 600;
+  height: 88rpx;
+  justify-content: center;
+  line-height: 88rpx;
+  margin: 0;
+}
+
+.button-primary {
+  background: #3f8f6b;
+  color: #ffffff;
+}
+
+.button-secondary {
+  background: #f1eee8;
+  color: #25211c;
+}
+
+.row > .button-primary,
+.row > .button-secondary {
+  flex: 1;
+}
+
+.row > .button-primary + .button-secondary,
+.row > .button-secondary + .button-primary {
+  margin-left: 20rpx;
+}
+
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+}
+
+.chip {
+  background: #f1eee8;
+  border-radius: 16rpx;
+  color: #6e665c;
+  font-size: 26rpx;
+  line-height: 40rpx;
+  padding: 12rpx 20rpx;
+}
+
+.chip-active {
+  background: #e4f3ec;
+  color: #3f8f6b;
+}
+
+.task-row {
+  align-items: center;
+  border-top: 1rpx solid #e7e0d7;
+  display: flex;
+  gap: 20rpx;
+  padding: 24rpx 0;
+}
+
+.task-row:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.role-badge {
+  border-radius: 14rpx;
+  flex: 0 0 auto;
+  font-size: 24rpx;
+  line-height: 36rpx;
+  padding: 8rpx 14rpx;
+}
+
+.role-father {
+  background: #eaf2ff;
+  color: #5d8ccb;
+}
+
+.role-mother {
+  background: #fff0df;
+  color: #b46f32;
+}
+
+.role-family {
+  background: #e4f3ec;
+  color: #3f8f6b;
+}
+
+.task-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.task-title {
+  color: #25211c;
+  font-size: 30rpx;
+  font-weight: 500;
+  line-height: 42rpx;
+}
+
+.progress-pill {
+  background: #f1eee8;
+  border-radius: 999rpx;
+  color: #6e665c;
+  flex: 0 0 auto;
+  font-size: 24rpx;
+  line-height: 36rpx;
+  padding: 8rpx 16rpx;
+}
+
+.timeline-item {
+  border-left: 4rpx solid #e7e0d7;
+  padding: 0 0 32rpx 24rpx;
+}
+
+.timeline-item:last-child {
+  padding-bottom: 0;
+}
+
+.input-box {
+  background: #ffffff;
+  border: 1rpx solid #e7e0d7;
+  border-radius: 16rpx;
+  box-sizing: border-box;
+  color: #25211c;
+  min-height: 88rpx;
+  padding: 20rpx 24rpx;
+}
+
+.note-box {
+  background: rgba(255, 255, 255, 0.58);
+  border: 1rpx solid #c9e3d6;
+  border-radius: 16rpx;
+  padding: 24rpx;
+}
+
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
 }

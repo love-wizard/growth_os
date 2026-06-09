@@ -1,0 +1,40 @@
+<view class="page">
+  <view>
+    <view class="caption">我的</view>
+    <view class="page-title">家庭成长空间</view>
+  </view>
+
+  <view class="section card primary-card">
+    <view class="title">{{child.nickname}}</view>
+    <view class="muted">{{child.age}}，当前重点是轻量陪伴和习惯建立。</view>
+    <view class="chip-row">
+      <view class="chip chip-active" wx:for="{{child.goals}}" wx:key="*this">{{item}}</view>
+    </view>
+  </view>
+
+  <view class="section card">
+    <view class="row">
+      <view>
+        <view class="title">家庭成员</view>
+        <view class="muted">邀请另一位家长一起维护成长空间。</view>
+      </view>
+    </view>
+    <button class="button-secondary" bindtap="openInvite">邀请另一位家长</button>
+  </view>
+
+  <view class="section card">
+    <view class="title">温和提醒</view>
+    <view class="task-row" wx:for="{{reminders}}" wx:key="title">
+      <view class="task-main">
+        <view class="task-title">{{item.title}}</view>
+        <view class="caption">只提醒陪伴，不提醒失败</view>
+      </view>
+      <view class="progress-pill">{{item.enabled ? '已开启' : '未开启'}}</view>
+    </view>
+  </view>
+
+  <view class="section card">
+    <view class="title">隐私</view>
+    <view class="muted">成长记录默认仅家庭可见。分享卡片不公开照片和视频。</view>
+  </view>
+</view>

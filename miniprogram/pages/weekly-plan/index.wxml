@@ -1,0 +1,48 @@
+<view class="page">
+  <view>
+    <view class="caption">本周计划</view>
+    <view class="page-title">《{{theme}}》</view>
+    <view class="subtitle">轻量安排，用来支持陪伴，不用追求完美完成。</view>
+  </view>
+
+  <view class="section card blue-card">
+    <view class="title">周末活动</view>
+    <view class="muted">选择一个公园或小区角落，和孩子一起找三种不同形状的叶子。</view>
+  </view>
+
+  <view class="section card">
+    <view class="title">爸爸任务</view>
+    <view class="task-row" wx:for="{{fatherTasks}}" wx:key="title">
+      <view class="role-badge role-father">爸爸</view>
+      <view class="task-main">
+        <view class="task-title">{{item.title}}</view>
+        <view class="caption">{{item.note}}</view>
+      </view>
+      <button class="progress-pill" data-title="{{item.title}}" bindtap="completeTask">{{item.progress}}</button>
+    </view>
+  </view>
+
+  <view class="section card">
+    <view class="title">妈妈任务</view>
+    <view class="task-row" wx:for="{{motherTasks}}" wx:key="title">
+      <view class="role-badge role-mother">妈妈</view>
+      <view class="task-main">
+        <view class="task-title">{{item.title}}</view>
+        <view class="caption">{{item.note}}</view>
+      </view>
+      <button class="progress-pill" data-title="{{item.title}}" bindtap="completeTask">{{item.progress}}</button>
+    </view>
+  </view>
+
+  <view class="section card">
+    <view class="title">家庭任务</view>
+    <view class="task-row" wx:for="{{familyTasks}}" wx:key="title">
+      <view class="role-badge role-family">家庭</view>
+      <view class="task-main">
+        <view class="task-title">{{item.title}}</view>
+        <view class="caption">{{item.note}}</view>
+      </view>
+      <button class="progress-pill" data-title="{{item.title}}" bindtap="completeTask">{{item.progress}}</button>
+    </view>
+  </view>
+</view>

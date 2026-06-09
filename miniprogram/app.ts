@@ -1,5 +1,5 @@
 App({
   globalData: {
-    apiBaseUrl: "https://growth-os.example.com"
+    apiBaseUrl: "http://growth.familylove.space"
   }
 });

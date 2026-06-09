@@ -1,0 +1,39 @@
+<view class="page">
+  <view>
+    <view class="caption">AI成长教练</view>
+    <view class="page-title">结合孩子情况，给一个可执行建议</view>
+  </view>
+
+  <view class="section card">
+    <view class="title">快捷问题</view>
+    <view class="chip-row">
+      <view
+        class="chip {{selectedPrompt === item ? 'chip-active' : ''}}"
+        data-prompt="{{item}}"
+        bindtap="selectPrompt"
+        wx:for="{{prompts}}"
+        wx:key="*this"
+      >
+        {{item}}
+      </view>
+    </view>
+  </view>
+
+  <view class="section card primary-card stack">
+    <view>
+      <view class="caption">基于：小钟 / 5岁 / 本周阅读主题</view>
+      <view class="title">{{answer.title}}</view>
+    </view>
+    <view class="muted">{{answer.text}}</view>
+    <view class="note-box">
+      <view class="caption">温和备选</view>
+      <view class="muted">{{answer.fallback}}</view>
+    </view>
+    <button class="button-primary" bindtap="askCoach">生成新的建议</button>
+  </view>
+
+  <view class="section card">
+    <view class="title">自由提问</view>
+    <input class="input-box" placeholder="请输入育儿问题" />
+  </view>
+</view>

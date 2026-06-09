@@ -1,0 +1,28 @@
+<view class="page">
+  <view class="row">
+    <view>
+      <view class="caption">成长档案</view>
+      <view class="page-title">记录真实发生的小瞬间</view>
+    </view>
+  </view>
+
+  <view class="section card warm-card stack">
+    <view>
+      <view class="title">今天有什么值得记下？</view>
+      <view class="muted">一句话就可以，照片和视频以后再补也没关系。</view>
+    </view>
+    <button class="button-primary" bindtap="addRecord">记录成长瞬间</button>
+  </view>
+
+  <view class="section card">
+    <view class="title">六月</view>
+    <view class="timeline-item" wx:for="{{records}}" wx:key="date">
+      <view class="caption">{{item.date}}</view>
+      <view class="task-title">{{item.title}}</view>
+      <view class="muted">{{item.text}}</view>
+      <view class="chip-row">
+        <view class="chip" wx:for="{{item.tags}}" wx:for-item="tag" wx:key="tag">{{tag}}</view>
+      </view>
+    </view>
+  </view>
+</view>

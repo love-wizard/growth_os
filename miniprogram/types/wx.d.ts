@@ -7,6 +7,9 @@ declare const wx: {
     success?: (response: unknown) => void;
     fail?: (error: unknown) => void;
   }): void;
+  switchTab(options: { url: string }): void;
+  navigateTo(options: { url: string }): void;
+  showToast(options: { title: string; icon?: "success" | "error" | "loading" | "none" }): void;
 };
 
 declare function App(options: any): void;
