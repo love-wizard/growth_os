@@ -4,6 +4,8 @@ type WeChatLoginResponse = {
   accessToken?: string;
   isNewUser?: boolean;
   requiresBackend?: boolean;
+  errorStage?: "wx.login" | "api.wechat.login";
+  errorMessage?: string;
 };
 
 export function hasMiniProgramSession() {
@@ -15,11 +17,15 @@ export function logoutMiniProgram() {
 }
 
 export function loginWithWeChat() {
-  return new Promise<WeChatLoginResponse>((resolve, reject) => {
+  return new Promise<WeChatLoginResponse>((resolve) => {
     wx.login({
       success: ({ code }) => {
         if (!code) {
-          reject(new Error("WeChat login code is missing"));
+          resolve({
+            requiresBackend: true,
+            errorStage: "wx.login",
+            errorMessage: "WeChat login code is missing"
+          });
           return;
         }
 
@@ -30,11 +36,24 @@ export function loginWithWeChat() {
             }
             resolve(session);
           })
-          .catch(() => {
-            resolve({ requiresBackend: true });
+          .catch((error) => {
+            resolve({
+              requiresBackend: true,
+              errorStage: "api.wechat.login",
+              errorMessage:
+                error && typeof error === "object" && "error" in error
+                  ? String(error.error)
+                  : "Unable to login with backend"
+            });
           });
       },
-      fail: reject
+      fail: (error) => {
+        resolve({
+          requiresBackend: true,
+          errorStage: "wx.login",
+          errorMessage: error.errMsg || "wx.login failed"
+        });
+      }
     });
   });
 }

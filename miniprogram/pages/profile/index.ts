@@ -25,11 +25,16 @@ Page({
     wx.showToast({ title: "正在登录", icon: "loading" });
     void loginWithWeChat().then((result) => {
       if (result.requiresBackend) {
+        const status =
+          result.errorStage === "wx.login"
+            ? "微信登录超时，请检查开发者工具账号和网络"
+            : "微信登录已获取，后端登录失败";
         this.setData({
           isLoggedIn: false,
-          loginStatus: "已获取微信授权，后端登录接口待接入"
+          loginStatus: status
         });
-        wx.showToast({ title: "登录接口待接入", icon: "none" });
+        console.warn("GrowthOS mini program login failed", result);
+        wx.showToast({ title: "登录失败", icon: "none" });
         return;
       }
 
@@ -38,6 +43,13 @@ Page({
         loginStatus: "微信身份已绑定"
       });
       wx.showToast({ title: "已登录", icon: "success" });
+    }).catch((error) => {
+      console.warn("GrowthOS mini program login unexpected error", error);
+      this.setData({
+        isLoggedIn: false,
+        loginStatus: "登录失败，请稍后重试"
+      });
+      wx.showToast({ title: "登录失败", icon: "none" });
     });
   },
   logout() {

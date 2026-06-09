@@ -28,6 +28,7 @@ export function postJson<T = unknown>(path: string, data: unknown) {
       url: `${apiBaseUrl}${path}`,
       method: "POST",
       data,
+      timeout: 10000,
       header: {
         "content-type": "application/json",
         ...getAuthHeader()
@@ -49,6 +50,7 @@ export function getJson<T = unknown>(path: string) {
     wx.request({
       url: `${apiBaseUrl}${path}`,
       method: "GET",
+      timeout: 10000,
       header: {
         "content-type": "application/json",
         ...getAuthHeader()

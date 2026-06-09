@@ -11,11 +11,15 @@ function logoutMiniProgram() {
 }
 
 function loginWithWeChat() {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     wx.login({
       success({ code }) {
         if (!code) {
-          reject(new Error("WeChat login code is missing"));
+          resolve({
+            requiresBackend: true,
+            errorStage: "wx.login",
+            errorMessage: "WeChat login code is missing"
+          });
           return;
         }
 
@@ -26,11 +30,21 @@ function loginWithWeChat() {
             }
             resolve(session);
           })
-          .catch(() => {
-            resolve({ requiresBackend: true });
+          .catch((error) => {
+            resolve({
+              requiresBackend: true,
+              errorStage: "api.wechat.login",
+              errorMessage: error && error.error ? error.error : "Unable to login with backend"
+            });
           });
       },
-      fail: reject
+      fail(error) {
+        resolve({
+          requiresBackend: true,
+          errorStage: "wx.login",
+          errorMessage: error && error.errMsg ? error.errMsg : "wx.login failed"
+        });
+      }
     });
   });
 }

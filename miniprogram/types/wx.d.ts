@@ -1,12 +1,13 @@
 declare const wx: {
   login(options: {
     success?: (response: { code?: string; errMsg?: string }) => void;
-    fail?: (error: unknown) => void;
+    fail?: (error: { errMsg?: string }) => void;
   }): void;
   request(options: {
     url: string;
     method?: string;
     data?: unknown;
+    timeout?: number;
     header?: Record<string, string>;
     success?: (response: { statusCode?: number; data?: unknown }) => void;
     fail?: (error: unknown) => void;

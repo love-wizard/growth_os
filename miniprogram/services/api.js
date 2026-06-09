@@ -20,6 +20,7 @@ function requestJson(method, path, data) {
       url: `${apiBaseUrl}${path}`,
       method,
       data,
+      timeout: 10000,
       header: {
         "content-type": "application/json",
         ...getAuthHeader()
