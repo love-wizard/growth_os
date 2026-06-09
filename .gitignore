@@ -32,3 +32,6 @@ Thumbs.db
 *.swp
 .vscode/
 .idea/
+
+# WeChat DevTools local settings
+miniprogram/project.private.config.json
