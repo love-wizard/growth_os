@@ -6,6 +6,8 @@ If Growth OS v0.1 is piloted as a WeChat Mini Program, WeChat should be treated 
 
 > friction -> child-specific suggestion -> accepted action -> completed companionship -> lightweight record -> return -> payment-intent signal
 
+Page-level Mini Program UI and interaction rules are defined in `wechat-mini-program-design-spec.md`.
+
 ## Product Fit
 
 WeChat Mini Program is a strong fit for v0.1 because parents already use WeChat for:
@@ -184,4 +186,3 @@ WeChat is a distribution and engagement layer. It must not turn Growth OS into:
 - A training-institution lead-generation tool
 - A public child-performance display
 - A heavy expert-consulting service
-
