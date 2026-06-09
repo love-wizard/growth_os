@@ -30,6 +30,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: error.message }, { status: 409 });
     }
 
+    console.error("Unable to complete onboarding", error);
     return NextResponse.json({ error: "Unable to complete onboarding" }, { status: 500 });
   }
 }

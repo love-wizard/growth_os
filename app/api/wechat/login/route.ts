@@ -107,6 +107,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    console.error("Unable to login with WeChat", error);
     return NextResponse.json({ error: "Unable to login with WeChat" }, { status: 400 });
   }
 }

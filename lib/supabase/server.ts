@@ -22,7 +22,7 @@ export async function createServerSupabaseClient() {
       },
       global: {
         headers: {
-          authorization
+          Authorization: authorization
         }
       }
     });

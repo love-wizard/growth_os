@@ -22,6 +22,7 @@ export async function GET() {
       return NextResponse.json({ error: "Authentication is required" }, { status: 401 });
     }
 
+    console.error("Unable to load dashboard", error);
     return NextResponse.json({ error: "Unable to load dashboard" }, { status: 500 });
   }
 }
