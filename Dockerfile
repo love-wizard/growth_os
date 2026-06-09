@@ -4,7 +4,8 @@ FROM ${NODE_IMAGE} AS deps
 WORKDIR /app
 
 COPY package.json package-lock.json ./
-RUN npm ci
+RUN npm config set registry https://registry.npmmirror.com \
+  && npm ci
 
 FROM ${NODE_IMAGE} AS builder
 WORKDIR /app
