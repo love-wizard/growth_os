@@ -59,9 +59,10 @@ Page({
           result.errorStage === "wx.login"
             ? "微信登录超时，请检查开发者工具账号和网络"
             : "微信登录已获取，后端登录失败";
+        const detail = result.errorMessage ? `：${result.errorMessage}` : "";
         this.setData({
           isLoggedIn: false,
-          loginStatus: status
+          loginStatus: `${status}${detail}`
         });
         console.warn("GrowthOS mini program login failed", result);
         wx.showToast({ title: "登录失败", icon: "none" });
