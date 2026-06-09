@@ -2,7 +2,10 @@ import { NextResponse } from "next/server";
 import { requireAuthenticatedUser } from "@/lib/auth/family-access";
 import { recordWeChatMetricEvent } from "@/lib/metrics/wechat-events";
 import { acceptFamilyInvite } from "@/lib/services/invite-service";
-import { createServerSupabaseClient } from "@/lib/supabase/server";
+import {
+  createServerSupabaseClient,
+  createServiceRoleSupabaseClient
+} from "@/lib/supabase/server";
 
 export async function POST(
   _request: Request,
@@ -13,7 +16,7 @@ export async function POST(
   try {
     const user = await requireAuthenticatedUser(supabase);
     const { inviteId } = await params;
-    const membership = await acceptFamilyInvite(supabase, {
+    const membership = await acceptFamilyInvite(createServiceRoleSupabaseClient(), {
       inviteId,
       user
     });

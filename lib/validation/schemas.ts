@@ -128,7 +128,7 @@ export const wechatScenarioEntryRequestSchema = z.object({
 });
 
 export const wechatFamilyInviteRequestSchema = z.object({
-  familyId: uuid,
+  familyId: uuid.optional(),
   role: z.enum(parentRoles)
 });
 

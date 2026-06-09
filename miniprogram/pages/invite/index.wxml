@@ -1,7 +1,15 @@
 <view class="page">
-  <view class="card">
+  <view class="card stack">
     <view class="title">邀请另一位家长</view>
-    <view class="muted">共同维护一个家庭成长系统。</view>
-    <button bindtap="shareInvite">生成邀请卡</button>
+    <view class="muted">{{status}}</view>
+
+    <view wx:if="{{!inviteId}}" class="chip-row">
+      <view class="chip {{role === 'mother' ? 'chip-active' : ''}}" data-role="mother" bindtap="chooseRole">邀请妈妈</view>
+      <view class="chip {{role === 'father' ? 'chip-active' : ''}}" data-role="father" bindtap="chooseRole">邀请爸爸</view>
+    </view>
+
+    <button wx:if="{{!inviteId}}" class="button-primary" loading="{{isLoading}}" bindtap="shareInvite">生成邀请</button>
+    <button wx:if="{{inviteId}}" class="button-secondary" open-type="share">分享给另一位家长</button>
+    <button wx:if="{{inviteId}}" class="button-primary" loading="{{isLoading}}" bindtap="loginAndAccept">接受邀请并加入</button>
   </view>
 </view>

@@ -1,4 +1,5 @@
 import type { SupabaseClient, User } from "@supabase/supabase-js";
+import { randomUUID } from "node:crypto";
 import type { ParentRole, UUID } from "@/lib/domain/types";
 import { createAcceptedFamilyMember } from "@/lib/repositories/family-repo";
 
@@ -22,6 +23,18 @@ export async function createSecondParentInvite(
   }
 
   return data.id as UUID;
+}
+
+export async function createWeChatFamilyInvite(
+  supabase: SupabaseClient,
+  input: { familyId: UUID; role: ParentRole; invitedByUserId: UUID }
+) {
+  return createSecondParentInvite(supabase, {
+    familyId: input.familyId,
+    role: input.role,
+    invitedByUserId: input.invitedByUserId,
+    email: `wechat-invite-${randomUUID()}@familylove.space`
+  });
 }
 
 export async function acceptFamilyInvite(

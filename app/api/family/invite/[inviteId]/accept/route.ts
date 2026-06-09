@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
 import { requireAuthenticatedUser } from "@/lib/auth/family-access";
 import { acceptFamilyInvite } from "@/lib/services/invite-service";
-import { createServerSupabaseClient } from "@/lib/supabase/server";
+import {
+  createServerSupabaseClient,
+  createServiceRoleSupabaseClient
+} from "@/lib/supabase/server";
 
 export async function POST(
   _request: Request,
@@ -12,7 +15,7 @@ export async function POST(
 
   try {
     const user = await requireAuthenticatedUser(supabase);
-    const result = await acceptFamilyInvite(supabase, {
+    const result = await acceptFamilyInvite(createServiceRoleSupabaseClient(), {
       inviteId,
       user
     });
