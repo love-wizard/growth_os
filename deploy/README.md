@@ -25,11 +25,24 @@ LLM_BASE_URL=https://api.deepseek.com
 LLM_JSON_MODE=true
 ```
 
+## Bootstrap Server
+
+If the server does not already have a git checkout at `/opt/growth_os`, convert it once:
+
+```bash
+cd /opt
+mv growth_os growth_os.backup.$(date +%Y%m%d-%H%M%S)
+git clone git@github.com:love-wizard/growth_os.git growth_os
+cp growth_os.backup.*/.env.production growth_os/.env.production
+```
+
+The server SSH key must already be authorized for this private repository.
+
 ## Deploy
 
 ```bash
 cd /opt/growth_os
-docker compose --env-file /opt/growth_os/.env.production -f deploy/growthos.compose.yml up -d --build
+bash deploy/deploy.sh
 ```
 
 ## Nginx
