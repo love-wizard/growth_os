@@ -1,4 +1,4 @@
-const apiBaseUrl = "http://growth.familylove.space";
+const apiBaseUrl = "https://growth.familylove.space";
 const sessionStorageKey = "growth_os_session";
 
 type GrowthOSSession = {
