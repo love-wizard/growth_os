@@ -13,7 +13,7 @@ Create `.env.local`:
 
 ```bash
 NEXT_PUBLIC_SUPABASE_URL=
-NEXT_PUBLIC_SUPABASE_ANON_KEY=
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
 LLM_PROVIDER=deepseek
 LLM_API_KEY=
@@ -24,6 +24,7 @@ LLM_JSON_MODE=true
 
 Rules:
 
+- `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` is safe for browser Supabase clients.
 - `SUPABASE_SERVICE_ROLE_KEY` must only be used on the server.
 - AI route handlers must assemble context server-side.
 - Browser clients must rely on Supabase Auth and RLS.

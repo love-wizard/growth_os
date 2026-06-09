@@ -1,15 +1,17 @@
 export function getSupabasePublicEnv() {
   const publicUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const publicAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const publicKey =
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ??
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-  if (!publicUrl || !publicAnonKey) {
+  if (!publicUrl || !publicKey) {
     throw new Error(
-      "Missing NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY"
+      "Missing NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY"
     );
   }
 
   return {
     url: publicUrl,
-    anonKey: publicAnonKey
+    anonKey: publicKey
   };
 }

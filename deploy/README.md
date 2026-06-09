@@ -13,7 +13,7 @@ This deployment keeps the existing `familylove.space` service running and attach
 
 ```env
 NEXT_PUBLIC_SUPABASE_URL=
-NEXT_PUBLIC_SUPABASE_ANON_KEY=
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
 LLM_PROVIDER=deepseek
 LLM_API_KEY=
