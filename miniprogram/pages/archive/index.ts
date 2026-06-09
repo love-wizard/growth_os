@@ -34,9 +34,28 @@ Page({
     errorMessage: "",
     recordText: "",
     recordTags: "成长瞬间",
+    shareRecord: null as null | {
+      id: string;
+      title: string;
+      text: string;
+    },
     selectedPhotoName: "",
     selectedPhotoPath: "",
     records: []
+  },
+  onShareAppMessage() {
+    const shareRecord = this.data.shareRecord;
+    if (!shareRecord) {
+      return {
+        title: "看看这个成长瞬间",
+        path: "/pages/archive/index"
+      };
+    }
+
+    return {
+      title: `${shareRecord.title || "成长瞬间"} | ${shareRecord.text.slice(0, 20)}`,
+      path: `/pages/record-preview/index?recordId=${shareRecord.id}`
+    };
   },
   onShow() {
     this.loadRecords();
@@ -97,6 +116,29 @@ Page({
     this.setData({
       selectedPhotoName: "",
       selectedPhotoPath: ""
+    });
+  },
+  previewRecordPhoto(event: { currentTarget: { dataset: { current?: string; urls?: string[] } } }) {
+    const current = event.currentTarget.dataset.current;
+    const urls = event.currentTarget.dataset.urls || [];
+    if (!current || !urls.length) {
+      return;
+    }
+
+    wx.previewImage({
+      current,
+      urls
+    });
+  },
+  prepareShareRecord(event: {
+    currentTarget: { dataset: { id?: string; title?: string; text?: string } };
+  }) {
+    this.setData({
+      shareRecord: {
+        id: event.currentTarget.dataset.id || "",
+        title: event.currentTarget.dataset.title || "成长瞬间",
+        text: event.currentTarget.dataset.text || ""
+      }
     });
   },
   addRecord() {

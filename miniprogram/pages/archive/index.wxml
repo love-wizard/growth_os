@@ -46,10 +46,25 @@
           wx:key="photoUrl"
           src="{{photoUrl}}"
           mode="aspectFill"
+          data-current="{{photoUrl}}"
+          data-urls="{{item.photoUrls}}"
+          bindtap="previewRecordPhoto"
         />
       </view>
       <view class="chip-row">
         <view class="chip" wx:for="{{item.tags}}" wx:for-item="tag" wx:key="tag">{{tag}}</view>
+      </view>
+      <view class="row action-row">
+        <button
+          class="button-secondary compact-button"
+          open-type="share"
+          data-id="{{item.id}}"
+          data-title="{{item.title}}"
+          data-text="{{item.text}}"
+          bindtap="prepareShareRecord"
+        >
+          分享摘要
+        </button>
       </view>
     </view>
   </view>

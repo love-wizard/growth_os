@@ -32,6 +32,10 @@ declare const wx: {
     }) => void;
     fail?: (error: { errMsg?: string }) => void;
   }): void;
+  previewImage(options: {
+    current?: string;
+    urls: string[];
+  }): void;
   switchTab(options: { url: string }): void;
   navigateTo(options: { url: string }): void;
   showToast(options: { title: string; icon?: "success" | "error" | "loading" | "none" }): void;

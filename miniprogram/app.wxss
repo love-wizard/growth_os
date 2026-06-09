@@ -306,6 +306,11 @@ page {
   margin-bottom: 20rpx;
 }
 
+.action-row {
+  justify-content: flex-start;
+  margin-top: 20rpx;
+}
+
 .avatar-button {
   align-items: center;
   background: #f1eee8;
