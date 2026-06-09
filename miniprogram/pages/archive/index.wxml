@@ -11,12 +11,20 @@
       <view class="title">今天有什么值得记下？</view>
       <view class="muted">一句话就可以，照片和视频以后再补也没关系。</view>
     </view>
-    <button class="button-primary" bindtap="addRecord">记录成长瞬间</button>
+    <textarea class="input-box text-area" placeholder="例如：今天第一次主动练琴20分钟。" value="{{recordText}}" bindinput="onRecordTextInput" />
+    <input class="input-box" placeholder="标签，用逗号分隔" value="{{recordTags}}" bindinput="onRecordTagsInput" />
+    <button class="button-primary" loading="{{isSubmitting}}" bindtap="addRecord">记录成长瞬间</button>
+  </view>
+
+  <view wx:if="{{errorMessage}}" class="section card">
+    <view class="title">{{errorMessage}}</view>
+    <view class="muted">完成首次配置后，就可以记录孩子的真实成长瞬间。</view>
   </view>
 
   <view class="section card">
-    <view class="title">六月</view>
-    <view class="timeline-item" wx:for="{{records}}" wx:key="date">
+    <view class="title">时间轴</view>
+    <view wx:if="{{records.length === 0 && !errorMessage}}" class="muted">还没有成长记录，先写下今天的一件小事。</view>
+    <view class="timeline-item" wx:for="{{records}}" wx:key="id">
       <view class="caption">{{item.date}}</view>
       <view class="task-title">{{item.title}}</view>
       <view class="muted">{{item.text}}</view>

@@ -1,21 +1,98 @@
+import { getJson, postJson } from "../../services/api";
+
+function todayString() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function formatRecord(record: {
+  id: string;
+  happened_on: string;
+  text: string;
+  tags?: string[];
+}) {
+  const tags = record.tags && record.tags.length ? record.tags : ["成长瞬间"];
+  return {
+    id: record.id,
+    date: record.happened_on,
+    title: tags[0],
+    text: record.text,
+    tags
+  };
+}
+
 Page({
   data: {
-    records: [
-      {
-        date: "2026-06-09",
-        title: "主动阅读10分钟",
-        text: "睡前自己选了一本绘本，愿意和妈妈轮流讲。",
-        tags: ["阅读", "表达"]
-      },
-      {
-        date: "2026-06-08",
-        title: "第一次游过25米",
-        text: "虽然有点紧张，但最后坚持游到了终点。",
-        tags: ["游泳", "勇气"]
-      }
-    ]
+    isLoading: false,
+    isSubmitting: false,
+    errorMessage: "",
+    recordText: "",
+    recordTags: "成长瞬间",
+    records: []
+  },
+  onShow() {
+    this.loadRecords();
+  },
+  loadRecords() {
+    this.setData({ isLoading: true, errorMessage: "" });
+    void getJson<{
+      records: Array<{
+        id: string;
+        happened_on: string;
+        text: string;
+        tags?: string[];
+      }>;
+    }>("/api/growth-records")
+      .then((response) => {
+        this.setData({
+          isLoading: false,
+          records: (response.records || []).map(formatRecord)
+        });
+      })
+      .catch((error) => {
+        this.setData({
+          isLoading: false,
+          errorMessage:
+            error.statusCode === 409 ? "请先完成首次配置" : error.error || "成长记录加载失败"
+        });
+      });
+  },
+  onRecordTextInput(event: { detail: { value: string } }) {
+    this.setData({ recordText: event.detail.value });
+  },
+  onRecordTagsInput(event: { detail: { value: string } }) {
+    this.setData({ recordTags: event.detail.value });
   },
   addRecord() {
-    wx.showToast({ title: "记录入口待接入", icon: "none" });
+    const text = this.data.recordText.trim();
+    if (!text) {
+      wx.showToast({ title: "先写一句记录", icon: "none" });
+      return;
+    }
+
+    const tags = this.data.recordTags
+      .split(/[，,]/)
+      .map((tag: string) => tag.trim())
+      .filter(Boolean);
+
+    this.setData({ isSubmitting: true });
+    void postJson("/api/growth-records", {
+      happenedOn: todayString(),
+      text,
+      tags: tags.length ? tags : ["成长瞬间"]
+    })
+      .then(() => {
+        wx.showToast({ title: "已记录", icon: "success" });
+        this.setData({
+          recordText: "",
+          recordTags: "成长瞬间"
+        });
+        this.loadRecords();
+      })
+      .catch((error) => {
+        wx.showToast({ title: error.error || "记录失败", icon: "none" });
+      })
+      .finally(() => {
+        this.setData({ isSubmitting: false });
+      });
   }
 });

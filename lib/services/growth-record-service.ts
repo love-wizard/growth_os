@@ -5,6 +5,7 @@ import { getFamilyChildId } from "@/lib/repositories/weekly-plan-repo";
 import {
   createGrowthRecord,
   getGrowthRecordForFamily,
+  listRecentGrowthRecords,
   restoreGrowthRecord,
   softDeleteGrowthRecord
 } from "@/lib/repositories/growth-record-repo";
@@ -19,6 +20,19 @@ export class GrowthRecordError extends Error {
 }
 
 export type GrowthRecordRequest = z.infer<typeof growthRecordInputSchema>;
+
+export async function listGrowthRecordsForFamily(
+  supabase: SupabaseClient,
+  input: { familyId: UUID }
+) {
+  const childId = await getFamilyChildId(supabase, input.familyId);
+
+  if (!childId) {
+    return [];
+  }
+
+  return listRecentGrowthRecords(supabase, childId);
+}
 
 export async function saveGrowthRecord(
   supabase: SupabaseClient,
