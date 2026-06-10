@@ -32,6 +32,11 @@ declare const wx: {
     }) => void;
     fail?: (error: { errMsg?: string }) => void;
   }): void;
+  getImageInfo(options: {
+    src: string;
+    success?: (response: { path: string }) => void;
+    fail?: (error: { errMsg?: string }) => void;
+  }): void;
   previewImage(options: {
     current?: string;
     urls: string[];

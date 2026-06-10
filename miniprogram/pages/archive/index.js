@@ -16,7 +16,8 @@ function formatRecord(record) {
     tags,
     photoUrls: (record.growth_record_media || [])
       .filter((media) => media.media_type === "photo" && media.signed_url)
-      .map((media) => media.signed_url)
+      .map((media) => media.signed_url),
+    shareImageUrl: ""
   };
 }
 
@@ -31,6 +32,27 @@ Page({
     selectedPhotoName: "",
     selectedPhotoPath: "",
     records: []
+  },
+  preloadShareImages(records) {
+    records.forEach((record) => {
+      const firstPhotoUrl = record.photoUrls && record.photoUrls[0];
+      if (!firstPhotoUrl || record.shareImageUrl) {
+        return;
+      }
+
+      wx.getImageInfo({
+        src: firstPhotoUrl,
+        success: (result) => {
+          const nextRecords = this.data.records.map((item) =>
+            item.id === record.id ? { ...item, shareImageUrl: result.path } : item
+          );
+
+          this.setData({
+            records: nextRecords
+          });
+        }
+      });
+    });
   },
   onShareAppMessage() {
     const shareRecord = this.data.shareRecord;
@@ -72,10 +94,12 @@ Page({
     this.setData({ isLoading: true, errorMessage: "" });
     getJson("/api/growth-records")
       .then((response) => {
+        const records = (response.records || []).map(formatRecord);
         this.setData({
           isLoading: false,
-          records: (response.records || []).map(formatRecord)
+          records
         });
+        this.preloadShareImages(records);
       })
       .catch((error) => {
         this.setData({
