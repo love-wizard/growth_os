@@ -2,7 +2,10 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { UUID } from "@/lib/domain/types";
 import { recordWeChatMetricEvent } from "@/lib/metrics/wechat-events";
 import { getFamilyName } from "@/lib/repositories/family-repo";
-import { getGrowthRecordForFamily } from "@/lib/repositories/growth-record-repo";
+import {
+  getGrowthRecordForFamily,
+  getGrowthRecordForSharePreview
+} from "@/lib/repositories/growth-record-repo";
 import { createGrowthMediaSignedReadUrl } from "@/lib/services/storage-service";
 import { getCurrentWeeklyPlanForFamily } from "@/lib/services/weekly-plan-service";
 
@@ -77,6 +80,43 @@ export function buildPrivacySafeRecordPreview(input: {
     weeklyTheme: input.weeklyTheme ?? "",
     growthFocus: input.growthFocus ?? "",
     coachNote: input.coachNote ?? ""
+  };
+}
+
+export async function createPublicWeChatRecordSharePreview(
+  supabase: SupabaseClient,
+  input: { recordId: UUID }
+) {
+  const record = await getGrowthRecordForSharePreview(supabase, input.recordId);
+
+  if (!record || record.deleted_at) {
+    throw new Error("Growth record was not found");
+  }
+
+  const photoUrls = await Promise.all(
+    (record.growth_record_media ?? [])
+      .filter((media) => media.media_type === "photo")
+      .slice(0, 1)
+      .map(async (media) => {
+        const signed = await createGrowthMediaSignedReadUrl(supabase, media.storage_path, 86400);
+        return signed.signedUrl;
+      })
+  );
+
+  const familyInfo = Array.isArray(record.child_profiles?.families)
+    ? record.child_profiles?.families[0]
+    : record.child_profiles?.families;
+  const familyName = familyInfo?.name ?? "";
+  const nickname = record.child_profiles?.nickname ?? "";
+
+  return {
+    happenedOn: record.happened_on,
+    text: record.text.slice(0, 80),
+    photoUrls,
+    familyName,
+    subtitle: nickname
+      ? `${nickname}的一个成长瞬间`
+      : "把值得记住的小瞬间，好好记下来。"
   };
 }
 

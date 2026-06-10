@@ -2,20 +2,16 @@
   <view class="card stack">
     <view>
       <view class="caption">成长记录分享</view>
-      <view class="title">看看这次成长瞬间</view>
-      <view class="muted">这不是普通相册，而是一条被认真陪伴和记录下来的成长瞬间。</view>
+      <view class="title">{{preview && preview.familyName ? preview.familyName : "成长 OS"}}</view>
+      <view class="muted">{{preview && preview.subtitle ? preview.subtitle : "把值得记住的小瞬间，好好记下来。"}}</view>
     </view>
 
     <view wx:if="{{errorMessage}}" class="note-box">
       <view class="task-title">{{errorMessage}}</view>
-      <view class="muted">先进入成长 OS，就能开始记录属于你们家的成长轨迹。</view>
+      <view class="muted">这条分享暂时打不开。</view>
     </view>
 
     <view wx:if="{{preview}}" class="stack">
-      <view>
-        <view class="caption">{{preview.familyName ? ('来自 ' + preview.familyName) : '来自一个正在认真陪伴孩子的家庭'}}</view>
-        <view class="subtitle">{{preview.happenedOn}}</view>
-      </view>
       <view wx:if="{{preview.photoUrls && preview.photoUrls.length}}" class="timeline-photo-row">
         <image
           class="record-hero-photo"
@@ -29,27 +25,10 @@
           bindtap="previewPhoto"
         />
       </view>
-      <view class="chip-row">
-        <view wx:if="{{preview.growthFocus}}" class="chip chip-active">{{preview.growthFocus}}</view>
-        <view wx:if="{{preview.weeklyTheme}}" class="chip">本周主题：{{preview.weeklyTheme}}</view>
-      </view>
+      <view class="caption">{{preview.happenedOn}}</view>
       <view class="task-title">{{preview.text}}</view>
-      <view class="chip-row">
-        <view class="chip" wx:for="{{preview.tags}}" wx:key="*this">{{item}}</view>
-      </view>
-      <view wx:if="{{preview.coachNote}}" class="note-box">
-        <view class="caption">陪伴建议</view>
-        <view class="muted">{{preview.coachNote}}</view>
-      </view>
     </view>
 
-    <view class="warm-card card stack product-note">
-      <view class="caption">成长 OS</view>
-      <view class="task-title">把年度成长目标拆成每周陪伴行动，并持续记录孩子的真实变化。</view>
-      <view class="muted">不是刷题，也不是打卡焦虑，而是帮父母知道今天可以怎么陪伴。</view>
-    </view>
-
-    <button wx:if="{{!isLoggedIn}}" class="button-primary" bindtap="login">微信登录后加入共同陪伴</button>
-    <button wx:if="{{isLoggedIn}}" class="button-secondary" bindtap="openHome">{{primaryActionText}}</button>
+    <button class="button-primary" bindtap="openGrowthOs">我也来记录孩子成长</button>
   </view>
 </view>

@@ -105,6 +105,30 @@ export async function getGrowthRecordForFamily(
   return data as GrowthRecord | null;
 }
 
+export async function getGrowthRecordForSharePreview(
+  supabase: SupabaseClient,
+  recordId: UUID
+) {
+  const { data, error } = await supabase
+    .from("growth_records")
+    .select(
+      "id,child_id,happened_on,text,tags,parent_notes,draft_status,deleted_at,restore_until,growth_record_media(id,storage_path,media_type,file_name,mime_type,size_bytes),child_profiles!inner(nickname,families!inner(name))"
+    )
+    .eq("id", recordId)
+    .maybeSingle();
+
+  if (error) {
+    throw error;
+  }
+
+  return data as (GrowthRecord & {
+    child_profiles?: {
+      nickname?: string;
+      families?: { name?: string } | { name?: string }[];
+    };
+  }) | null;
+}
+
 export async function listRecentGrowthRecords(supabase: SupabaseClient, childId: UUID) {
   const { data, error } = await supabase
     .from("growth_records")

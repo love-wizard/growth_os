@@ -7,29 +7,25 @@ Page({
     preview: null as null | {
       happenedOn: string;
       text: string;
-      tags: string[];
       photoUrls: string[];
       familyName: string;
-      weeklyTheme: string;
-      growthFocus: string;
-      coachNote: string;
+      subtitle: string;
     },
     errorMessage: "",
-    isLoggedIn: false,
-    primaryActionText: "微信登录后加入共同陪伴"
+    isLoggedIn: false
   },
   onLoad(query: Record<string, string | undefined>) {
     const recordId = query.recordId || "";
     const isLoggedIn = hasMiniProgramSession();
     this.setData({ recordId, isLoggedIn });
-    if (recordId && isLoggedIn) {
+    if (recordId) {
       this.loadPreview();
     }
   },
   onShow() {
     const isLoggedIn = hasMiniProgramSession();
     this.setData({ isLoggedIn });
-    if (isLoggedIn && this.data.recordId && !this.data.preview) {
+    if (this.data.recordId && !this.data.preview) {
       this.loadPreview();
     }
   },
@@ -38,49 +34,31 @@ Page({
       preview?: {
         happenedOn: string;
         text: string;
-        tags: string[];
         photoUrls: string[];
         familyName: string;
-        weeklyTheme: string;
-        growthFocus: string;
-        coachNote: string;
+        subtitle: string;
       };
       happenedOn?: string;
       text?: string;
-      tags?: string[];
       photoUrls?: string[];
       familyName?: string;
-      weeklyTheme?: string;
-      growthFocus?: string;
-      coachNote?: string;
+      subtitle?: string;
     }>("/api/wechat/record-share-preview", { recordId: this.data.recordId })
       .then((response) => {
         this.setData({
           preview: response.preview || {
             happenedOn: response.happenedOn || "",
             text: response.text || "",
-            tags: response.tags || [],
             photoUrls: response.photoUrls || [],
             familyName: response.familyName || "",
-            weeklyTheme: response.weeklyTheme || "",
-            growthFocus: response.growthFocus || "",
-            coachNote: response.coachNote || ""
+            subtitle: response.subtitle || ""
           },
-          errorMessage: "",
-          primaryActionText: "进入家庭空间"
+          errorMessage: ""
         });
       })
       .catch((error) => {
-        const errorMessage =
-          error.statusCode === 401
-            ? "请先登录"
-            : error.statusCode === 409
-              ? "你还没有加入这个家庭空间"
-              : error.error || "记录摘要加载失败";
         this.setData({
-          errorMessage,
-          primaryActionText:
-            error.statusCode === 409 ? "创建我的成长空间" : "打开成长 OS"
+          errorMessage: error.error || "记录加载失败"
         });
       });
   },
@@ -96,7 +74,12 @@ Page({
       urls
     });
   },
-  login() {
+  openGrowthOs() {
+    if (hasMiniProgramSession()) {
+      wx.switchTab({ url: "/pages/home/index" });
+      return;
+    }
+
     wx.showToast({ title: "正在登录", icon: "loading" });
     void loginWithWeChat()
       .then((result) => {
@@ -108,18 +91,12 @@ Page({
           return;
         }
 
-        this.setData({
-          isLoggedIn: true,
-          errorMessage: ""
-        });
-        this.loadPreview();
+        this.setData({ isLoggedIn: true, errorMessage: "" });
+        wx.switchTab({ url: "/pages/home/index" });
         wx.showToast({ title: "已登录", icon: "success" });
       })
       .catch(() => {
         wx.showToast({ title: "登录失败", icon: "none" });
       });
-  },
-  openHome() {
-    wx.switchTab({ url: "/pages/home/index" });
   }
 });
