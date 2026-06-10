@@ -11,6 +11,7 @@ function todayString() {
 function formatRecord(record: {
   id: string;
   happened_on: string;
+  created_at?: string;
   text: string;
   tags?: string[];
   growth_record_media?: Array<{
@@ -22,6 +23,7 @@ function formatRecord(record: {
   return {
     id: record.id,
     date: record.happened_on,
+    createdAt: record.created_at || "",
     title: tags[0],
     text: record.text,
     tags,
@@ -30,6 +32,64 @@ function formatRecord(record: {
       .map((media) => media.signed_url as string),
     shareImageUrl: ""
   };
+}
+
+function sortRecords<T extends { date: string; createdAt?: string }>(records: T[]) {
+  return [...records].sort((left, right) => {
+    if (left.date !== right.date) {
+      return right.date.localeCompare(left.date);
+    }
+
+    return (right.createdAt || "").localeCompare(left.createdAt || "");
+  });
+}
+
+function mergeCachedMedia(
+  nextRecords: Array<{
+    id: string;
+    date: string;
+    createdAt?: string;
+    title: string;
+    text: string;
+    tags: string[];
+    photoUrls: string[];
+    shareImageUrl?: string;
+  }>,
+  currentRecords: Array<{
+    id: string;
+    date: string;
+    createdAt?: string;
+    title: string;
+    text: string;
+    tags: string[];
+    photoUrls?: string[];
+    shareImageUrl?: string;
+  }>
+) {
+  const currentById = new Map(currentRecords.map((record) => [record.id, record]));
+
+  return sortRecords(nextRecords).map((record) => {
+    const current = currentById.get(record.id);
+    if (!current) {
+      return record;
+    }
+
+    const isSameRecord =
+      current.date === record.date &&
+      current.title === record.title &&
+      current.text === record.text &&
+      JSON.stringify(current.tags || []) === JSON.stringify(record.tags || []);
+
+    if (!isSameRecord) {
+      return record;
+    }
+
+    return {
+      ...record,
+      photoUrls: current.photoUrls?.length ? current.photoUrls : record.photoUrls,
+      shareImageUrl: current.shareImageUrl || record.shareImageUrl
+    };
+  });
 }
 
 Page({
@@ -154,6 +214,7 @@ Page({
       records: Array<{
         id: string;
         happened_on: string;
+        created_at?: string;
         text: string;
         tags?: string[];
         growth_record_media?: Array<{
@@ -163,7 +224,19 @@ Page({
       }>;
     }>("/api/growth-records")
       .then((response) => {
-        const records = (response.records || []).map(formatRecord);
+        const records = mergeCachedMedia(
+          (response.records || []).map(formatRecord),
+          this.data.records as Array<{
+            id: string;
+            date: string;
+            createdAt?: string;
+            title: string;
+            text: string;
+            tags: string[];
+            photoUrls?: string[];
+            shareImageUrl?: string;
+          }>
+        );
         wx.setStorageSync(growthRecordsCacheStorageKey, {
           savedAt: Date.now(),
           records

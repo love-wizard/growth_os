@@ -13,6 +13,7 @@ function formatRecord(record) {
   return {
     id: record.id,
     date: record.happened_on,
+    createdAt: record.created_at || "",
     title: tags[0],
     text: record.text,
     tags,
@@ -21,6 +22,43 @@ function formatRecord(record) {
       .map((media) => media.signed_url),
     shareImageUrl: ""
   };
+}
+
+function sortRecords(records) {
+  return [...records].sort((left, right) => {
+    if (left.date !== right.date) {
+      return right.date.localeCompare(left.date);
+    }
+
+    return (right.createdAt || "").localeCompare(left.createdAt || "");
+  });
+}
+
+function mergeCachedMedia(nextRecords, currentRecords) {
+  const currentById = new Map(currentRecords.map((record) => [record.id, record]));
+
+  return sortRecords(nextRecords).map((record) => {
+    const current = currentById.get(record.id);
+    if (!current) {
+      return record;
+    }
+
+    const isSameRecord =
+      current.date === record.date &&
+      current.title === record.title &&
+      current.text === record.text &&
+      JSON.stringify(current.tags || []) === JSON.stringify(record.tags || []);
+
+    if (!isSameRecord) {
+      return record;
+    }
+
+    return {
+      ...record,
+      photoUrls: current.photoUrls && current.photoUrls.length ? current.photoUrls : record.photoUrls,
+      shareImageUrl: current.shareImageUrl || record.shareImageUrl
+    };
+  });
 }
 
 Page({
@@ -124,7 +162,10 @@ Page({
 
     getJson("/api/growth-records")
       .then((response) => {
-        const records = (response.records || []).map(formatRecord);
+        const records = mergeCachedMedia(
+          (response.records || []).map(formatRecord),
+          this.data.records
+        );
         wx.setStorageSync(growthRecordsCacheStorageKey, {
           savedAt: Date.now(),
           records

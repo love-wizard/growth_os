@@ -137,11 +137,12 @@ export async function listRecentGrowthRecords(
   const { data, error } = await supabase
     .from("growth_records")
     .select(
-      "id,happened_on,text,tags,parent_notes,draft_status,growth_record_media(id,storage_path,media_type,file_name,mime_type,size_bytes)"
+      "id,happened_on,text,tags,parent_notes,draft_status,created_at,growth_record_media(id,storage_path,media_type,file_name,mime_type,size_bytes)"
     )
     .eq("child_id", childId)
     .is("deleted_at", null)
     .order("happened_on", { ascending: false })
+    .order("created_at", { ascending: false })
     .limit(limit);
 
   if (error) {
@@ -186,6 +187,7 @@ export interface GrowthRecord {
   id: UUID;
   child_id: UUID;
   happened_on: string;
+  created_at?: string;
   text: string;
   tags: string[];
   parent_notes: string | null;
