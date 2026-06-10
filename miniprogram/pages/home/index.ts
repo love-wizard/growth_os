@@ -1,5 +1,7 @@
 import { getJson } from "../../services/api";
 
+const aiCoachPrefillStorageKey = "growth_os_ai_coach_prefill";
+
 const roleLabels: Record<string, string> = {
   father: "爸爸",
   mother: "妈妈",
@@ -109,7 +111,10 @@ Page({
       wx.navigateTo({ url: "/pages/setup/index" });
       return;
     }
-    wx.showToast({ title: "已开始陪伴", icon: "success" });
+
+    const prompt = `今晚只有30分钟。结合本周主题“${this.data.weeklyTheme}”和当前建议“${this.data.todayAction.title}”，给一个现在就能开始的亲子陪伴建议。`;
+    wx.setStorageSync(aiCoachPrefillStorageKey, prompt);
+    wx.switchTab({ url: "/pages/ai-coach/index" });
   },
   openCoach() {
     wx.switchTab({ url: "/pages/ai-coach/index" });

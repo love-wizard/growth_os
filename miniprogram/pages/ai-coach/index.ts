@@ -6,6 +6,7 @@ import {
 } from "../../services/api";
 
 const aiRequestTimeoutMs = 30000;
+const aiCoachPrefillStorageKey = "growth_os_ai_coach_prefill";
 
 function inferMode(message: string) {
   if (/下周|生成.*周计划|周计划草案/.test(message)) {
@@ -217,6 +218,7 @@ Page({
   },
   onShow() {
     this.loadHistory();
+    this.consumePrefilledPrompt();
   },
   selectPrompt(event: { currentTarget: { dataset: { prompt: string } } }) {
     this.setData({ selectedPrompt: event.currentTarget.dataset.prompt, freeQuestion: "" });
@@ -231,6 +233,9 @@ Page({
       return;
     }
 
+    this.runCoachMessage(message);
+  },
+  runCoachMessage(message: string) {
     this.setData({ isLoading: true, errorMessage: "" });
     void postJsonWithOptions<{
       conversationId: string;
@@ -264,7 +269,9 @@ Page({
             ...answer,
             weeklyPlanDraftId:
               answer.isWeeklyPlanDraft && result.weeklyPlanDraftId ? result.weeklyPlanDraftId : ""
-          }
+          },
+          selectedPrompt: message,
+          freeQuestion: ""
         });
       })
       .catch((error) => {
@@ -278,6 +285,20 @@ Page({
           errorMessage: errorMessage
         });
       });
+  },
+  consumePrefilledPrompt() {
+    const message = wx.getStorageSync(aiCoachPrefillStorageKey) as string | undefined;
+
+    if (!message || this.data.isLoading) {
+      return;
+    }
+
+    wx.removeStorageSync(aiCoachPrefillStorageKey);
+    this.setData({
+      selectedPrompt: message,
+      freeQuestion: ""
+    });
+    this.runCoachMessage(message);
   },
   confirmWeeklyPlanDraft() {
     const draftId = this.data.answer.weeklyPlanDraftId;
