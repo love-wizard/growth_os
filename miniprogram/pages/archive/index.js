@@ -43,7 +43,11 @@ Page({
 
     return {
       title: `${shareRecord.title || "成长瞬间"} | ${shareRecord.text.slice(0, 20)}`,
-      path: `/pages/record-preview/index?recordId=${shareRecord.id}`,
+      path:
+        `/pages/record-preview/index?recordId=${shareRecord.id}` +
+        `&text=${encodeURIComponent(shareRecord.text || "")}` +
+        `&date=${encodeURIComponent(shareRecord.date || "")}` +
+        `&imageUrl=${encodeURIComponent(shareRecord.imageUrl || "")}`,
       imageUrl: shareRecord.imageUrl || undefined
     };
   },
@@ -130,6 +134,7 @@ Page({
         id: event.currentTarget.dataset.id,
         title: event.currentTarget.dataset.title || "成长瞬间",
         text: event.currentTarget.dataset.text || "",
+        date: event.currentTarget.dataset.date || "",
         imageUrl: event.currentTarget.dataset.imageUrl || ""
       }
     });

@@ -61,6 +61,7 @@
           data-id="{{item.id}}"
           data-title="{{item.title}}"
           data-text="{{item.text}}"
+          data-date="{{item.date}}"
           data-image-url="{{item.photoUrls[0]}}"
           bindtap="prepareShareRecord"
         >

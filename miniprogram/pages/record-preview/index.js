@@ -13,6 +13,24 @@ Page({
     const recordId = query.recordId || "";
     const isLoggedIn = hasMiniProgramSession();
     this.setData({ recordId, isLoggedIn });
+    const sharedText = decodeURIComponent(query.text || "");
+    const sharedDate = decodeURIComponent(query.date || "");
+    const sharedImageUrl = decodeURIComponent(query.imageUrl || "");
+
+    if (sharedText || sharedImageUrl) {
+      this.setData({
+        preview: {
+          happenedOn: sharedDate,
+          text: sharedText,
+          photoUrls: sharedImageUrl ? [sharedImageUrl] : [],
+          familyName: "成长 OS",
+          subtitle: "把值得记住的小瞬间，好好记下来。"
+        },
+        errorMessage: ""
+      });
+      return;
+    }
+
     if (recordId) {
       this.loadPreview();
     }
