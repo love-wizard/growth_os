@@ -1,6 +1,8 @@
 import { getJson } from "../../services/api";
 
 const growthRecordPrefillStorageKey = "growth_os_growth_record_prefill";
+const dashboardCacheStorageKey = "growth_os_dashboard_cache";
+const dashboardCacheTtlMs = 60 * 1000;
 
 const roleLabels: Record<string, string> = {
   father: "爸爸",
@@ -53,10 +55,89 @@ Page({
     ]
   },
   onShow() {
-    this.loadDashboard();
+    const usedCache = this.hydrateDashboardCache();
+    this.loadDashboard({ useLoadingState: !usedCache, skipIfFresh: usedCache });
   },
-  loadDashboard() {
-    this.setData({ isLoading: true, errorMessage: "" });
+  hydrateDashboardCache() {
+    const cached = wx.getStorageSync(dashboardCacheStorageKey) as
+      | {
+          savedAt?: number;
+          dashboard?: unknown;
+        }
+      | undefined;
+
+    if (!cached?.savedAt || !cached.dashboard) {
+      return false;
+    }
+
+    if (Date.now() - cached.savedAt > dashboardCacheTtlMs) {
+      return false;
+    }
+
+    this.applyDashboard(
+      cached.dashboard as {
+        child: { nickname: string } | null;
+        weeklyPlan: { theme: string } | null;
+        todayGuidance: { title: string; description: string } | null;
+        progress: { description: string } | null;
+        todayTasks: Array<{
+          id: string;
+          assignee_type: string;
+          title: string;
+          planned_count: number;
+          completed_count: number;
+        }>;
+      }
+    );
+    return true;
+  },
+  applyDashboard(dashboard: {
+    child: { nickname: string } | null;
+    weeklyPlan: { theme: string } | null;
+    todayGuidance: { title: string; description: string } | null;
+    progress: { description: string } | null;
+    todayTasks: Array<{
+      id: string;
+      assignee_type: string;
+      title: string;
+      planned_count: number;
+      completed_count: number;
+    }>;
+  }) {
+    const tasks = (dashboard.todayTasks || []).map(formatTask);
+    const weeklyTheme = dashboard.weeklyPlan ? dashboard.weeklyPlan.theme : "轻松陪伴";
+    this.setData({
+      isLoading: false,
+      setupRequired: false,
+      childNickname: dashboard.child ? dashboard.child.nickname : "孩子",
+      weeklyTheme,
+      taskCount: `${tasks.length}件小事`,
+      todayAction: {
+        title: dashboard.todayGuidance ? dashboard.todayGuidance.title : "今天留一个轻松陪伴时刻",
+        context: dashboard.todayGuidance
+          ? dashboard.todayGuidance.description
+          : "如果没有明确任务，可以一起散步、共读或聊一件今天的小发现。",
+        minutes: "10分钟",
+        why: dashboard.progress ? dashboard.progress.description : "重点是父母和孩子一起完成。"
+      },
+      tasks
+    });
+  },
+  loadDashboard(options?: { useLoadingState?: boolean; skipIfFresh?: boolean }) {
+    if (options?.skipIfFresh) {
+      const cached = wx.getStorageSync(dashboardCacheStorageKey) as
+        | { savedAt?: number }
+        | undefined;
+
+      if (cached?.savedAt && Date.now() - cached.savedAt <= dashboardCacheTtlMs) {
+        return;
+      }
+    }
+
+    if (options?.useLoadingState !== false) {
+      this.setData({ isLoading: true, errorMessage: "" });
+    }
+
     void getJson<{
       child: { nickname: string } | null;
       weeklyPlan: { theme: string } | null;
@@ -71,24 +152,11 @@ Page({
       }>;
     }>("/api/dashboard")
       .then((dashboard) => {
-        const tasks = (dashboard.todayTasks || []).map(formatTask);
-        const weeklyTheme = dashboard.weeklyPlan ? dashboard.weeklyPlan.theme : "轻松陪伴";
-        this.setData({
-          isLoading: false,
-          setupRequired: false,
-          childNickname: dashboard.child ? dashboard.child.nickname : "孩子",
-          weeklyTheme,
-          taskCount: `${tasks.length}件小事`,
-          todayAction: {
-            title: dashboard.todayGuidance ? dashboard.todayGuidance.title : "今天留一个轻松陪伴时刻",
-            context: dashboard.todayGuidance
-              ? dashboard.todayGuidance.description
-              : "如果没有明确任务，可以一起散步、共读或聊一件今天的小发现。",
-            minutes: "10分钟",
-            why: dashboard.progress ? dashboard.progress.description : "重点是父母和孩子一起完成。"
-          },
-          tasks
+        wx.setStorageSync(dashboardCacheStorageKey, {
+          savedAt: Date.now(),
+          dashboard
         });
+        this.applyDashboard(dashboard);
       })
       .catch((error) => {
         if (error.statusCode === 409) {

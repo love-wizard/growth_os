@@ -19,7 +19,9 @@ export async function getDashboardData(supabase: SupabaseClient, familyId: UUID)
 
   const [annualGoals, weeklyPlan] = await Promise.all([
     getAnnualGoals(supabase, child.id),
-    getCurrentWeeklyPlanForFamily(supabase, familyId)
+    getCurrentWeeklyPlanForFamily(supabase, familyId, {
+      allowAutoGenerate: false
+    })
   ]);
   const todayTasks = weeklyPlan?.weekly_tasks ?? [];
 

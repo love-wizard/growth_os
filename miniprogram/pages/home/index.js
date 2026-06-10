@@ -1,6 +1,8 @@
 /* global Page, wx */
 const { getJson } = require("../../services/api");
 const growthRecordPrefillStorageKey = "growth_os_growth_record_prefill";
+const dashboardCacheStorageKey = "growth_os_dashboard_cache";
+const dashboardCacheTtlMs = 60 * 1000;
 
 const roleLabels = {
   father: "爸爸",
@@ -47,30 +49,62 @@ Page({
     ]
   },
   onShow() {
-    this.loadDashboard();
+    const usedCache = this.hydrateDashboardCache();
+    this.loadDashboard({ useLoadingState: !usedCache, skipIfFresh: usedCache });
   },
-  loadDashboard() {
-    this.setData({ isLoading: true, errorMessage: "" });
+  hydrateDashboardCache() {
+    const cached = wx.getStorageSync(dashboardCacheStorageKey);
+
+    if (!cached || !cached.savedAt || !cached.dashboard) {
+      return false;
+    }
+
+    if (Date.now() - cached.savedAt > dashboardCacheTtlMs) {
+      return false;
+    }
+
+    this.applyDashboard(cached.dashboard);
+    return true;
+  },
+  applyDashboard(dashboard) {
+    const tasks = (dashboard.todayTasks || []).map(formatTask);
+    const weeklyTheme = dashboard.weeklyPlan ? dashboard.weeklyPlan.theme : "轻松陪伴";
+    this.setData({
+      isLoading: false,
+      setupRequired: false,
+      childNickname: dashboard.child ? dashboard.child.nickname : "孩子",
+      weeklyTheme,
+      taskCount: `${tasks.length}件小事`,
+      todayAction: {
+        title: dashboard.todayGuidance ? dashboard.todayGuidance.title : "今天留一个轻松陪伴时刻",
+        context: dashboard.todayGuidance
+          ? dashboard.todayGuidance.description
+          : "如果没有明确任务，可以一起散步、共读或聊一件今天的小发现。",
+        minutes: "10分钟",
+        why: dashboard.progress ? dashboard.progress.description : "重点是父母和孩子一起完成。"
+      },
+      tasks
+    });
+  },
+  loadDashboard(options) {
+    if (options && options.skipIfFresh) {
+      const cached = wx.getStorageSync(dashboardCacheStorageKey);
+      if (cached && cached.savedAt && Date.now() - cached.savedAt <= dashboardCacheTtlMs) {
+        return;
+      }
+    }
+
+    if (!options || options.useLoadingState !== false) {
+      this.setData({ isLoading: true, errorMessage: "" });
+    }
+
     getJson("/api/dashboard")
       .then((dashboard) => {
-        const tasks = (dashboard.todayTasks || []).map(formatTask);
-        const weeklyTheme = dashboard.weeklyPlan ? dashboard.weeklyPlan.theme : "轻松陪伴";
-        this.setData({
-          isLoading: false,
-          setupRequired: false,
-          childNickname: dashboard.child ? dashboard.child.nickname : "孩子",
-          weeklyTheme,
-          taskCount: `${tasks.length}件小事`,
-          todayAction: {
-            title: dashboard.todayGuidance ? dashboard.todayGuidance.title : "今天留一个轻松陪伴时刻",
-            context: dashboard.todayGuidance
-              ? dashboard.todayGuidance.description
-              : "如果没有明确任务，可以一起散步、共读或聊一件今天的小发现。",
-            minutes: "10分钟",
-            why: dashboard.progress ? dashboard.progress.description : "重点是父母和孩子一起完成。"
-          },
-          tasks
+        wx.setStorageSync(dashboardCacheStorageKey, {
+          savedAt: Date.now(),
+          dashboard
         });
+        this.applyDashboard(dashboard);
       })
       .catch((error) => {
         if (error.statusCode === 409) {

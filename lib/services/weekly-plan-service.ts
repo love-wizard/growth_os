@@ -37,7 +37,8 @@ export class WeeklyTaskProgressError extends Error {
 
 export async function getCurrentWeeklyPlanForFamily(
   supabase: SupabaseClient,
-  familyId: UUID
+  familyId: UUID,
+  options?: { allowAutoGenerate?: boolean; referenceDate?: Date }
 ) {
   const childId = await getFamilyChildId(supabase, familyId);
 
@@ -45,7 +46,7 @@ export async function getCurrentWeeklyPlanForFamily(
     return null;
   }
 
-  return ensureCurrentWeeklyPlanForChild(supabase, familyId, childId);
+  return ensureCurrentWeeklyPlanForChild(supabase, familyId, childId, options);
 }
 
 export async function updateWeeklyTaskProgressForFamily(
@@ -139,8 +140,9 @@ async function ensureCurrentWeeklyPlanForChild(
   supabase: SupabaseClient,
   familyId: UUID,
   childId: UUID,
-  referenceDate = new Date()
+  options?: { allowAutoGenerate?: boolean; referenceDate?: Date }
 ) {
+  const referenceDate = options?.referenceDate ?? new Date();
   const weekWindow = getWeekWindowForDate(referenceDate);
   const currentWeekPlan = await getActiveWeeklyPlanForWeekWithTasks(supabase, {
     childId,
@@ -150,6 +152,10 @@ async function ensureCurrentWeeklyPlanForChild(
 
   if (currentWeekPlan) {
     return formatWeeklyPlan(currentWeekPlan);
+  }
+
+  if (options?.allowAutoGenerate === false) {
+    return null;
   }
 
   await archiveStaleActiveWeeklyPlans(supabase, {
