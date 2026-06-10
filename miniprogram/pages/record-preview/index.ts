@@ -43,7 +43,7 @@ Page({
       photoUrls?: string[];
       familyName?: string;
       subtitle?: string;
-    }>("/api/wechat/record-share-preview", { recordId: this.data.recordId })
+    }>("/api/wechat/public-record-share-preview", { recordId: this.data.recordId })
       .then((response) => {
         this.setData({
           preview: response.preview || {

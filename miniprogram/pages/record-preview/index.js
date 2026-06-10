@@ -25,7 +25,7 @@ Page({
     }
   },
   loadPreview() {
-    postJson("/api/wechat/record-share-preview", { recordId: this.data.recordId })
+    postJson("/api/wechat/public-record-share-preview", { recordId: this.data.recordId })
       .then((response) => {
         this.setData({
           preview: response.preview || {
