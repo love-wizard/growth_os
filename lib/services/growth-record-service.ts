@@ -103,6 +103,7 @@ export async function saveGrowthRecord(
   const record = await createGrowthRecord(supabase, {
     childId,
     happenedOn: input.record.happenedOn,
+    happenedAt: input.record.happenedAt,
     text: input.record.text,
     tags: input.record.tags,
     parentNotes: input.record.parentNotes,

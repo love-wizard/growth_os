@@ -3,7 +3,7 @@ import { getJson } from "../../services/api";
 const growthRecordPrefillStorageKey = "growth_os_growth_record_prefill";
 const dashboardCacheStorageKey = "growth_os_dashboard_cache";
 const weeklyPlanCacheStorageKey = "growth_os_weekly_plan_cache";
-const growthRecordsCacheStorageKey = "growth_os_growth_records_cache";
+const growthRecordsCacheStorageKey = "growth_os_growth_records_cache_v2";
 const dashboardCacheRefreshMs = 5 * 60 * 1000;
 const dashboardCacheDisplayMs = 24 * 60 * 60 * 1000;
 
@@ -88,9 +88,25 @@ function formatWeeklyPlanCache(plan: {
   };
 }
 
+function formatDateTimeLabel(value?: string | null, fallbackDate?: string) {
+  const date = value ? new Date(value) : fallbackDate ? new Date(`${fallbackDate}T00:00:00`) : null;
+  if (!date || Number.isNaN(date.getTime())) {
+    return fallbackDate || "";
+  }
+
+  const year = date.getFullYear();
+  const month = `${date.getMonth() + 1}`.padStart(2, "0");
+  const day = `${date.getDate()}`.padStart(2, "0");
+  const hours = `${date.getHours()}`.padStart(2, "0");
+  const minutes = `${date.getMinutes()}`.padStart(2, "0");
+  const seconds = `${date.getSeconds()}`.padStart(2, "0");
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+}
+
 function formatGrowthRecordCache(record: {
   id: string;
   happened_on: string;
+  happened_at?: string | null;
   created_at?: string;
   text: string;
   tags?: string[];
@@ -103,6 +119,8 @@ function formatGrowthRecordCache(record: {
   return {
     id: record.id,
     date: record.happened_on,
+    happenedAt: record.happened_at || "",
+    dateTimeLabel: formatDateTimeLabel(record.happened_at, record.happened_on),
     createdAt: record.created_at || "",
     title: tags[0],
     text: record.text,

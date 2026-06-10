@@ -16,6 +16,7 @@ import {
 const nonEmptyText = z.string().trim().min(1);
 const uuid = z.string().uuid();
 const dateString = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
+const dateTimeString = z.string().datetime({ offset: true });
 
 export const childProfileInputSchema = z.object({
   name: nonEmptyText,
@@ -83,6 +84,7 @@ export const interestParticipationRecordInputSchema = z.object({
 
 export const growthRecordInputSchema = z.object({
   happenedOn: dateString,
+  happenedAt: dateTimeString.optional(),
   text: nonEmptyText,
   tags: z.array(nonEmptyText).optional(),
   parentNotes: z.string().trim().optional()

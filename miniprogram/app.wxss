@@ -235,6 +235,16 @@ page {
   width: 100%;
 }
 
+.record-time-row {
+  display: grid;
+  gap: 16rpx;
+  grid-template-columns: 1fr 1fr;
+}
+
+.picker-box {
+  color: #6e665c;
+}
+
 .text-area {
   min-height: 176rpx;
 }

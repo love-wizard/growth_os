@@ -9,6 +9,7 @@ import type {
 export interface GrowthRecordInput {
   childId: UUID;
   happenedOn: string;
+  happenedAt?: string;
   text: string;
   tags?: string[];
   parentNotes?: string;
@@ -27,6 +28,7 @@ export async function createGrowthRecord(
     .insert({
       child_id: input.childId,
       happened_on: input.happenedOn,
+      happened_at: input.happenedAt ?? null,
       text: input.text,
       tags: input.tags ?? [],
       parent_notes: input.parentNotes ?? null,
@@ -35,7 +37,7 @@ export async function createGrowthRecord(
       draft_status: input.draftStatus ?? "saved",
       created_by_user_id: input.createdByUserId
     })
-    .select("id,happened_on,text,tags,parent_notes,draft_status")
+    .select("id,happened_on,happened_at,text,tags,parent_notes,draft_status")
     .single();
 
   if (error) {
@@ -92,7 +94,7 @@ export async function getGrowthRecordForFamily(
   const { data, error } = await supabase
     .from("growth_records")
     .select(
-      "id,child_id,happened_on,text,tags,parent_notes,draft_status,deleted_at,restore_until,growth_record_media(id,storage_path,media_type,file_name,mime_type,size_bytes),child_profiles!inner(family_id)"
+      "id,child_id,happened_on,happened_at,text,tags,parent_notes,draft_status,deleted_at,restore_until,growth_record_media(id,storage_path,media_type,file_name,mime_type,size_bytes),child_profiles!inner(family_id)"
     )
     .eq("id", input.recordId)
     .eq("child_profiles.family_id", input.familyId)
@@ -112,7 +114,7 @@ export async function getGrowthRecordForSharePreview(
   const { data, error } = await supabase
     .from("growth_records")
     .select(
-      "id,child_id,happened_on,text,tags,parent_notes,draft_status,deleted_at,restore_until,growth_record_media(id,storage_path,media_type,file_name,mime_type,size_bytes),child_profiles!inner(nickname,families!inner(name))"
+      "id,child_id,happened_on,happened_at,text,tags,parent_notes,draft_status,deleted_at,restore_until,growth_record_media(id,storage_path,media_type,file_name,mime_type,size_bytes),child_profiles!inner(nickname,families!inner(name))"
     )
     .eq("id", recordId)
     .maybeSingle();
@@ -137,10 +139,11 @@ export async function listRecentGrowthRecords(
   const { data, error } = await supabase
     .from("growth_records")
     .select(
-      "id,happened_on,text,tags,parent_notes,draft_status,created_at,growth_record_media(id,storage_path,media_type,file_name,mime_type,size_bytes)"
+      "id,happened_on,happened_at,text,tags,parent_notes,draft_status,created_at,growth_record_media(id,storage_path,media_type,file_name,mime_type,size_bytes)"
     )
     .eq("child_id", childId)
     .is("deleted_at", null)
+    .order("happened_at", { ascending: false, nullsFirst: false })
     .order("happened_on", { ascending: false })
     .order("created_at", { ascending: false })
     .limit(limit);
@@ -187,6 +190,7 @@ export interface GrowthRecord {
   id: UUID;
   child_id: UUID;
   happened_on: string;
+  happened_at?: string | null;
   created_at?: string;
   text: string;
   tags: string[];

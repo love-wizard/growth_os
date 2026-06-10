@@ -1,17 +1,51 @@
 import { getJson, postJson, uploadFile } from "../../services/api";
 
 const growthRecordPrefillStorageKey = "growth_os_growth_record_prefill";
-const growthRecordsCacheStorageKey = "growth_os_growth_records_cache";
+const growthRecordsCacheStorageKey = "growth_os_growth_records_cache_v2";
 const growthRecordsCacheRefreshMs = 5 * 60 * 1000;
 const growthRecordsCacheDisplayMs = 30 * 60 * 1000;
 
 function todayString() {
-  return new Date().toISOString().slice(0, 10);
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = `${now.getMonth() + 1}`.padStart(2, "0");
+  const day = `${now.getDate()}`.padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function currentTimeString() {
+  const now = new Date();
+  return `${now.getHours()}`.padStart(2, "0") + ":" + `${now.getMinutes()}`.padStart(2, "0");
+}
+
+function currentSecondString() {
+  return `${new Date().getSeconds()}`.padStart(2, "0");
+}
+
+function buildLocalDateTime(date: string, time: string, seconds = currentSecondString()) {
+  const [hours = "00", minutes = "00"] = time.split(":");
+  return new Date(`${date}T${hours}:${minutes}:${seconds}`).toISOString();
+}
+
+function formatDateTimeLabel(value?: string | null, fallbackDate?: string) {
+  const date = value ? new Date(value) : fallbackDate ? new Date(`${fallbackDate}T00:00:00`) : null;
+  if (!date || Number.isNaN(date.getTime())) {
+    return fallbackDate || "";
+  }
+
+  const year = date.getFullYear();
+  const month = `${date.getMonth() + 1}`.padStart(2, "0");
+  const day = `${date.getDate()}`.padStart(2, "0");
+  const hours = `${date.getHours()}`.padStart(2, "0");
+  const minutes = `${date.getMinutes()}`.padStart(2, "0");
+  const seconds = `${date.getSeconds()}`.padStart(2, "0");
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
 
 function formatRecord(record: {
   id: string;
   happened_on: string;
+  happened_at?: string | null;
   created_at?: string;
   text: string;
   tags?: string[];
@@ -24,6 +58,8 @@ function formatRecord(record: {
   return {
     id: record.id,
     date: record.happened_on,
+    happenedAt: record.happened_at || "",
+    dateTimeLabel: formatDateTimeLabel(record.happened_at, record.happened_on),
     createdAt: record.created_at || "",
     title: tags[0],
     text: record.text,
@@ -35,8 +71,14 @@ function formatRecord(record: {
   };
 }
 
-function sortRecords<T extends { date: string; createdAt?: string }>(records: T[]) {
+function sortRecords<T extends { date: string; happenedAt?: string; createdAt?: string }>(records: T[]) {
   return [...records].sort((left, right) => {
+    const leftTime = left.happenedAt || left.createdAt || left.date;
+    const rightTime = right.happenedAt || right.createdAt || right.date;
+    if (leftTime !== rightTime) {
+      return rightTime.localeCompare(leftTime);
+    }
+
     if (left.date !== right.date) {
       return right.date.localeCompare(left.date);
     }
@@ -49,6 +91,8 @@ function mergeCachedMedia(
   nextRecords: Array<{
     id: string;
     date: string;
+    happenedAt?: string;
+    dateTimeLabel?: string;
     createdAt?: string;
     title: string;
     text: string;
@@ -59,6 +103,8 @@ function mergeCachedMedia(
   currentRecords: Array<{
     id: string;
     date: string;
+    happenedAt?: string;
+    dateTimeLabel?: string;
     createdAt?: string;
     title: string;
     text: string;
@@ -77,6 +123,7 @@ function mergeCachedMedia(
 
     const isSameRecord =
       current.date === record.date &&
+      current.happenedAt === record.happenedAt &&
       current.title === record.title &&
       current.text === record.text &&
       JSON.stringify(current.tags || []) === JSON.stringify(record.tags || []);
@@ -105,10 +152,13 @@ Page({
       title: string;
       text: string;
       date?: string;
+      dateTimeLabel?: string;
       imageUrl?: string;
     },
     selectedPhotoName: "",
     selectedPhotoPath: "",
+    happenedDate: todayString(),
+    happenedTime: currentTimeString(),
     records: []
   },
   preloadShareImages(records: Array<{ id: string; photoUrls?: string[]; shareImageUrl?: string }>) {
@@ -177,7 +227,7 @@ Page({
       path:
         `/pages/record-preview/index?recordId=${shareRecord.id}` +
         `&text=${encodeURIComponent(shareRecord.text || "")}` +
-        `&date=${encodeURIComponent(shareRecord.date || "")}` +
+        `&date=${encodeURIComponent(shareRecord.dateTimeLabel || shareRecord.date || "")}` +
         `&imageUrl=${encodeURIComponent(shareRecord.imageUrl || "")}`,
       imageUrl: shareRecord.imageUrl || undefined
     };
@@ -243,6 +293,7 @@ Page({
       records: Array<{
         id: string;
         happened_on: string;
+        happened_at?: string | null;
         created_at?: string;
         text: string;
         tags?: string[];
@@ -258,6 +309,8 @@ Page({
           this.data.records as Array<{
             id: string;
             date: string;
+            happenedAt?: string;
+            dateTimeLabel?: string;
             createdAt?: string;
             title: string;
             text: string;
@@ -289,6 +342,12 @@ Page({
   },
   onRecordTagsInput(event: { detail: { value: string } }) {
     this.setData({ recordTags: event.detail.value });
+  },
+  onHappenedDateChange(event: { detail: { value: string } }) {
+    this.setData({ happenedDate: event.detail.value });
+  },
+  onHappenedTimeChange(event: { detail: { value: string } }) {
+    this.setData({ happenedTime: event.detail.value });
   },
   choosePhoto() {
     wx.chooseImage({
@@ -337,6 +396,7 @@ Page({
         title: event.currentTarget.dataset.title || "成长瞬间",
         text: event.currentTarget.dataset.text || "",
         date: event.currentTarget.dataset.date || "",
+        dateTimeLabel: event.currentTarget.dataset.date || "",
         imageUrl: event.currentTarget.dataset.imageUrl || ""
       }
     });
@@ -359,7 +419,11 @@ Page({
         id: string;
       };
     }>("/api/growth-records", {
-      happenedOn: todayString(),
+      happenedOn: this.data.happenedDate || todayString(),
+      happenedAt: buildLocalDateTime(
+        this.data.happenedDate || todayString(),
+        this.data.happenedTime || currentTimeString()
+      ),
       text,
       tags: tags.length ? tags : ["成长瞬间"]
     })
@@ -376,7 +440,9 @@ Page({
           recordText: "",
           recordTags: "成长瞬间",
           selectedPhotoName: "",
-          selectedPhotoPath: ""
+          selectedPhotoPath: "",
+          happenedDate: todayString(),
+          happenedTime: currentTimeString()
         });
         this.loadRecords();
       })

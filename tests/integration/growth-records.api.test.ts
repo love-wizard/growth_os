@@ -6,6 +6,7 @@ import {
   buildGrowthMediaStoragePath,
   inferGrowthMediaType
 } from "@/lib/services/storage-service";
+import { growthRecordInputSchema } from "@/lib/validation/schemas";
 
 describe("growth records API support logic", () => {
   it("builds a 30 day restore window for soft delete", () => {
@@ -18,6 +19,17 @@ describe("growth records API support logic", () => {
   it("creates draft text from weekly task sources", () => {
     expect(buildDraftText("weekly_task")).toMatch(/本周成长任务/);
     expect(buildDraftText("parent_note", "第一次游过25米。")).toBe("第一次游过25米。");
+  });
+
+  it("accepts occurrence date time when creating a record", () => {
+    const result = growthRecordInputSchema.safeParse({
+      happenedOn: "2026-06-08",
+      happenedAt: "2026-06-08T19:32:18.000+08:00",
+      text: "第一次游过25米。",
+      tags: ["游泳"]
+    });
+
+    expect(result.success).toBe(true);
   });
 
   it("keeps AI context free of media metadata", () => {

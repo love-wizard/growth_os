@@ -13,6 +13,14 @@
     </view>
     <textarea class="input-box text-area" placeholder="例如：今天第一次主动练琴20分钟。" value="{{recordText}}" bindinput="onRecordTextInput" />
     <input class="input-box" placeholder="标签，用逗号分隔" value="{{recordTags}}" bindinput="onRecordTagsInput" />
+    <view class="record-time-row">
+      <picker mode="date" value="{{happenedDate}}" bindchange="onHappenedDateChange">
+        <view class="input-box picker-box">日期 {{happenedDate}}</view>
+      </picker>
+      <picker mode="time" value="{{happenedTime}}" bindchange="onHappenedTimeChange">
+        <view class="input-box picker-box">时间 {{happenedTime}}</view>
+      </picker>
+    </view>
     <view class="stack">
       <button class="button-secondary" bindtap="choosePhoto">选择一张照片</button>
       <view wx:if="{{selectedPhotoPath}}" class="photo-preview-card">
@@ -35,7 +43,7 @@
     <view class="title">时间轴</view>
     <view wx:if="{{records.length === 0 && !errorMessage}}" class="muted">还没有成长记录，先写下今天的一件小事。</view>
     <view class="timeline-item" wx:for="{{records}}" wx:key="id">
-      <view class="caption">{{item.date}}</view>
+      <view class="caption">{{item.dateTimeLabel || item.date}}</view>
       <view class="task-title">{{item.title}}</view>
       <view class="muted">{{item.text}}</view>
       <view wx:if="{{item.photoUrls && item.photoUrls.length}}" class="timeline-photo-row">
@@ -62,7 +70,7 @@
           data-id="{{item.id}}"
           data-title="{{item.title}}"
           data-text="{{item.text}}"
-          data-date="{{item.date}}"
+          data-date="{{item.dateTimeLabel || item.date}}"
           data-image-url="{{item.shareImageUrl || item.photoUrls[0]}}"
           bindtap="prepareShareRecord"
         >
