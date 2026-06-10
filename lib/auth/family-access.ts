@@ -1,4 +1,5 @@
 import type { SupabaseClient, User } from "@supabase/supabase-js";
+import { headers } from "next/headers";
 import type {
   FamilyMemberAccess,
   InternalReviewerAccess,
@@ -6,6 +7,15 @@ import type {
   ParentRole,
   UUID
 } from "@/lib/domain/types";
+import { elapsedMs, logPerf, nowMs } from "@/lib/services/perf-log";
+
+type CachedUser = {
+  expiresAt: number;
+  user: User;
+};
+
+const authenticatedUserCache = new Map<string, CachedUser>();
+const maxAuthenticatedUserCacheMs = 5 * 60 * 1000;
 
 export class AuthRequiredError extends Error {
   constructor() {
@@ -39,9 +49,86 @@ function isAuthSessionMissingError(error: unknown) {
   );
 }
 
+async function getBearerAccessToken() {
+  try {
+    const authorization = (await headers()).get("authorization");
+    if (!authorization?.toLowerCase().startsWith("bearer ")) {
+      return null;
+    }
+
+    return authorization.slice("bearer ".length).trim();
+  } catch {
+    return null;
+  }
+}
+
+function getJwtExpiresAt(accessToken: string) {
+  try {
+    const payload = accessToken.split(".")[1];
+    if (!payload) {
+      return null;
+    }
+
+    const normalizedPayload = payload.replace(/-/g, "+").replace(/_/g, "/");
+    const parsed = JSON.parse(Buffer.from(normalizedPayload, "base64").toString("utf8")) as {
+      exp?: number;
+    };
+
+    return parsed.exp ? parsed.exp * 1000 : null;
+  } catch {
+    return null;
+  }
+}
+
+function getCachedAuthenticatedUser(accessToken: string) {
+  const cached = authenticatedUserCache.get(accessToken);
+
+  if (!cached) {
+    return null;
+  }
+
+  if (cached.expiresAt <= Date.now()) {
+    authenticatedUserCache.delete(accessToken);
+    return null;
+  }
+
+  return cached.user;
+}
+
+function setCachedAuthenticatedUser(accessToken: string, user: User) {
+  const tokenExpiresAt = getJwtExpiresAt(accessToken);
+  const expiresAt = Math.min(
+    Date.now() + maxAuthenticatedUserCacheMs,
+    tokenExpiresAt ? tokenExpiresAt - 30 * 1000 : Number.POSITIVE_INFINITY
+  );
+
+  if (expiresAt <= Date.now()) {
+    return;
+  }
+
+  authenticatedUserCache.set(accessToken, {
+    expiresAt,
+    user
+  });
+}
+
 export async function getAuthenticatedUser(
   supabase: SupabaseClient
 ): Promise<User | null> {
+  const startedAt = nowMs();
+  const bearerAccessToken = await getBearerAccessToken();
+  if (bearerAccessToken) {
+    const cachedUser = getCachedAuthenticatedUser(bearerAccessToken);
+    if (cachedUser) {
+      logPerf("auth.user", {
+        totalMs: elapsedMs(startedAt),
+        cache: "hit",
+        userId: cachedUser.id
+      });
+      return cachedUser;
+    }
+  }
+
   const {
     data: { user },
     error
@@ -54,6 +141,16 @@ export async function getAuthenticatedUser(
 
     throw error;
   }
+
+  if (user && bearerAccessToken) {
+    setCachedAuthenticatedUser(bearerAccessToken, user);
+  }
+
+  logPerf("auth.user", {
+    totalMs: elapsedMs(startedAt),
+    cache: bearerAccessToken ? "miss" : "none",
+    userId: user?.id
+  });
 
   return user;
 }
