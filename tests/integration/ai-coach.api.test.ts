@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { AIContextSnapshot } from "@/lib/ai/context";
 import type { AICoachMode } from "@/lib/domain/types";
+import { buildConfirmedWeeklyPlanTasks } from "@/lib/repositories/ai-repo";
 import { generateLocalResponse } from "@/lib/services/ai-coach-service";
 
 describe("AI coach API support logic", () => {
@@ -29,6 +30,22 @@ describe("AI coach API support logic", () => {
     }
     expect(response.fatherTasks.length).toBeGreaterThan(0);
     expect(response.motherTasks.length).toBeGreaterThan(0);
+  });
+
+  it("includes a family task when confirming a weekly plan draft", () => {
+    const tasks = buildConfirmedWeeklyPlanTasks("weekly-plan-id", {
+      father_tasks: [{ title: "户外探索", plannedCount: 2 }],
+      mother_tasks: [{ title: "亲子共读", plannedCount: 3 }],
+      child_tasks: [{ title: "表达今天最喜欢的事", plannedCount: 3 }],
+      weekend_activity: "周末去公园做一次观察"
+    });
+
+    expect(tasks).toHaveLength(4);
+    expect(tasks.at(-1)).toMatchObject({
+      assignee_type: "family",
+      title: "周末去公园做一次观察",
+      planned_count: 1
+    });
   });
 });
 

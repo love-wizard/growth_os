@@ -1,5 +1,5 @@
 /* global Page, wx */
-const { getJson, patchJson } = require("../../services/api");
+const { getJson, patchJson, postJson } = require("../../services/api");
 
 const emptyPlan = {
   theme: "本周计划",
@@ -8,6 +8,18 @@ const emptyPlan = {
   motherTasks: [],
   familyTasks: [],
   childTasks: []
+};
+
+const emptyNextWeekDraft = {
+  draftId: "",
+  theme: "",
+  readingRecommendation: "",
+  englishRecommendation: "",
+  weekendActivity: "",
+  fatherTasks: [],
+  motherTasks: [],
+  childTasks: [],
+  isConfirmed: false
 };
 
 function formatTask(task) {
@@ -37,10 +49,32 @@ function formatPlan(plan) {
   };
 }
 
+function formatDraftTask(task) {
+  return `${task.title} ${task.plannedCount}次`;
+}
+
+function formatNextWeekDraft(response, draftId) {
+  return {
+    draftId,
+    theme: response.theme,
+    readingRecommendation: response.readingRecommendation,
+    englishRecommendation: response.englishRecommendation,
+    weekendActivity: response.weekendActivity,
+    fatherTasks: (response.fatherTasks || []).map(formatDraftTask),
+    motherTasks: (response.motherTasks || []).map(formatDraftTask),
+    childTasks: (response.childTasks || []).map(formatDraftTask),
+    isConfirmed: false
+  };
+}
+
 Page({
   data: {
     isLoading: false,
+    isGeneratingDraft: false,
+    isConfirmingDraft: false,
     errorMessage: "",
+    draftErrorMessage: "",
+    nextWeekDraft: null,
     ...emptyPlan
   },
   onShow() {
@@ -61,6 +95,73 @@ Page({
           isLoading: false,
           errorMessage:
             error.statusCode === 409 ? "请先完成首次配置" : error.error || "周计划加载失败"
+        });
+      });
+  },
+  generateNextWeekDraft() {
+    this.setData({
+      isGeneratingDraft: true,
+      draftErrorMessage: "",
+      nextWeekDraft: null
+    });
+
+    postJson("/api/ai/coach", {
+      mode: "weekly_plan_draft",
+      message: "请基于当前完成情况，重新生成一版下周周计划草案。"
+    })
+      .then((result) => {
+        if (!result.weeklyPlanDraftId) {
+          this.setData({
+            isGeneratingDraft: false,
+            draftErrorMessage: "草案生成成功，但缺少确认标识"
+          });
+          return;
+        }
+
+        this.setData({
+          isGeneratingDraft: false,
+          nextWeekDraft: formatNextWeekDraft(result.response, result.weeklyPlanDraftId)
+        });
+      })
+      .catch((error) => {
+        this.setData({
+          isGeneratingDraft: false,
+          draftErrorMessage:
+            error.statusCode === 409
+              ? "请先完成首次配置"
+              : error.error || "下周计划草案生成失败"
+        });
+      });
+  },
+  confirmNextWeekDraft() {
+    const draftId = this.data.nextWeekDraft && this.data.nextWeekDraft.draftId;
+
+    if (!draftId || (this.data.nextWeekDraft && this.data.nextWeekDraft.isConfirmed)) {
+      return;
+    }
+
+    this.setData({
+      isConfirmingDraft: true,
+      draftErrorMessage: ""
+    });
+
+    postJson(`/api/ai/weekly-plan-drafts/${draftId}/confirm`, {})
+      .then(() => {
+        wx.showToast({ title: "已更新下周计划", icon: "success" });
+        this.setData({
+          isConfirmingDraft: false,
+          nextWeekDraft: this.data.nextWeekDraft
+            ? {
+                ...this.data.nextWeekDraft,
+                isConfirmed: true
+              }
+            : null
+        });
+      })
+      .catch((error) => {
+        this.setData({
+          isConfirmingDraft: false,
+          draftErrorMessage: error.error || "采用下周计划失败"
         });
       });
   },

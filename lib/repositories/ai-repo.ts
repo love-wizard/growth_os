@@ -131,13 +131,26 @@ export async function confirmAIWeeklyPlanDraft(
   const weekStart = startOfNextWeek(input.referenceDate ?? new Date());
   const weekEnd = new Date(weekStart);
   weekEnd.setUTCDate(weekStart.getUTCDate() + 6);
+  const weekStartDate = weekStart.toISOString().slice(0, 10);
+  const weekEndDate = weekEnd.toISOString().slice(0, 10);
+
+  const { error: archiveError } = await supabase
+    .from("weekly_plans")
+    .update({ status: "archived" })
+    .eq("child_id", input.draft.child_id)
+    .eq("status", "active")
+    .eq("week_start_date", weekStartDate);
+
+  if (archiveError) {
+    throw archiveError;
+  }
 
   const { data: plan, error: planError } = await supabase
     .from("weekly_plans")
     .insert({
       child_id: input.draft.child_id,
-      week_start_date: weekStart.toISOString().slice(0, 10),
-      week_end_date: weekEnd.toISOString().slice(0, 10),
+      week_start_date: weekStartDate,
+      week_end_date: weekEndDate,
       theme: input.draft.theme,
       source: "ai_confirmed",
       status: "active",
@@ -153,11 +166,7 @@ export async function confirmAIWeeklyPlanDraft(
   }
 
   const weeklyPlanId = plan.id as UUID;
-  const tasks = [
-    ...toWeeklyTasks(weeklyPlanId, "father", input.draft.father_tasks),
-    ...toWeeklyTasks(weeklyPlanId, "mother", input.draft.mother_tasks),
-    ...toWeeklyTasks(weeklyPlanId, "child", input.draft.child_tasks)
-  ];
+  const tasks = buildConfirmedWeeklyPlanTasks(weeklyPlanId, input.draft);
 
   const { error: taskError } = await supabase.from("weekly_tasks").insert(tasks);
 
@@ -199,6 +208,30 @@ export interface AIWeeklyPlanDraftRecord {
 interface DraftTaskRecord {
   title: string;
   plannedCount: number;
+}
+
+export function buildConfirmedWeeklyPlanTasks(
+  weeklyPlanId: UUID,
+  draft: Pick<
+    AIWeeklyPlanDraftRecord,
+    "father_tasks" | "mother_tasks" | "child_tasks" | "weekend_activity"
+  >
+) {
+  return [
+    ...toWeeklyTasks(weeklyPlanId, "father", draft.father_tasks),
+    ...toWeeklyTasks(weeklyPlanId, "mother", draft.mother_tasks),
+    ...toWeeklyTasks(weeklyPlanId, "child", draft.child_tasks),
+    ...(draft.weekend_activity
+      ? [
+          {
+            weekly_plan_id: weeklyPlanId,
+            assignee_type: "family" as const,
+            title: draft.weekend_activity,
+            planned_count: 1
+          }
+        ]
+      : [])
+  ];
 }
 
 function toWeeklyTasks(

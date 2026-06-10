@@ -10,6 +10,72 @@
     <view class="muted">{{weekendActivity}}</view>
   </view>
 
+  <view class="section card primary-card stack">
+    <view>
+      <view class="caption">下周计划</view>
+      <view class="title">想换一版节奏，可以让 AI 重新想一版</view>
+      <view class="muted">不会改动本周任务，确认后只覆盖下周计划。</view>
+    </view>
+    <button class="button-secondary" loading="{{isGeneratingDraft}}" bindtap="generateNextWeekDraft">
+      让AI重新想一版下周计划
+    </button>
+    <view wx:if="{{draftErrorMessage}}" class="muted">{{draftErrorMessage}}</view>
+  </view>
+
+  <view wx:if="{{nextWeekDraft}}" class="section card stack">
+    <view>
+      <view class="caption">下周草案</view>
+      <view class="title">《{{nextWeekDraft.theme}}》</view>
+    </view>
+    <view class="note-box">
+      <view class="caption">阅读建议</view>
+      <view class="muted">{{nextWeekDraft.readingRecommendation}}</view>
+    </view>
+    <view class="note-box">
+      <view class="caption">英语建议</view>
+      <view class="muted">{{nextWeekDraft.englishRecommendation}}</view>
+    </view>
+    <view class="note-box">
+      <view class="caption">周末活动</view>
+      <view class="muted">{{nextWeekDraft.weekendActivity}}</view>
+    </view>
+    <view wx:if="{{nextWeekDraft.fatherTasks.length}}" class="stack">
+      <view class="caption">爸爸任务</view>
+      <view class="task-row" wx:for="{{nextWeekDraft.fatherTasks}}" wx:key="*this">
+        <view class="role-badge role-father">爸爸</view>
+        <view class="task-main">
+          <view class="task-title">{{item}}</view>
+        </view>
+      </view>
+    </view>
+    <view wx:if="{{nextWeekDraft.motherTasks.length}}" class="stack">
+      <view class="caption">妈妈任务</view>
+      <view class="task-row" wx:for="{{nextWeekDraft.motherTasks}}" wx:key="*this">
+        <view class="role-badge role-mother">妈妈</view>
+        <view class="task-main">
+          <view class="task-title">{{item}}</view>
+        </view>
+      </view>
+    </view>
+    <view wx:if="{{nextWeekDraft.childTasks.length}}" class="stack">
+      <view class="caption">孩子任务</view>
+      <view class="task-row" wx:for="{{nextWeekDraft.childTasks}}" wx:key="*this">
+        <view class="role-badge role-family">孩子</view>
+        <view class="task-main">
+          <view class="task-title">{{item}}</view>
+        </view>
+      </view>
+    </view>
+    <button
+      class="button-primary"
+      loading="{{isConfirmingDraft}}"
+      disabled="{{nextWeekDraft.isConfirmed}}"
+      bindtap="confirmNextWeekDraft"
+    >
+      {{nextWeekDraft.isConfirmed ? '已采用到下周' : '采用这份下周计划'}}
+    </button>
+  </view>
+
   <view wx:if="{{errorMessage}}" class="section card warm-card">
     <view class="title">{{errorMessage}}</view>
     <view class="muted">完成首次配置后会自动生成本周任务。</view>
