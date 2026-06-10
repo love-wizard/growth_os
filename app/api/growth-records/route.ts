@@ -22,7 +22,8 @@ export async function GET() {
     }
 
     const records = await listGrowthRecordsForFamily(supabase, serviceRoleSupabase, {
-      familyId: membership.family_id
+      familyId: membership.family_id,
+      limit: 20
     });
 
     return NextResponse.json({ records });

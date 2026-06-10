@@ -129,7 +129,11 @@ export async function getGrowthRecordForSharePreview(
   }) | null;
 }
 
-export async function listRecentGrowthRecords(supabase: SupabaseClient, childId: UUID) {
+export async function listRecentGrowthRecords(
+  supabase: SupabaseClient,
+  childId: UUID,
+  limit = 20
+) {
   const { data, error } = await supabase
     .from("growth_records")
     .select(
@@ -138,7 +142,7 @@ export async function listRecentGrowthRecords(supabase: SupabaseClient, childId:
     .eq("child_id", childId)
     .is("deleted_at", null)
     .order("happened_on", { ascending: false })
-    .limit(50);
+    .limit(limit);
 
   if (error) {
     throw error;

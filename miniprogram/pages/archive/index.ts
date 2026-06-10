@@ -1,6 +1,8 @@
 import { getJson, postJson, uploadFile } from "../../services/api";
 
 const growthRecordPrefillStorageKey = "growth_os_growth_record_prefill";
+const growthRecordsCacheStorageKey = "growth_os_growth_records_cache";
+const growthRecordsCacheTtlMs = 60 * 1000;
 
 function todayString() {
   return new Date().toISOString().slice(0, 10);
@@ -93,7 +95,30 @@ Page({
   },
   onShow() {
     this.consumePrefilledRecord();
-    this.loadRecords();
+    const usedCache = this.hydrateRecordCache();
+    this.loadRecords({ useLoadingState: !usedCache, skipIfFresh: usedCache });
+  },
+  hydrateRecordCache() {
+    const cached = wx.getStorageSync(growthRecordsCacheStorageKey) as
+      | {
+          savedAt?: number;
+          records?: unknown[];
+        }
+      | undefined;
+
+    if (!cached?.savedAt || !cached.records) {
+      return false;
+    }
+
+    if (Date.now() - cached.savedAt > growthRecordsCacheTtlMs) {
+      return false;
+    }
+
+    this.setData({
+      isLoading: false,
+      records: cached.records
+    });
+    return true;
   },
   consumePrefilledRecord() {
     const draft = wx.getStorageSync(growthRecordPrefillStorageKey) as
@@ -110,8 +135,21 @@ Page({
       recordTags: draft.tags || "成长瞬间"
     });
   },
-  loadRecords() {
-    this.setData({ isLoading: true, errorMessage: "" });
+  loadRecords(options?: { useLoadingState?: boolean; skipIfFresh?: boolean }) {
+    if (options?.skipIfFresh) {
+      const cached = wx.getStorageSync(growthRecordsCacheStorageKey) as
+        | { savedAt?: number }
+        | undefined;
+
+      if (cached?.savedAt && Date.now() - cached.savedAt <= growthRecordsCacheTtlMs) {
+        return;
+      }
+    }
+
+    if (options?.useLoadingState !== false) {
+      this.setData({ isLoading: true, errorMessage: "" });
+    }
+
     void getJson<{
       records: Array<{
         id: string;
@@ -126,6 +164,10 @@ Page({
     }>("/api/growth-records")
       .then((response) => {
         const records = (response.records || []).map(formatRecord);
+        wx.setStorageSync(growthRecordsCacheStorageKey, {
+          savedAt: Date.now(),
+          records
+        });
         this.setData({
           isLoading: false,
           records

@@ -30,7 +30,7 @@ export type GrowthRecordRequest = z.infer<typeof growthRecordInputSchema>;
 export async function listGrowthRecordsForFamily(
   supabase: SupabaseClient,
   storageSupabase: SupabaseClient,
-  input: { familyId: UUID }
+  input: { familyId: UUID; limit?: number }
 ) {
   const childId = await getFamilyChildId(supabase, input.familyId);
 
@@ -38,13 +38,13 @@ export async function listGrowthRecordsForFamily(
     return [];
   }
 
-  const records = await listRecentGrowthRecords(supabase, childId);
+  const records = await listRecentGrowthRecords(supabase, childId, input.limit ?? 20);
 
   return Promise.all(
     records.map(async (record) => ({
       ...record,
       growth_record_media: await Promise.all(
-        (record.growth_record_media ?? []).map(async (media) => {
+        (record.growth_record_media ?? []).slice(0, 1).map(async (media) => {
           const signed = await createGrowthMediaSignedReadUrl(
             storageSupabase,
             media.storage_path
