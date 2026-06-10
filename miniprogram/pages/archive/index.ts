@@ -111,26 +111,54 @@ Page({
     records: []
   },
   preloadShareImages(records: Array<{ id: string; photoUrls?: string[]; shareImageUrl?: string }>) {
-    records.forEach((record) => {
-      const firstPhotoUrl = record.photoUrls?.[0];
-      if (!firstPhotoUrl || record.shareImageUrl) {
+    const preloadTargets = records
+      .filter((record) => record.photoUrls?.[0] && !record.shareImageUrl)
+      .slice(0, 3);
+
+    if (!preloadTargets.length) {
+      return;
+    }
+
+    void Promise.all(
+      preloadTargets.map(
+        (record) =>
+          new Promise<{ id: string; shareImageUrl: string } | null>((resolve) => {
+            wx.getImageInfo({
+              src: record.photoUrls?.[0] || "",
+              success: (result) => {
+                resolve({ id: record.id, shareImageUrl: result.path });
+              },
+              fail: () => resolve(null)
+            });
+          })
+      )
+    ).then((results) => {
+      const updates = new Map(
+        results
+          .filter(
+            (result): result is { id: string; shareImageUrl: string } =>
+              Boolean(result?.id && result.shareImageUrl)
+          )
+          .map((result) => [result.id, result.shareImageUrl])
+      );
+
+      if (!updates.size) {
         return;
       }
 
-      wx.getImageInfo({
-        src: firstPhotoUrl,
-        success: (result) => {
-          const nextRecords = (this.data.records as Array<{
-            id: string;
-            shareImageUrl?: string;
-          }>).map((item) =>
-            item.id === record.id ? { ...item, shareImageUrl: result.path } : item
-          );
+      const nextRecords = (this.data.records as Array<{
+        id: string;
+        shareImageUrl?: string;
+      }>).map((item) =>
+        updates.has(item.id) ? { ...item, shareImageUrl: updates.get(item.id) } : item
+      );
 
-          this.setData({
-            records: nextRecords
-          });
-        }
+      wx.setStorageSync(growthRecordsCacheStorageKey, {
+        savedAt: Date.now(),
+        records: nextRecords
+      });
+      this.setData({
+        records: nextRecords
       });
     });
   },

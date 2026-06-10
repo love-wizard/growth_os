@@ -2,6 +2,8 @@
 const { getJson } = require("../../services/api");
 const growthRecordPrefillStorageKey = "growth_os_growth_record_prefill";
 const dashboardCacheStorageKey = "growth_os_dashboard_cache";
+const weeklyPlanCacheStorageKey = "growth_os_weekly_plan_cache";
+const growthRecordsCacheStorageKey = "growth_os_growth_records_cache";
 const dashboardCacheTtlMs = 60 * 1000;
 
 const roleLabels = {
@@ -25,6 +27,53 @@ function formatTask(task) {
     roleClass: roleClasses[task.assignee_type] || "role-family",
     title: task.title,
     progress: `${task.completed_count}/${task.planned_count}`
+  };
+}
+
+function isFreshCache(savedAt, ttlMs = dashboardCacheTtlMs) {
+  return Boolean(savedAt && Date.now() - savedAt <= ttlMs);
+}
+
+function formatWeeklyPlanTask(task) {
+  return {
+    id: task.id,
+    title: task.title,
+    progress: `${task.completed_count}/${task.planned_count}`,
+    completedCount: task.completed_count,
+    plannedCount: task.planned_count,
+    note: task.status === "completed" ? "已完成" : "慢慢来，不需要补任务"
+  };
+}
+
+function formatWeeklyPlanCache(plan) {
+  if (!plan) {
+    return null;
+  }
+
+  const grouped = plan.groupedTasks || {};
+  return {
+    theme: plan.theme,
+    weekendActivity: plan.weekend_activity || "留一个轻松的家庭陪伴时刻。",
+    fatherTasks: (grouped.father || []).map(formatWeeklyPlanTask),
+    motherTasks: (grouped.mother || []).map(formatWeeklyPlanTask),
+    familyTasks: (grouped.family || []).map(formatWeeklyPlanTask),
+    childTasks: (grouped.child || []).map(formatWeeklyPlanTask)
+  };
+}
+
+function formatGrowthRecordCache(record) {
+  const tags = record.tags && record.tags.length ? record.tags : ["成长瞬间"];
+  return {
+    id: record.id,
+    date: record.happened_on,
+    createdAt: record.created_at || "",
+    title: tags[0],
+    text: record.text,
+    tags,
+    photoUrls: (record.growth_record_media || [])
+      .filter((media) => media.media_type === "photo" && media.signed_url)
+      .map((media) => media.signed_url),
+    shareImageUrl: ""
   };
 }
 
@@ -59,7 +108,7 @@ Page({
       return false;
     }
 
-    if (Date.now() - cached.savedAt > dashboardCacheTtlMs) {
+    if (!isFreshCache(cached.savedAt)) {
       return false;
     }
 
@@ -89,7 +138,7 @@ Page({
   loadDashboard(options) {
     if (options && options.skipIfFresh) {
       const cached = wx.getStorageSync(dashboardCacheStorageKey);
-      if (cached && cached.savedAt && Date.now() - cached.savedAt <= dashboardCacheTtlMs) {
+      if (isFreshCache(cached && cached.savedAt)) {
         return;
       }
     }
@@ -105,6 +154,7 @@ Page({
           dashboard
         });
         this.applyDashboard(dashboard);
+        this.warmTabCaches();
       })
       .catch((error) => {
         if (error.statusCode === 409) {
@@ -121,6 +171,36 @@ Page({
           errorMessage: error.error || "首页数据加载失败"
         });
       });
+  },
+  warmTabCaches() {
+    const weeklyPlanCache = wx.getStorageSync(weeklyPlanCacheStorageKey);
+    if (!isFreshCache(weeklyPlanCache && weeklyPlanCache.savedAt)) {
+      getJson("/api/weekly-plan/current")
+        .then((response) => {
+          const weeklyPlan = formatWeeklyPlanCache(response.weeklyPlan);
+          if (!weeklyPlan) {
+            return;
+          }
+
+          wx.setStorageSync(weeklyPlanCacheStorageKey, {
+            savedAt: Date.now(),
+            weeklyPlan
+          });
+        })
+        .catch(() => {});
+    }
+
+    const growthRecordsCache = wx.getStorageSync(growthRecordsCacheStorageKey);
+    if (!isFreshCache(growthRecordsCache && growthRecordsCache.savedAt)) {
+      getJson("/api/growth-records")
+        .then((response) => {
+          wx.setStorageSync(growthRecordsCacheStorageKey, {
+            savedAt: Date.now(),
+            records: (response.records || []).map(formatGrowthRecordCache)
+          });
+        })
+        .catch(() => {});
+    }
   },
   startAction() {
     if (this.data.setupRequired) {

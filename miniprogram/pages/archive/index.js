@@ -74,23 +74,48 @@ Page({
     records: []
   },
   preloadShareImages(records) {
-    records.forEach((record) => {
-      const firstPhotoUrl = record.photoUrls && record.photoUrls[0];
-      if (!firstPhotoUrl || record.shareImageUrl) {
+    const preloadTargets = records
+      .filter((record) => record.photoUrls && record.photoUrls[0] && !record.shareImageUrl)
+      .slice(0, 3);
+
+    if (!preloadTargets.length) {
+      return;
+    }
+
+    Promise.all(
+      preloadTargets.map(
+        (record) =>
+          new Promise((resolve) => {
+            wx.getImageInfo({
+              src: (record.photoUrls && record.photoUrls[0]) || "",
+              success: (result) => {
+                resolve({ id: record.id, shareImageUrl: result.path });
+              },
+              fail: () => resolve(null)
+            });
+          })
+      )
+    ).then((results) => {
+      const updates = new Map(
+        results
+          .filter((result) => result && result.id && result.shareImageUrl)
+          .map((result) => [result.id, result.shareImageUrl])
+      );
+
+      if (!updates.size) {
         return;
       }
 
-      wx.getImageInfo({
-        src: firstPhotoUrl,
-        success: (result) => {
-          const nextRecords = this.data.records.map((item) =>
-            item.id === record.id ? { ...item, shareImageUrl: result.path } : item
-          );
+      const nextRecords = this.data.records.map((item) =>
+        updates.has(item.id) ? { ...item, shareImageUrl: updates.get(item.id) } : item
+      );
 
-          this.setData({
-            records: nextRecords
-          });
-        }
+      wx.setStorageSync(growthRecordsCacheStorageKey, {
+        savedAt: Date.now(),
+        records: nextRecords
+      });
+      this.setData({
+        records: nextRecords
       });
     });
   },

@@ -7,6 +7,9 @@ const {
   postJsonWithOptions
 } = require("../../services/api");
 const aiRequestTimeoutMs = 30000;
+const weeklyPlanCacheStorageKey = "growth_os_weekly_plan_cache";
+const weeklyPlanCacheTtlMs = 60 * 1000;
+const dashboardCacheStorageKey = "growth_os_dashboard_cache";
 
 const emptyPlan = {
   theme: "本周计划",
@@ -74,6 +77,10 @@ function formatNextWeekDraft(response, draftId) {
   };
 }
 
+function isFreshCache(savedAt, ttlMs = weeklyPlanCacheTtlMs) {
+  return Boolean(savedAt && Date.now() - savedAt <= ttlMs);
+}
+
 Page({
   data: {
     isLoading: false,
@@ -85,16 +92,46 @@ Page({
     ...emptyPlan
   },
   onShow() {
-    this.loadWeeklyPlan();
+    const usedCache = this.hydrateWeeklyPlanCache();
+    this.loadWeeklyPlan({ useLoadingState: !usedCache, skipIfFresh: usedCache });
   },
-  loadWeeklyPlan() {
-    this.setData({ isLoading: true, errorMessage: "" });
+  hydrateWeeklyPlanCache() {
+    const cached = wx.getStorageSync(weeklyPlanCacheStorageKey);
+
+    if (!cached || !cached.savedAt || !cached.weeklyPlan || !isFreshCache(cached.savedAt)) {
+      return false;
+    }
+
+    this.setData({
+      isLoading: false,
+      errorMessage: "",
+      ...cached.weeklyPlan
+    });
+    return true;
+  },
+  loadWeeklyPlan(options) {
+    if (options && options.skipIfFresh) {
+      const cached = wx.getStorageSync(weeklyPlanCacheStorageKey);
+      if (isFreshCache(cached && cached.savedAt)) {
+        return;
+      }
+    }
+
+    if (!options || options.useLoadingState !== false) {
+      this.setData({ isLoading: true, errorMessage: "" });
+    }
+
     getJson("/api/weekly-plan/current")
       .then((response) => {
+        const weeklyPlan = formatPlan(response.weeklyPlan);
+        wx.setStorageSync(weeklyPlanCacheStorageKey, {
+          savedAt: Date.now(),
+          weeklyPlan
+        });
         this.setData({
           isLoading: false,
           errorMessage: "",
-          ...formatPlan(response.weeklyPlan)
+          ...weeklyPlan
         });
       })
       .catch((error) => {
@@ -191,6 +228,8 @@ Page({
     })
       .then(() => {
         wx.showToast({ title: "已记录", icon: "success" });
+        wx.removeStorageSync(dashboardCacheStorageKey);
+        wx.removeStorageSync(weeklyPlanCacheStorageKey);
         this.loadWeeklyPlan();
       })
       .catch((error) => {

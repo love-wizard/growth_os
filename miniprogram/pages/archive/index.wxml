@@ -46,6 +46,7 @@
           wx:key="photoUrl"
           src="{{photoUrl}}"
           mode="aspectFill"
+          lazy-load="{{true}}"
           data-current="{{photoUrl}}"
           data-urls="{{item.photoUrls}}"
           bindtap="previewRecordPhoto"
