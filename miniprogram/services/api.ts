@@ -215,3 +215,18 @@ export function setSession(session: GrowthOSSession) {
 export function clearSession() {
   wx.removeStorageSync(sessionStorageKey);
 }
+
+export function isTimeoutRequestError(error: unknown) {
+  if (!error || typeof error !== "object") {
+    return false;
+  }
+
+  const errMsg =
+    "errMsg" in error && typeof error.errMsg === "string"
+      ? error.errMsg
+      : "error" in error && typeof error.error === "string"
+        ? error.error
+        : "";
+
+  return errMsg.toLowerCase().includes("timeout");
+}

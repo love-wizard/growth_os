@@ -188,10 +188,26 @@ function clearSession() {
   wx.removeStorageSync(sessionStorageKey);
 }
 
+function isTimeoutRequestError(error) {
+  if (!error || typeof error !== "object") {
+    return false;
+  }
+
+  const errMsg =
+    typeof error.errMsg === "string"
+      ? error.errMsg
+      : typeof error.error === "string"
+        ? error.error
+        : "";
+
+  return errMsg.toLowerCase().includes("timeout");
+}
+
 module.exports = {
   clearSession,
   getJson,
   getSession,
+  isTimeoutRequestError,
   patchJson,
   postJson,
   postJsonWithOptions,

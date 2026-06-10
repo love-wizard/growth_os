@@ -1,4 +1,10 @@
-import { getJson, patchJson, postJson, postJsonWithOptions } from "../../services/api";
+import {
+  getJson,
+  isTimeoutRequestError,
+  patchJson,
+  postJson,
+  postJsonWithOptions
+} from "../../services/api";
 
 const aiRequestTimeoutMs = 30000;
 
@@ -166,12 +172,14 @@ Page({
         });
       })
       .catch((error) => {
+        const errorMessage = isTimeoutRequestError(error)
+          ? "这次生成下周计划稍久，已超过等待时间，请再试一次。"
+          : error.statusCode === 409
+            ? "请先完成首次配置"
+            : error.error || "下周计划草案生成失败";
         this.setData({
           isGeneratingDraft: false,
-          draftErrorMessage:
-            error.statusCode === 409
-              ? "请先完成首次配置"
-              : error.error || "下周计划草案生成失败"
+          draftErrorMessage: errorMessage
         });
       });
   },
@@ -201,9 +209,12 @@ Page({
         });
       })
       .catch((error) => {
+        const errorMessage = isTimeoutRequestError(error)
+          ? "采用下周计划时等待超时，请再试一次。"
+          : error.error || "采用下周计划失败";
         this.setData({
           isConfirmingDraft: false,
-          draftErrorMessage: error.error || "采用下周计划失败"
+          draftErrorMessage: errorMessage
         });
       });
   },

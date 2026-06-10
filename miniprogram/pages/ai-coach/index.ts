@@ -1,4 +1,9 @@
-import { getJson, postJson, postJsonWithOptions } from "../../services/api";
+import {
+  getJson,
+  isTimeoutRequestError,
+  postJson,
+  postJsonWithOptions
+} from "../../services/api";
 
 const aiRequestTimeoutMs = 30000;
 
@@ -263,10 +268,14 @@ Page({
         });
       })
       .catch((error) => {
+        const errorMessage = isTimeoutRequestError(error)
+          ? "这次思考稍久，已超过等待时间，请再试一次。"
+          : error.statusCode === 409
+            ? "请先完成首次配置，再使用AI教练"
+            : error.error || "AI教练暂时不可用";
         this.setData({
           isLoading: false,
-          errorMessage:
-            error.statusCode === 409 ? "请先完成首次配置，再使用AI教练" : error.error || "AI教练暂时不可用"
+          errorMessage: errorMessage
         });
       });
   },
@@ -291,9 +300,12 @@ Page({
         });
       })
       .catch((error) => {
+        const errorMessage = isTimeoutRequestError(error)
+          ? "采用草案时等待超时，请再试一次。"
+          : error.error || "采用计划失败";
         this.setData({
           isLoading: false,
-          errorMessage: error.error || "采用计划失败"
+          errorMessage
         });
       });
   },
