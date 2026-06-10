@@ -9,6 +9,7 @@ import {
   getAIWeeklyPlanDraftForFamily
 } from "@/lib/repositories/ai-repo";
 import { getAcceptedFamilyMembership } from "@/lib/repositories/family-repo";
+import { invalidateFamilyReadCaches } from "@/lib/services/response-cache";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export async function POST(
@@ -55,6 +56,7 @@ export async function POST(
       });
     }
 
+    invalidateFamilyReadCaches(membership.family_id);
     return NextResponse.json({ weeklyPlanId });
   } catch (error) {
     if (error instanceof Error && error.name === "AuthRequiredError") {

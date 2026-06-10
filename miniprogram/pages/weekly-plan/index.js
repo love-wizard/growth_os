@@ -8,7 +8,8 @@ const {
 } = require("../../services/api");
 const aiRequestTimeoutMs = 30000;
 const weeklyPlanCacheStorageKey = "growth_os_weekly_plan_cache";
-const weeklyPlanCacheTtlMs = 60 * 1000;
+const weeklyPlanCacheRefreshMs = 5 * 60 * 1000;
+const weeklyPlanCacheDisplayMs = 24 * 60 * 60 * 1000;
 const dashboardCacheStorageKey = "growth_os_dashboard_cache";
 
 const emptyPlan = {
@@ -77,7 +78,11 @@ function formatNextWeekDraft(response, draftId) {
   };
 }
 
-function isFreshCache(savedAt, ttlMs = weeklyPlanCacheTtlMs) {
+function isFreshCache(savedAt, ttlMs = weeklyPlanCacheRefreshMs) {
+  return Boolean(savedAt && Date.now() - savedAt <= ttlMs);
+}
+
+function canDisplayCache(savedAt, ttlMs = weeklyPlanCacheDisplayMs) {
   return Boolean(savedAt && Date.now() - savedAt <= ttlMs);
 }
 
@@ -98,7 +103,7 @@ Page({
   hydrateWeeklyPlanCache() {
     const cached = wx.getStorageSync(weeklyPlanCacheStorageKey);
 
-    if (!cached || !cached.savedAt || !cached.weeklyPlan || !isFreshCache(cached.savedAt)) {
+    if (!cached || !cached.savedAt || !cached.weeklyPlan || !canDisplayCache(cached.savedAt)) {
       return false;
     }
 

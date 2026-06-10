@@ -2,7 +2,14 @@ import { NextResponse } from "next/server";
 import { requireAuthenticatedUser } from "@/lib/auth/family-access";
 import { getAcceptedFamilyMembership } from "@/lib/repositories/family-repo";
 import { getDashboardData } from "@/lib/services/dashboard-service";
+import {
+  familyDashboardCacheKey,
+  getCachedResponse,
+  setCachedResponse
+} from "@/lib/services/response-cache";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+
+const dashboardCacheTtlMs = 30 * 1000;
 
 export async function GET() {
   const supabase = await createServerSupabaseClient();
@@ -15,7 +22,14 @@ export async function GET() {
       return NextResponse.json({ error: "Family workspace is required" }, { status: 409 });
     }
 
+    const cacheKey = familyDashboardCacheKey(membership.family_id);
+    const cachedDashboard = getCachedResponse(cacheKey);
+    if (cachedDashboard) {
+      return NextResponse.json(cachedDashboard);
+    }
+
     const dashboard = await getDashboardData(supabase, membership.family_id);
+    setCachedResponse(cacheKey, dashboard, dashboardCacheTtlMs);
     return NextResponse.json(dashboard);
   } catch (error) {
     if (error instanceof Error && error.name === "AuthRequiredError") {

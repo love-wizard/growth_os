@@ -4,7 +4,8 @@ const growthRecordPrefillStorageKey = "growth_os_growth_record_prefill";
 const dashboardCacheStorageKey = "growth_os_dashboard_cache";
 const weeklyPlanCacheStorageKey = "growth_os_weekly_plan_cache";
 const growthRecordsCacheStorageKey = "growth_os_growth_records_cache";
-const dashboardCacheTtlMs = 60 * 1000;
+const dashboardCacheRefreshMs = 5 * 60 * 1000;
+const dashboardCacheDisplayMs = 24 * 60 * 60 * 1000;
 
 const roleLabels = {
   father: "爸爸",
@@ -30,7 +31,11 @@ function formatTask(task) {
   };
 }
 
-function isFreshCache(savedAt, ttlMs = dashboardCacheTtlMs) {
+function isFreshCache(savedAt, ttlMs = dashboardCacheRefreshMs) {
+  return Boolean(savedAt && Date.now() - savedAt <= ttlMs);
+}
+
+function canDisplayCache(savedAt, ttlMs = dashboardCacheDisplayMs) {
   return Boolean(savedAt && Date.now() - savedAt <= ttlMs);
 }
 
@@ -108,7 +113,7 @@ Page({
       return false;
     }
 
-    if (!isFreshCache(cached.savedAt)) {
+    if (!canDisplayCache(cached.savedAt)) {
       return false;
     }
 

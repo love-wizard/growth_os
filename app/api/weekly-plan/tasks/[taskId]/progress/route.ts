@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { requireAuthenticatedUser } from "@/lib/auth/family-access";
 import { recordCompanionshipActionCompleted } from "@/lib/metrics/weekly-plan-events";
 import { getAcceptedFamilyMembership } from "@/lib/repositories/family-repo";
+import { invalidateFamilyReadCaches } from "@/lib/services/response-cache";
 import {
   updateWeeklyTaskProgressForFamily,
   WeeklyPlanNotFoundError,
@@ -43,6 +44,7 @@ export async function PATCH(
       });
     }
 
+    invalidateFamilyReadCaches(membership.family_id);
     return NextResponse.json({ task: result.task });
   } catch (error) {
     if (error instanceof Error && error.name === "AuthRequiredError") {

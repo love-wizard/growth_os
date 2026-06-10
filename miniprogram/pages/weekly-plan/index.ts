@@ -8,7 +8,8 @@ import {
 
 const aiRequestTimeoutMs = 30000;
 const weeklyPlanCacheStorageKey = "growth_os_weekly_plan_cache";
-const weeklyPlanCacheTtlMs = 60 * 1000;
+const weeklyPlanCacheRefreshMs = 5 * 60 * 1000;
+const weeklyPlanCacheDisplayMs = 24 * 60 * 60 * 1000;
 const dashboardCacheStorageKey = "growth_os_dashboard_cache";
 
 const emptyPlan = {
@@ -104,7 +105,11 @@ function formatNextWeekDraft(
   };
 }
 
-function isFreshCache(savedAt?: number, ttlMs = weeklyPlanCacheTtlMs) {
+function isFreshCache(savedAt?: number, ttlMs = weeklyPlanCacheRefreshMs) {
+  return Boolean(savedAt && Date.now() - savedAt <= ttlMs);
+}
+
+function canDisplayCache(savedAt?: number, ttlMs = weeklyPlanCacheDisplayMs) {
   return Boolean(savedAt && Date.now() - savedAt <= ttlMs);
 }
 
@@ -127,7 +132,7 @@ Page({
       | { savedAt?: number; weeklyPlan?: typeof emptyPlan }
       | undefined;
 
-    if (!cached?.savedAt || !cached.weeklyPlan || !isFreshCache(cached.savedAt)) {
+    if (!cached?.savedAt || !cached.weeklyPlan || !canDisplayCache(cached.savedAt)) {
       return false;
     }
 

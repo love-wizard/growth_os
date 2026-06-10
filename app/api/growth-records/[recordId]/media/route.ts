@@ -5,6 +5,7 @@ import {
   GrowthRecordError,
   attachGrowthRecordPhotoForFamily
 } from "@/lib/services/growth-record-service";
+import { invalidateFamilyReadCaches } from "@/lib/services/response-cache";
 import { createServerSupabaseClient, createServiceRoleSupabaseClient } from "@/lib/supabase/server";
 
 const maxUploadBytes = 10 * 1024 * 1024;
@@ -50,6 +51,7 @@ export async function POST(
       }
     );
 
+    invalidateFamilyReadCaches(membership.family_id);
     return NextResponse.json({ media }, { status: 201 });
   } catch (error) {
     if (error instanceof Error && error.name === "AuthRequiredError") {

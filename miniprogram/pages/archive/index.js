@@ -2,7 +2,8 @@
 const { getJson, postJson, uploadFile } = require("../../services/api");
 const growthRecordPrefillStorageKey = "growth_os_growth_record_prefill";
 const growthRecordsCacheStorageKey = "growth_os_growth_records_cache";
-const growthRecordsCacheTtlMs = 60 * 1000;
+const growthRecordsCacheRefreshMs = 5 * 60 * 1000;
+const growthRecordsCacheDisplayMs = 30 * 60 * 1000;
 
 function todayString() {
   return new Date().toISOString().slice(0, 10);
@@ -150,7 +151,7 @@ Page({
       return false;
     }
 
-    if (Date.now() - cached.savedAt > growthRecordsCacheTtlMs) {
+    if (Date.now() - cached.savedAt > growthRecordsCacheDisplayMs) {
       return false;
     }
 
@@ -176,7 +177,7 @@ Page({
   loadRecords(options) {
     if (options && options.skipIfFresh) {
       const cached = wx.getStorageSync(growthRecordsCacheStorageKey);
-      if (cached && cached.savedAt && Date.now() - cached.savedAt <= growthRecordsCacheTtlMs) {
+      if (cached && cached.savedAt && Date.now() - cached.savedAt <= growthRecordsCacheRefreshMs) {
         return;
       }
     }

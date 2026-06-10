@@ -6,8 +6,16 @@ import {
   listGrowthRecordsForFamily,
   saveGrowthRecord
 } from "@/lib/services/growth-record-service";
+import {
+  familyGrowthRecordsCacheKey,
+  getCachedResponse,
+  invalidateFamilyReadCaches,
+  setCachedResponse
+} from "@/lib/services/response-cache";
 import { createServerSupabaseClient, createServiceRoleSupabaseClient } from "@/lib/supabase/server";
 import { growthRecordInputSchema } from "@/lib/validation/schemas";
+
+const growthRecordsCacheTtlMs = 60 * 1000;
 
 export async function GET() {
   const supabase = await createServerSupabaseClient();
@@ -21,11 +29,18 @@ export async function GET() {
       return NextResponse.json({ error: "Family workspace is required" }, { status: 409 });
     }
 
+    const cacheKey = familyGrowthRecordsCacheKey(membership.family_id);
+    const cachedRecords = getCachedResponse(cacheKey);
+    if (cachedRecords) {
+      return NextResponse.json({ records: cachedRecords });
+    }
+
     const records = await listGrowthRecordsForFamily(supabase, serviceRoleSupabase, {
       familyId: membership.family_id,
       limit: 20
     });
 
+    setCachedResponse(cacheKey, records, growthRecordsCacheTtlMs);
     return NextResponse.json({ records });
   } catch (error) {
     if (error instanceof Error && error.name === "AuthRequiredError") {
@@ -55,6 +70,7 @@ export async function POST(request: NextRequest) {
       record: body
     });
 
+    invalidateFamilyReadCaches(membership.family_id);
     return NextResponse.json({ record }, { status: 201 });
   } catch (error) {
     if (error instanceof Error && error.name === "AuthRequiredError") {
