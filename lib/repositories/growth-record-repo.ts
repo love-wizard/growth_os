@@ -92,7 +92,7 @@ export async function getGrowthRecordForFamily(
   const { data, error } = await supabase
     .from("growth_records")
     .select(
-      "id,child_id,happened_on,text,tags,parent_notes,draft_status,deleted_at,restore_until,child_profiles!inner(family_id)"
+      "id,child_id,happened_on,text,tags,parent_notes,draft_status,deleted_at,restore_until,growth_record_media(id,storage_path,media_type,file_name,mime_type,size_bytes),child_profiles!inner(family_id)"
     )
     .eq("id", input.recordId)
     .eq("child_profiles.family_id", input.familyId)

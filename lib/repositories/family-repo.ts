@@ -57,3 +57,17 @@ export async function createAcceptedFamilyMember(
     throw error;
   }
 }
+
+export async function getFamilyName(supabase: SupabaseClient, familyId: UUID) {
+  const { data, error } = await supabase
+    .from("families")
+    .select("name")
+    .eq("id", familyId)
+    .maybeSingle();
+
+  if (error) {
+    throw error;
+  }
+
+  return data?.name ?? "";
+}

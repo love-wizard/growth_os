@@ -17,17 +17,19 @@ describe("privacy boundaries", () => {
     expect(records[0]).not.toHaveProperty("storage_path");
   });
 
-  it("keeps WeChat record share previews media-free", () => {
+  it("keeps WeChat record share previews scoped to tags, text, and approved photos", () => {
     const preview = buildPrivacySafeRecordPreview({
       happenedOn: "2026-06-08",
       text: "第一次主动练琴20分钟。",
-      tags: ["piano"]
+      tags: ["piano"],
+      photoUrls: ["https://example.com/photo.jpg"]
     });
 
-    expect(preview).toEqual({
+    expect(preview).toMatchObject({
       happenedOn: "2026-06-08",
       text: "第一次主动练琴20分钟。",
-      tags: ["piano"]
+      tags: ["piano"],
+      photoUrls: ["https://example.com/photo.jpg"]
     });
   });
 

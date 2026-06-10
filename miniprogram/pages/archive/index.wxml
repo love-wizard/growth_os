@@ -61,9 +61,10 @@
           data-id="{{item.id}}"
           data-title="{{item.title}}"
           data-text="{{item.text}}"
+          data-image-url="{{item.photoUrls[0]}}"
           bindtap="prepareShareRecord"
         >
-          分享摘要
+          分享记录
         </button>
       </view>
     </view>

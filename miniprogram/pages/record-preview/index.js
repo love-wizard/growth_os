@@ -7,7 +7,8 @@ Page({
     recordId: "",
     preview: null,
     errorMessage: "",
-    isLoggedIn: false
+    isLoggedIn: false,
+    primaryActionText: "微信登录后加入共同陪伴"
   },
   onLoad(query) {
     const recordId = query.recordId || "";
@@ -28,20 +29,45 @@ Page({
     postJson("/api/wechat/record-share-preview", { recordId: this.data.recordId })
       .then((response) => {
         this.setData({
-          preview: response.preview || response,
-          errorMessage: ""
+          preview: response.preview || {
+            happenedOn: response.happenedOn || "",
+            text: response.text || "",
+            tags: response.tags || [],
+            photoUrls: response.photoUrls || [],
+            familyName: response.familyName || "",
+            weeklyTheme: response.weeklyTheme || "",
+            growthFocus: response.growthFocus || "",
+            coachNote: response.coachNote || ""
+          },
+          errorMessage: "",
+          primaryActionText: "进入家庭空间"
         });
       })
       .catch((error) => {
+        const errorMessage =
+          error.statusCode === 401
+            ? "请先登录"
+            : error.statusCode === 409
+              ? "你还没有加入这个家庭空间"
+              : error.error || "记录摘要加载失败";
         this.setData({
-          errorMessage:
-            error.statusCode === 401
-              ? "请先登录"
-              : error.statusCode === 409
-                ? "你还没有加入这个家庭空间"
-                : error.error || "记录摘要加载失败"
+          errorMessage,
+          primaryActionText:
+            error.statusCode === 409 ? "创建我的成长空间" : "打开成长 OS"
         });
       });
+  },
+  previewPhoto(event) {
+    const current = event.currentTarget.dataset.current;
+    const urls = event.currentTarget.dataset.urls || [];
+    if (!current || !urls.length) {
+      return;
+    }
+
+    wx.previewImage({
+      current,
+      urls
+    });
   },
   login() {
     wx.showToast({ title: "正在登录", icon: "loading" });
