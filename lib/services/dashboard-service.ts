@@ -1,12 +1,22 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { UUID } from "@/lib/domain/types";
+import { elapsedMs, logPerf, nowMs } from "@/lib/services/perf-log";
 import { getSupportiveProgressCopy } from "@/lib/services/progress-copy-service";
 import { getCurrentWeeklyPlanForFamily } from "@/lib/services/weekly-plan-service";
 
 export async function getDashboardData(supabase: SupabaseClient, familyId: UUID) {
+  const startedAt = nowMs();
+  const childStartedAt = nowMs();
   const child = await getChild(supabase, familyId);
+  const childMs = elapsedMs(childStartedAt);
 
   if (!child) {
+    logPerf("service.dashboard", {
+      totalMs: elapsedMs(startedAt),
+      childMs,
+      hasChild: false,
+      familyId
+    });
     return {
       child: null,
       annualGoals: [],
@@ -17,13 +27,25 @@ export async function getDashboardData(supabase: SupabaseClient, familyId: UUID)
     };
   }
 
+  const relatedStartedAt = nowMs();
   const [annualGoals, weeklyPlan] = await Promise.all([
     getAnnualGoals(supabase, child.id),
     getCurrentWeeklyPlanForFamily(supabase, familyId, {
       allowAutoGenerate: false
     })
   ]);
+  const relatedMs = elapsedMs(relatedStartedAt);
   const todayTasks = weeklyPlan?.weekly_tasks ?? [];
+
+  logPerf("service.dashboard", {
+    totalMs: elapsedMs(startedAt),
+    childMs,
+    relatedMs,
+    hasChild: true,
+    familyId,
+    goalCount: annualGoals.length,
+    taskCount: todayTasks.length
+  });
 
   return {
     child,

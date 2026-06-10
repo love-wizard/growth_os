@@ -6,6 +6,7 @@ import {
   listGrowthRecordsForFamily,
   saveGrowthRecord
 } from "@/lib/services/growth-record-service";
+import { elapsedMs, logPerf, nowMs } from "@/lib/services/perf-log";
 import {
   familyGrowthRecordsCacheKey,
   getCachedResponse,
@@ -18,6 +19,7 @@ import { growthRecordInputSchema } from "@/lib/validation/schemas";
 const growthRecordsCacheTtlMs = 60 * 1000;
 
 export async function GET() {
+  const startedAt = nowMs();
   const supabase = await createServerSupabaseClient();
   const serviceRoleSupabase = createServiceRoleSupabaseClient();
 
@@ -32,15 +34,33 @@ export async function GET() {
     const cacheKey = familyGrowthRecordsCacheKey(membership.family_id);
     const cachedRecords = getCachedResponse(cacheKey);
     if (cachedRecords) {
+      logPerf("api.growth-records", {
+        totalMs: elapsedMs(startedAt),
+        cache: "hit",
+        familyId: membership.family_id,
+        recordCount: Array.isArray(cachedRecords) ? cachedRecords.length : undefined
+      });
       return NextResponse.json({ records: cachedRecords });
     }
 
+    const loadStartedAt = nowMs();
     const records = await listGrowthRecordsForFamily(supabase, serviceRoleSupabase, {
       familyId: membership.family_id,
       limit: 20
     });
 
     setCachedResponse(cacheKey, records, growthRecordsCacheTtlMs);
+    logPerf("api.growth-records", {
+      totalMs: elapsedMs(startedAt),
+      dataMs: elapsedMs(loadStartedAt),
+      cache: "miss",
+      familyId: membership.family_id,
+      recordCount: records.length,
+      mediaCount: records.reduce(
+        (count, record) => count + (record.growth_record_media?.length ?? 0),
+        0
+      )
+    });
     return NextResponse.json({ records });
   } catch (error) {
     if (error instanceof Error && error.name === "AuthRequiredError") {
@@ -53,6 +73,7 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
+  const startedAt = nowMs();
   const supabase = await createServerSupabaseClient();
 
   try {
@@ -71,6 +92,10 @@ export async function POST(request: NextRequest) {
     });
 
     invalidateFamilyReadCaches(membership.family_id);
+    logPerf("api.growth-records.create", {
+      totalMs: elapsedMs(startedAt),
+      familyId: membership.family_id
+    });
     return NextResponse.json({ record }, { status: 201 });
   } catch (error) {
     if (error instanceof Error && error.name === "AuthRequiredError") {

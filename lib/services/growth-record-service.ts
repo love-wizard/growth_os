@@ -15,6 +15,7 @@ import {
   createGrowthMediaSignedReadUrl,
   growthRecordBucket
 } from "@/lib/services/storage-service";
+import { elapsedMs, logPerf, nowMs } from "@/lib/services/perf-log";
 import type { z } from "zod";
 import { growthRecordInputSchema } from "@/lib/validation/schemas";
 
@@ -32,15 +33,27 @@ export async function listGrowthRecordsForFamily(
   storageSupabase: SupabaseClient,
   input: { familyId: UUID; limit?: number }
 ) {
+  const startedAt = nowMs();
+  const childStartedAt = nowMs();
   const childId = await getFamilyChildId(supabase, input.familyId);
+  const childMs = elapsedMs(childStartedAt);
 
   if (!childId) {
+    logPerf("service.growth-records.list", {
+      totalMs: elapsedMs(startedAt),
+      childMs,
+      hasChild: false,
+      familyId: input.familyId
+    });
     return [];
   }
 
+  const recordsStartedAt = nowMs();
   const records = await listRecentGrowthRecords(supabase, childId, input.limit ?? 20);
+  const recordsMs = elapsedMs(recordsStartedAt);
 
-  return Promise.all(
+  const signingStartedAt = nowMs();
+  const recordsWithMedia = await Promise.all(
     records.map(async (record) => ({
       ...record,
       growth_record_media: await Promise.all(
@@ -58,6 +71,23 @@ export async function listGrowthRecordsForFamily(
       )
     }))
   );
+  const signingMs = elapsedMs(signingStartedAt);
+
+  logPerf("service.growth-records.list", {
+    totalMs: elapsedMs(startedAt),
+    childMs,
+    recordsMs,
+    signingMs,
+    hasChild: true,
+    familyId: input.familyId,
+    recordCount: records.length,
+    mediaCount: recordsWithMedia.reduce(
+      (count, record) => count + (record.growth_record_media?.length ?? 0),
+      0
+    )
+  });
+
+  return recordsWithMedia;
 }
 
 export async function saveGrowthRecord(
