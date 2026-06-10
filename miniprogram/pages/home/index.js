@@ -1,6 +1,6 @@
 /* global Page, wx */
 const { getJson } = require("../../services/api");
-const aiCoachPrefillStorageKey = "growth_os_ai_coach_prefill";
+const growthRecordPrefillStorageKey = "growth_os_growth_record_prefill";
 
 const roleLabels = {
   father: "爸爸",
@@ -93,9 +93,12 @@ Page({
       wx.navigateTo({ url: "/pages/setup/index" });
       return;
     }
-    const prompt = `今晚只有30分钟。结合本周主题“${this.data.weeklyTheme}”和当前建议“${this.data.todayAction.title}”，给一个现在就能开始的亲子陪伴建议。`;
-    wx.setStorageSync(aiCoachPrefillStorageKey, prompt);
-    wx.switchTab({ url: "/pages/ai-coach/index" });
+    const draftText = `${this.data.todayAction.title}。${this.data.todayAction.context}`;
+    wx.setStorageSync(growthRecordPrefillStorageKey, {
+      text: draftText,
+      tags: this.data.weeklyTheme ? `${this.data.weeklyTheme},成长瞬间` : "成长瞬间"
+    });
+    wx.switchTab({ url: "/pages/archive/index" });
   },
   openCoach() {
     wx.switchTab({ url: "/pages/ai-coach/index" });

@@ -1,5 +1,7 @@
 import { getJson, postJson, uploadFile } from "../../services/api";
 
+const growthRecordPrefillStorageKey = "growth_os_growth_record_prefill";
+
 function todayString() {
   return new Date().toISOString().slice(0, 10);
 }
@@ -58,7 +60,23 @@ Page({
     };
   },
   onShow() {
+    this.consumePrefilledRecord();
     this.loadRecords();
+  },
+  consumePrefilledRecord() {
+    const draft = wx.getStorageSync(growthRecordPrefillStorageKey) as
+      | { text?: string; tags?: string }
+      | undefined;
+
+    if (!draft?.text) {
+      return;
+    }
+
+    wx.removeStorageSync(growthRecordPrefillStorageKey);
+    this.setData({
+      recordText: draft.text,
+      recordTags: draft.tags || "成长瞬间"
+    });
   },
   loadRecords() {
     this.setData({ isLoading: true, errorMessage: "" });
