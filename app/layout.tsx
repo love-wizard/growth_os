@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Growth OS",
-  description: "AI family companionship coach for Growth OS v0.1"
+  title: "成长 OS",
+  description: "帮助父母更好陪伴孩子成长的 AI 家庭成长教练"
 };
 
 export default function RootLayout({

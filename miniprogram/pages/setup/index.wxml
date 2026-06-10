@@ -15,8 +15,8 @@
       <view class="title">孩子基本信息</view>
       <view class="muted">先用最少信息生成建议，完整目标可以之后再补。</view>
     </view>
-    <input class="input-box" placeholder="孩子昵称" value="{{nickname}}" bindinput="onNicknameInput" />
-    <input class="input-box" placeholder="出生日期 YYYY-MM-DD" value="{{birthDate}}" bindinput="onBirthDateInput" />
+    <input class="input-box" placeholder="例如：柚子" value="{{nickname}}" bindinput="onNicknameInput" />
+    <input class="input-box" placeholder="例如：2021-11-09" value="{{birthDate}}" bindinput="onBirthDateInput" />
     <view class="chip-row">
       <view class="chip {{gender === 'female' ? 'chip-active' : ''}}" data-value="female" bindtap="chooseGender">女孩</view>
       <view class="chip {{gender === 'male' ? 'chip-active' : ''}}" data-value="male" bindtap="chooseGender">男孩</view>
@@ -70,7 +70,7 @@
 
   <view wx:if="{{step === 4}}" class="section card primary-card stack">
     <view>
-      <view class="caption">基于 {{nickname}} / {{selectedChallenge}}</view>
+      <view class="caption">基于 {{nickname || '孩子'}} / {{selectedChallenge}}</view>
       <view class="title">{{suggestion.title}}</view>
     </view>
     <view class="chip-row">

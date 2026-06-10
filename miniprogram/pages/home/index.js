@@ -30,8 +30,8 @@ Page({
     isLoading: false,
     setupRequired: false,
     errorMessage: "",
-    childNickname: "小钟",
-    weeklyTheme: "建立阅读习惯",
+    childNickname: "孩子",
+    weeklyTheme: "轻松陪伴",
     taskCount: "3件小事",
     todayAction: {
       title: "今晚做一次10分钟亲子共读",

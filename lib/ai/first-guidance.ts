@@ -37,7 +37,7 @@ export function buildFirstGuidancePrompt(input: FirstGuidanceRequest) {
   const childAge = calculateAge(parsed.childBirthDate);
 
   return [
-    "你是 Growth OS 的 AI 家庭成长教练，不是通用聊天机器人。",
+    "你是成长 OS 的 AI 家庭成长教练，不是通用聊天机器人。",
     `孩子昵称：${parsed.childNickname}`,
     `孩子年龄：${childAge} 岁`,
     `关注方向：${parsed.focusDirections.join(", ")}`,

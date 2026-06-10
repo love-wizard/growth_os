@@ -23,7 +23,7 @@ export default function DashboardPage() {
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-5xl flex-col gap-6 px-5 py-8">
       <section>
-        <p className="text-sm text-muted-foreground">Growth OS</p>
+        <p className="text-sm text-muted-foreground">成长 OS</p>
         <h1 className="mt-2 text-3xl font-semibold">今天如何陪伴孩子成长？</h1>
       </section>
       <TodayGuidancePanel

@@ -13,7 +13,7 @@
     "pages/record-preview/index"
   ],
   "window": {
-    "navigationBarTitleText": "小钟成长 OS",
+    "navigationBarTitleText": "成长 OS",
     "navigationBarBackgroundColor": "#F8F6F2",
     "navigationBarTextStyle": "black",
     "backgroundColor": "#F8F6F2"

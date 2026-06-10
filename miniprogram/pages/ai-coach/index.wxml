@@ -21,7 +21,7 @@
 
   <view class="section card primary-card stack">
     <view>
-      <view class="caption">基于：小钟 / 5岁 / 本周阅读主题</view>
+      <view class="caption">{{answer.contextLabel}}</view>
       <view class="title">{{answer.title}}</view>
     </view>
     <view class="muted">{{answer.text}}</view>
@@ -35,7 +35,20 @@
       <view class="caption">温和备选</view>
       <view class="muted">{{answer.fallback}}</view>
     </view>
+    <view wx:if="{{answer.isWeeklyPlanDraft}}" class="note-box">
+      <view class="caption">采用说明</view>
+      <view class="muted">{{answer.confirmHint}}</view>
+    </view>
     <view wx:if="{{errorMessage}}" class="muted">{{errorMessage}}</view>
+    <button
+      wx:if="{{answer.weeklyPlanDraftId}}"
+      class="button-secondary"
+      loading="{{isLoading}}"
+      disabled="{{answer.isDraftConfirmed}}"
+      bindtap="confirmWeeklyPlanDraft"
+    >
+      {{answer.confirmLabel}}
+    </button>
     <button class="button-primary" loading="{{isLoading}}" bindtap="askCoach">生成新的建议</button>
   </view>
 
