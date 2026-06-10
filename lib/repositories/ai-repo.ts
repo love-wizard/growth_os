@@ -2,6 +2,21 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { AICoachMode, ParentRole, UUID } from "@/lib/domain/types";
 import type { WeeklyPlanDraftResponse } from "@/lib/ai/modes/weekly-plan-draft";
 
+export interface AIConversationRecord {
+  id: UUID;
+  family_id: UUID;
+  user_id: UUID;
+  user_role: ParentRole;
+  mode: AICoachMode;
+  message: string;
+  response: unknown;
+  created_at: string;
+  ai_weekly_plan_drafts?: Array<{
+    id: UUID;
+    status: string;
+  }>;
+}
+
 export async function createAIConversation(
   supabase: SupabaseClient,
   input: {
@@ -67,6 +82,26 @@ export async function createAIWeeklyPlanDraft(
   }
 
   return data.id as UUID;
+}
+
+export async function listAIConversationsForFamily(
+  supabase: SupabaseClient,
+  input: { familyId: UUID; limit?: number }
+) {
+  const { data, error } = await supabase
+    .from("ai_conversations")
+    .select(
+      "id,family_id,user_id,user_role,mode,message,response,created_at,ai_weekly_plan_drafts(id,status)"
+    )
+    .eq("family_id", input.familyId)
+    .order("created_at", { ascending: false })
+    .limit(input.limit ?? 10);
+
+  if (error) {
+    throw error;
+  }
+
+  return (data ?? []) as AIConversationRecord[];
 }
 
 export async function getAIWeeklyPlanDraftForFamily(

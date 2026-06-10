@@ -1,5 +1,5 @@
 /* global Page, wx */
-const { postJson } = require("../../services/api");
+const { getJson, postJson } = require("../../services/api");
 
 function inferMode(message) {
   if (/下周|生成.*周计划|周计划草案/.test(message)) {
@@ -98,9 +98,79 @@ function formatCoachResponse(response) {
   };
 }
 
+function getModeLabel(mode) {
+  if (mode === "weekly_plan_draft") {
+    return "下周计划";
+  }
+
+  if (mode === "growth_analysis") {
+    return "成长分析";
+  }
+
+  if (mode === "activity_generation") {
+    return "亲子活动";
+  }
+
+  return "育儿问答";
+}
+
+function summarizeCoachResponse(response) {
+  if (!response) {
+    return "还没有生成有效建议";
+  }
+
+  if (response.mode === "weekly_plan_draft") {
+    return response.theme || "下周计划草案";
+  }
+
+  if (response.mode === "growth_analysis") {
+    return response.title || "最近成长情况";
+  }
+
+  if (response.mode === "activity_generation") {
+    return response.activityName || "亲子活动建议";
+  }
+
+  return response.title || "育儿建议";
+}
+
+function formatHistoryTime(value) {
+  if (!value) {
+    return "";
+  }
+
+  const date = new Date(value);
+  const month = `${date.getMonth() + 1}`.padStart(2, "0");
+  const day = `${date.getDate()}`.padStart(2, "0");
+  const hours = `${date.getHours()}`.padStart(2, "0");
+  const minutes = `${date.getMinutes()}`.padStart(2, "0");
+  return `${month}-${day} ${hours}:${minutes}`;
+}
+
+function buildHistoryItem(conversation) {
+  const activeDraft = (conversation.ai_weekly_plan_drafts || []).find(
+    (item) => item.status === "draft"
+  );
+  const answer = formatCoachResponse(conversation.response);
+
+  return {
+    id: conversation.id,
+    modeLabel: getModeLabel(conversation.mode),
+    message: conversation.message,
+    title: summarizeCoachResponse(conversation.response),
+    createdAtLabel: formatHistoryTime(conversation.created_at),
+    answer: {
+      ...answer,
+      weeklyPlanDraftId:
+        answer.isWeeklyPlanDraft && activeDraft ? activeDraft.id : answer.weeklyPlanDraftId
+    }
+  };
+}
+
 Page({
   data: {
     isLoading: false,
+    isHistoryLoading: false,
     errorMessage: "",
     prompts: [
       "孩子不想练琴怎么办？",
@@ -113,6 +183,7 @@ Page({
     ],
     selectedPrompt: "今晚只有30分钟",
     freeQuestion: "",
+    history: [],
     answer: {
       contextLabel: "基于真实成长档案",
       title: "今晚可以做：绘本找宝藏",
@@ -125,6 +196,9 @@ Page({
       confirmLabel: "",
       confirmHint: ""
     }
+  },
+  onShow() {
+    this.loadHistory();
   },
   selectPrompt(event) {
     this.setData({ selectedPrompt: event.currentTarget.dataset.prompt, freeQuestion: "" });
@@ -146,8 +220,22 @@ Page({
     })
       .then((result) => {
         const answer = formatCoachResponse(result.response);
+        const historyItem = buildHistoryItem({
+          id: result.conversationId || `${Date.now()}`,
+          mode: inferMode(message),
+          message,
+          response: result.response,
+          created_at: new Date().toISOString(),
+          ai_weekly_plan_drafts: result.weeklyPlanDraftId
+            ? [{ id: result.weeklyPlanDraftId, status: "draft" }]
+            : []
+        });
         this.setData({
           isLoading: false,
+          history: [historyItem, ...this.data.history.filter((item) => item.id !== historyItem.id)].slice(
+            0,
+            8
+          ),
           answer: {
             ...answer,
             weeklyPlanDraftId:
@@ -189,5 +277,31 @@ Page({
           errorMessage: error.error || "采用计划失败"
         });
       });
+  },
+  loadHistory() {
+    this.setData({ isHistoryLoading: true });
+    getJson("/api/ai/conversations")
+      .then((result) => {
+        this.setData({
+          isHistoryLoading: false,
+          history: (result.conversations || []).map(buildHistoryItem)
+        });
+      })
+      .catch(() => {
+        this.setData({ isHistoryLoading: false });
+      });
+  },
+  openHistoryItem(event) {
+    const conversationId = event.currentTarget.dataset.conversationId;
+    const historyItem = this.data.history.find((item) => item.id === conversationId);
+
+    if (!historyItem) {
+      return;
+    }
+
+    this.setData({
+      answer: historyItem.answer,
+      errorMessage: ""
+    });
   }
 });

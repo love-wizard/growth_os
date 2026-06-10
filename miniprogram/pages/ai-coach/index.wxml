@@ -19,6 +19,27 @@
     </view>
   </view>
 
+  <view class="section card">
+    <view class="row">
+      <view class="title">最近咨询</view>
+      <view class="caption">{{isHistoryLoading ? '加载中' : ''}}</view>
+    </view>
+    <view wx:if="{{history.length === 0}}" class="muted">还没有历史记录，先问一个具体问题。</view>
+    <view
+      wx:for="{{history}}"
+      wx:key="id"
+      class="task-row"
+      data-conversation-id="{{item.id}}"
+      bindtap="openHistoryItem"
+    >
+      <view class="task-main">
+        <view class="task-title">{{item.message}}</view>
+        <view class="caption">{{item.modeLabel}} · {{item.createdAtLabel}}</view>
+        <view class="muted">{{item.title}}</view>
+      </view>
+    </view>
+  </view>
+
   <view class="section card primary-card stack">
     <view>
       <view class="caption">{{answer.contextLabel}}</view>
