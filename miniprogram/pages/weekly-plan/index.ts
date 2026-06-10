@@ -1,4 +1,6 @@
-import { getJson, patchJson, postJson } from "../../services/api";
+import { getJson, patchJson, postJson, postJsonWithOptions } from "../../services/api";
+
+const aiRequestTimeoutMs = 30000;
 
 const emptyPlan = {
   theme: "本周计划",
@@ -131,7 +133,7 @@ Page({
       nextWeekDraft: null
     });
 
-    void postJson<{
+    void postJsonWithOptions<{
       response: {
         mode: "weekly_plan_draft";
         theme: string;
@@ -146,6 +148,8 @@ Page({
     }>("/api/ai/coach", {
       mode: "weekly_plan_draft",
       message: "请基于当前完成情况，重新生成一版下周周计划草案。"
+    }, {
+      timeoutMs: aiRequestTimeoutMs
     })
       .then((result) => {
         if (!result.weeklyPlanDraftId) {

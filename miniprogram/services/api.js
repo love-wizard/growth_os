@@ -1,6 +1,7 @@
 /* global wx */
 const apiBaseUrl = "https://growth.familylove.space";
 const sessionStorageKey = "growth_os_session";
+const defaultRequestTimeoutMs = 10000;
 
 function getAuthHeader() {
   const session = wx.getStorageSync(sessionStorageKey);
@@ -90,7 +91,7 @@ function requestJson(method, path, data, options) {
       url: `${apiBaseUrl}${path}`,
       method,
       data,
-      timeout: 10000,
+      timeout: (options && options.timeoutMs) || defaultRequestTimeoutMs,
       header: {
         "content-type": "application/json",
         ...getAuthHeader()
@@ -98,7 +99,12 @@ function requestJson(method, path, data, options) {
       success(response) {
         if (shouldRetryAuth(response) && retryOnAuth) {
           refreshMiniProgramSession()
-            .then(() => requestJson(method, path, data, { retryOnAuth: false }))
+            .then(() =>
+              requestJson(method, path, data, {
+                retryOnAuth: false,
+                timeoutMs: options && options.timeoutMs
+              })
+            )
             .then(resolve)
             .catch(() => {
               reject({
@@ -130,6 +136,10 @@ function requestJson(method, path, data, options) {
 
 function postJson(path, data) {
   return requestJson("POST", path, data);
+}
+
+function postJsonWithOptions(path, data, options) {
+  return requestJson("POST", path, data, options);
 }
 
 function patchJson(path, data) {
@@ -184,6 +194,7 @@ module.exports = {
   getSession,
   patchJson,
   postJson,
+  postJsonWithOptions,
   setSession,
   uploadFile
 };

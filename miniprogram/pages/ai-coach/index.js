@@ -1,5 +1,6 @@
 /* global Page, wx */
-const { getJson, postJson } = require("../../services/api");
+const { getJson, postJson, postJsonWithOptions } = require("../../services/api");
+const aiRequestTimeoutMs = 30000;
 
 function inferMode(message) {
   if (/下周|生成.*周计划|周计划草案/.test(message)) {
@@ -214,9 +215,11 @@ Page({
     }
 
     this.setData({ isLoading: true, errorMessage: "" });
-    postJson("/api/ai/coach", {
+    postJsonWithOptions("/api/ai/coach", {
       mode: inferMode(message),
       message
+    }, {
+      timeoutMs: aiRequestTimeoutMs
     })
       .then((result) => {
         const answer = formatCoachResponse(result.response);

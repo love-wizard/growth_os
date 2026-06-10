@@ -1,4 +1,6 @@
-import { getJson, postJson } from "../../services/api";
+import { getJson, postJson, postJsonWithOptions } from "../../services/api";
+
+const aiRequestTimeoutMs = 30000;
 
 function inferMode(message: string) {
   if (/下周|生成.*周计划|周计划草案/.test(message)) {
@@ -225,13 +227,15 @@ Page({
     }
 
     this.setData({ isLoading: true, errorMessage: "" });
-    void postJson<{
+    void postJsonWithOptions<{
       conversationId: string;
       response: any;
       weeklyPlanDraftId?: string | null;
     }>("/api/ai/coach", {
       mode: inferMode(message),
       message
+    }, {
+      timeoutMs: aiRequestTimeoutMs
     })
       .then((result) => {
         const answer = formatCoachResponse(result.response);

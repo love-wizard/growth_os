@@ -17,7 +17,10 @@ type UploadResponse = {
 
 type RequestOptions = {
   retryOnAuth?: boolean;
+  timeoutMs?: number;
 };
+
+const defaultRequestTimeoutMs = 10000;
 
 function getAuthHeader() {
   const session = wx.getStorageSync(sessionStorageKey) as GrowthOSSession | undefined;
@@ -92,7 +95,7 @@ function requestJson<T = unknown>(
       url: `${apiBaseUrl}${path}`,
       method,
       data,
-      timeout: 10000,
+      timeout: options?.timeoutMs ?? defaultRequestTimeoutMs,
       header: {
         "content-type": "application/json",
         ...getAuthHeader()
@@ -100,7 +103,12 @@ function requestJson<T = unknown>(
       success: (response: RequestResponse) => {
         if (shouldRetryAuth(response) && options?.retryOnAuth !== false) {
           void refreshMiniProgramSession()
-            .then(() => requestJson<T>(method, path, data, { retryOnAuth: false }))
+            .then(() =>
+              requestJson<T>(method, path, data, {
+                retryOnAuth: false,
+                timeoutMs: options?.timeoutMs
+              })
+            )
             .then(resolve)
             .catch(() => {
               const data = response.data as { error?: string } | undefined;
@@ -143,6 +151,14 @@ function parseUploadResponse<T>(response: UploadResponse) {
 
 export function postJson<T = unknown>(path: string, data: unknown) {
   return requestJson<T>("POST", path, data);
+}
+
+export function postJsonWithOptions<T = unknown>(
+  path: string,
+  data: unknown,
+  options?: RequestOptions
+) {
+  return requestJson<T>("POST", path, data, options);
 }
 
 export function patchJson<T = unknown>(path: string, data: unknown) {
