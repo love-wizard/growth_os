@@ -347,6 +347,35 @@ page {
   margin-top: 20rpx;
 }
 
+.interest-page {
+  padding-top: 28rpx;
+}
+
+.interest-hero-card {
+  background: #eaf2ff;
+  border: 1rpx solid #d4e4fa;
+  border-radius: 16rpx;
+  box-sizing: border-box;
+  padding: 32rpx;
+}
+
+.interest-summary-grid {
+  display: grid;
+  gap: 16rpx;
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.interest-summary-grid .summary-tile {
+  background: rgba(255, 255, 255, 0.7);
+  border-color: #d4e4fa;
+  min-height: 128rpx;
+  padding: 20rpx 16rpx;
+}
+
+.interest-empty {
+  margin-top: 20rpx;
+}
+
 .primary-card {
   background: #e4f3ec;
   border-color: #c9e3d6;

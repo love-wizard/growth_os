@@ -33,8 +33,25 @@ function formatRecord(record: {
     date: record.happened_on,
     interestName: record.child_interests?.name || "兴趣活动",
     outcomeLabel: outcomeLabels[record.participation_outcome] || "已记录",
+    outcome: record.participation_outcome,
     detail: record.notes || "",
-    badge: duration || count
+    badge: duration || count,
+    durationMinutes: record.duration_minutes || 0
+  };
+}
+
+function buildSummary(records: ReturnType<typeof formatRecord>[]) {
+  const completedRecords = records.filter((record) => record.outcome === "completed");
+  const totalMinutes = completedRecords.reduce(
+    (total, record) => total + (record.durationMinutes || 0),
+    0
+  );
+
+  return {
+    totalRecords: `${records.length}`,
+    completedRecords: `${completedRecords.length}`,
+    totalMinutes: `${totalMinutes}`,
+    latestLabel: records[0] ? `${records[0].date} · ${records[0].interestName}` : "还没有记录"
   };
 }
 
@@ -49,9 +66,17 @@ Page({
       date: string;
       interestName: string;
       outcomeLabel: string;
+      outcome: string;
       detail: string;
       badge: string;
+      durationMinutes: number;
     }>,
+    summary: {
+      totalRecords: "0",
+      completedRecords: "0",
+      totalMinutes: "0",
+      latestLabel: "还没有记录"
+    },
     outcomeOptions,
     selectedInterestId: "",
     selectedOutcome: "completed",
@@ -78,11 +103,13 @@ Page({
     }>("/api/interest-participation-records")
       .then((response) => {
         const interestOptions = response.interests || [];
+        const records = (response.records || []).map(formatRecord);
         this.setData({
           isLoading: false,
           interestOptions,
           selectedInterestId: this.data.selectedInterestId || interestOptions[0]?.id || "",
-          records: (response.records || []).map(formatRecord)
+          records,
+          summary: buildSummary(records)
         });
       })
       .catch((error) => {

@@ -29,8 +29,25 @@ function formatRecord(record) {
       ? record.child_interests.name
       : "兴趣活动",
     outcomeLabel: outcomeLabels[record.participation_outcome] || "已记录",
+    outcome: record.participation_outcome,
     detail: record.notes || "",
-    badge
+    badge,
+    durationMinutes: record.duration_minutes || 0
+  };
+}
+
+function buildSummary(records) {
+  const completedRecords = records.filter((record) => record.outcome === "completed");
+  const totalMinutes = completedRecords.reduce(
+    (total, record) => total + (record.durationMinutes || 0),
+    0
+  );
+
+  return {
+    totalRecords: `${records.length}`,
+    completedRecords: `${completedRecords.length}`,
+    totalMinutes: `${totalMinutes}`,
+    latestLabel: records[0] ? `${records[0].date} · ${records[0].interestName}` : "还没有记录"
   };
 }
 
@@ -41,6 +58,12 @@ Page({
     errorMessage: "",
     interestOptions: [],
     records: [],
+    summary: {
+      totalRecords: "0",
+      completedRecords: "0",
+      totalMinutes: "0",
+      latestLabel: "还没有记录"
+    },
     outcomeOptions,
     selectedInterestId: "",
     selectedOutcome: "completed",
@@ -56,11 +79,13 @@ Page({
     getJson("/api/interest-participation-records")
       .then((response) => {
         const interestOptions = response.interests || [];
+        const records = (response.records || []).map(formatRecord);
         this.setData({
           isLoading: false,
           interestOptions,
           selectedInterestId: this.data.selectedInterestId || (interestOptions[0] && interestOptions[0].id) || "",
-          records: (response.records || []).map(formatRecord)
+          records,
+          summary: buildSummary(records)
         });
       })
       .catch((error) => {
