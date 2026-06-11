@@ -1,7 +1,8 @@
 <view class="page">
   <view>
     <view class="caption">今天的陪伴</view>
-    <view class="page-title">{{childNickname}}今天可以这样开始</view>
+    <view wx:if="{{childNickname}}" class="page-title">{{childNickname}}今天可以这样开始</view>
+    <view wx:else class="page-title">今天可以这样开始</view>
   </view>
 
   <view wx:if="{{errorMessage}}" class="section card warm-card stack">
@@ -12,6 +13,13 @@
     <button wx:if="{{setupRequired}}" class="button-primary" bindtap="openSetup">去创建成长系统</button>
   </view>
 
+  <view wx:if="{{isLoading && !hasDashboardData && !errorMessage}}" class="section card primary-card stack">
+    <view class="skeleton-line skeleton-title"></view>
+    <view class="skeleton-line"></view>
+    <view class="skeleton-line short"></view>
+  </view>
+
+  <block wx:if="{{hasDashboardData}}">
   <view class="section card primary-card stack">
     <view>
       <view class="title">{{todayAction.title}}</view>
@@ -50,8 +58,9 @@
       <view class="progress-pill">{{item.progress}}</view>
     </view>
   </view>
+  </block>
 
-  <view class="section card warm-card stack">
+  <view wx:if="{{hasDashboardData}}" class="section card warm-card stack">
     <view>
       <view class="title">刚完成一件小事？</view>
       <view class="muted">顺手记下这个成长瞬间，文字就够了。</view>

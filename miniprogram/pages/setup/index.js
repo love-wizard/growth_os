@@ -1,6 +1,8 @@
 /* global Page, wx */
 const { postJson } = require("../../services/api");
 
+const childProfileCacheStorageKey = "growth_os_child_profile_cache";
+
 const focusOptions = [
   { label: "阅读习惯", selected: true },
   { label: "英语启蒙", selected: true },
@@ -80,6 +82,10 @@ Page({
       }))
     })
       .then(() => {
+        wx.setStorageSync(childProfileCacheStorageKey, {
+          nickname: this.data.nickname,
+          savedAt: Date.now()
+        });
         wx.showToast({ title: "已生成成长系统", icon: "success" });
         wx.switchTab({ url: "/pages/home/index" });
       })

@@ -1,6 +1,7 @@
 import { getJson } from "../../services/api";
 
 const growthRecordPrefillStorageKey = "growth_os_growth_record_prefill";
+const childProfileCacheStorageKey = "growth_os_child_profile_cache";
 const dashboardCacheStorageKey = "growth_os_dashboard_cache";
 const weeklyPlanCacheStorageKey = "growth_os_weekly_plan_cache";
 const growthRecordsCacheStorageKey = "growth_os_growth_records_cache_v2";
@@ -135,26 +136,35 @@ function formatGrowthRecordCache(record: {
 Page({
   data: {
     isLoading: false,
+    hasDashboardData: false,
     setupRequired: false,
     errorMessage: "",
-    childNickname: "孩子",
-    weeklyTheme: "轻松陪伴",
-    taskCount: "3件小事",
+    childNickname: "",
+    weeklyTheme: "",
+    taskCount: "",
     todayAction: {
-      title: "今晚做一次10分钟亲子共读",
-      context: "围绕本周主题《建立阅读习惯》，先做一件轻量的小事。",
-      minutes: "10分钟",
-      why: "让孩子把阅读和被陪伴的感受连接起来，而不是把阅读当成任务。"
+      title: "",
+      context: "",
+      minutes: "",
+      why: ""
     },
-    tasks: [
-      { role: "爸爸", roleClass: "role-father", title: "一次户外运动或探索", progress: "0/1" },
-      { role: "妈妈", roleClass: "role-mother", title: "三次亲子阅读", progress: "1/3" },
-      { role: "家庭", roleClass: "role-family", title: "周末一起观察一种植物", progress: "未开始" }
-    ]
+    tasks: []
   },
   onShow() {
+    this.hydrateChildProfileCache();
     const usedCache = this.hydrateDashboardCache();
     this.loadDashboard({ useLoadingState: !usedCache, skipIfFresh: usedCache });
+  },
+  hydrateChildProfileCache() {
+    const cached = wx.getStorageSync(childProfileCacheStorageKey) as
+      | { nickname?: string }
+      | undefined;
+
+    if (!cached?.nickname || this.data.childNickname) {
+      return;
+    }
+
+    this.setData({ childNickname: cached.nickname });
   },
   hydrateDashboardCache() {
     const cached = wx.getStorageSync(dashboardCacheStorageKey) as
@@ -204,8 +214,16 @@ Page({
   }) {
     const tasks = (dashboard.todayTasks || []).map(formatTask);
     const weeklyTheme = dashboard.weeklyPlan ? dashboard.weeklyPlan.theme : "轻松陪伴";
+    if (dashboard.child?.nickname) {
+      wx.setStorageSync(childProfileCacheStorageKey, {
+        nickname: dashboard.child.nickname,
+        savedAt: Date.now()
+      });
+    }
+
     this.setData({
       isLoading: false,
+      hasDashboardData: true,
       setupRequired: false,
       childNickname: dashboard.child ? dashboard.child.nickname : "孩子",
       weeklyTheme,
@@ -261,6 +279,7 @@ Page({
         if (error.statusCode === 409) {
           this.setData({
             isLoading: false,
+            hasDashboardData: false,
             setupRequired: true,
             errorMessage: "还没有创建家庭成长系统"
           });

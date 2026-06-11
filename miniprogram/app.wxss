@@ -78,6 +78,23 @@ page {
   border-color: #f3d9b8;
 }
 
+.skeleton-line {
+  background: #e7e0d7;
+  border-radius: 999rpx;
+  height: 28rpx;
+  opacity: 0.75;
+  width: 100%;
+}
+
+.skeleton-line.short {
+  width: 46%;
+}
+
+.skeleton-title {
+  height: 40rpx;
+  width: 72%;
+}
+
 .blue-card {
   background: #eaf2ff;
   border-color: #d4e4fa;
