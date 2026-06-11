@@ -1,5 +1,5 @@
 page {
-  background: #f8f6f2;
+  background: #f7f4ee;
   color: #25211c;
   font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
   font-size: 30rpx;
@@ -12,6 +12,7 @@ page {
 }
 
 .home-page {
+  background: linear-gradient(180deg, #fbfaf7 0%, #f5f1eb 46%, #f8f6f2 100%);
   padding-top: 28rpx;
 }
 
@@ -41,9 +42,15 @@ page {
 
 .home-header {
   align-items: flex-start;
+  background: rgba(255, 255, 255, 0.68);
+  border: 1rpx solid rgba(238, 232, 223, 0.82);
+  border-radius: 28rpx;
+  box-shadow: 0 18rpx 48rpx rgba(88, 74, 56, 0.07);
+  box-sizing: border-box;
   display: flex;
   gap: 24rpx;
   justify-content: space-between;
+  padding: 28rpx;
 }
 
 .page-heading {
@@ -59,8 +66,8 @@ page {
 
 .visual-icon {
   align-items: center;
-  background: #e4f3ec;
-  border: 1rpx solid #c9e3d6;
+  background: linear-gradient(180deg, #f6fff9 0%, #dbeee5 100%);
+  border: 1rpx solid rgba(201, 227, 214, 0.86);
   border-radius: 50%;
   box-sizing: border-box;
   color: #3f8f6b;
@@ -101,9 +108,9 @@ page {
 
 .page-title {
   color: #25211c;
-  font-size: 48rpx;
+  font-size: 46rpx;
   font-weight: 600;
-  line-height: 64rpx;
+  line-height: 62rpx;
 }
 
 .title {
@@ -133,8 +140,8 @@ page {
 }
 
 .icon-text-button {
-  background: #ffffff;
-  border: 1rpx solid #e7e0d7;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1rpx solid rgba(231, 224, 215, 0.86);
   border-radius: 999rpx;
   color: #3f8f6b;
   flex: 0 0 auto;
@@ -147,20 +154,20 @@ page {
 }
 
 .quote-card {
-  background: #fffaf2;
-  border: 1rpx solid #f0e2ce;
-  border-radius: 20rpx;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1rpx solid rgba(235, 228, 219, 0.88);
+  border-radius: 28rpx;
   box-sizing: border-box;
-  box-shadow: 0 12rpx 36rpx rgba(133, 96, 55, 0.08);
+  box-shadow: 0 18rpx 52rpx rgba(80, 66, 48, 0.075);
   overflow: hidden;
   padding: 30rpx 32rpx 32rpx;
   position: relative;
 }
 
 .quote-card::before {
-  background: #d7a86e;
+  background: linear-gradient(90deg, #d7a86e 0%, #8fbfa7 100%);
   content: "";
-  height: 6rpx;
+  height: 4rpx;
   left: 32rpx;
   position: absolute;
   right: 32rpx;
@@ -170,53 +177,58 @@ page {
 .quote-topline {
   align-items: center;
   display: flex;
+  gap: 20rpx;
   justify-content: space-between;
 }
 
 .quote-eyebrow {
-  color: #9a7650;
+  background: rgba(228, 243, 236, 0.76);
+  border-radius: 999rpx;
+  color: #3f8f6b;
   font-size: 24rpx;
   font-weight: 700;
   line-height: 34rpx;
+  padding: 6rpx 16rpx;
 }
 
 .quote-mark {
-  color: #e7cfab;
+  color: rgba(215, 168, 110, 0.35);
   font-family: Georgia, serif;
-  font-size: 72rpx;
-  height: 44rpx;
-  line-height: 58rpx;
+  font-size: 96rpx;
+  height: 52rpx;
+  line-height: 72rpx;
+  margin-top: 10rpx;
 }
 
 .quote-text {
   color: #25211c;
-  font-size: 34rpx;
+  font-size: 32rpx;
   font-weight: 600;
-  line-height: 52rpx;
-  margin-top: 18rpx;
+  line-height: 50rpx;
+  margin-top: 4rpx;
 }
 
 .quote-reflection {
-  color: #5f5a51;
+  color: #55635b;
   font-size: 26rpx;
   line-height: 40rpx;
   margin-top: 8rpx;
 }
 
 .quote-source {
-  color: #9f8f7d;
+  color: #a29a90;
+  flex: 1;
   font-size: 24rpx;
   line-height: 34rpx;
-  margin-top: 12rpx;
   text-align: right;
 }
 
 .quote-reflection-box {
-  background: rgba(255, 255, 255, 0.68);
-  border: 1rpx solid rgba(225, 207, 181, 0.78);
-  border-radius: 14rpx;
+  background: rgba(236, 247, 241, 0.72);
+  border: 1rpx solid rgba(201, 227, 214, 0.72);
+  border-radius: 20rpx;
   margin-top: 24rpx;
-  padding: 22rpx 24rpx;
+  padding: 24rpx 26rpx;
 }
 
 .quote-reflection-label {
@@ -227,11 +239,13 @@ page {
 }
 
 .home-focus-card {
-  background: #e4f3ec;
-  border: 1rpx solid #c9e3d6;
-  border-radius: 16rpx;
+  background: linear-gradient(145deg, rgba(246, 255, 250, 0.94) 0%, rgba(225, 241, 232, 0.94) 100%);
+  border: 1rpx solid rgba(201, 227, 214, 0.84);
+  border-radius: 30rpx;
   box-sizing: border-box;
-  padding: 36rpx 32rpx;
+  box-shadow: 0 22rpx 58rpx rgba(54, 111, 85, 0.12);
+  padding: 36rpx 34rpx;
+  position: relative;
 }
 
 .focus-topline {
@@ -241,7 +255,7 @@ page {
 }
 
 .focus-minutes {
-  background: rgba(255, 255, 255, 0.72);
+  background: rgba(255, 255, 255, 0.78);
   border-radius: 999rpx;
   color: #3f8f6b;
   font-size: 24rpx;
@@ -252,25 +266,25 @@ page {
 
 .focus-title {
   color: #25211c;
-  font-size: 40rpx;
+  font-size: 42rpx;
   font-weight: 650;
-  line-height: 56rpx;
+  line-height: 58rpx;
 }
 
 .focus-context {
-  color: #4f5f55;
+  color: #495c52;
   font-size: 29rpx;
   line-height: 46rpx;
 }
 
 .focus-why {
-  background: rgba(255, 255, 255, 0.58);
-  border: 1rpx solid #c9e3d6;
-  border-radius: 16rpx;
+  background: rgba(255, 255, 255, 0.62);
+  border: 1rpx solid rgba(201, 227, 214, 0.74);
+  border-radius: 22rpx;
   color: #5f685f;
   font-size: 26rpx;
   line-height: 40rpx;
-  padding: 20rpx 22rpx;
+  padding: 22rpx 24rpx;
 }
 
 .home-summary-grid {
@@ -280,10 +294,11 @@ page {
 }
 
 .summary-tile {
-  background: #ffffff;
-  border: 1rpx solid #e7e0d7;
-  border-radius: 16rpx;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1rpx solid rgba(231, 224, 215, 0.82);
+  border-radius: 24rpx;
   box-sizing: border-box;
+  box-shadow: 0 12rpx 34rpx rgba(88, 74, 56, 0.055);
   min-height: 148rpx;
   padding: 24rpx;
 }
@@ -297,6 +312,10 @@ page {
 }
 
 .home-task-card {
+  background: rgba(255, 255, 255, 0.76);
+  border-color: rgba(231, 224, 215, 0.84);
+  border-radius: 28rpx;
+  box-shadow: 0 18rpx 48rpx rgba(88, 74, 56, 0.06);
   padding-bottom: 12rpx;
 }
 

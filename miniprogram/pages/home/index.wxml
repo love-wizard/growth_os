@@ -3,9 +3,9 @@
     <view class="page-heading">
       <view class="visual-icon">今</view>
       <view>
-      <view class="caption">今天的陪伴</view>
-      <view wx:if="{{childNickname}}" class="page-title">{{childNickname}}今天做一件小事</view>
-      <view wx:else class="page-title">今天做一件小事</view>
+        <view class="caption">今天的陪伴</view>
+        <view wx:if="{{childNickname}}" class="page-title">{{childNickname}}今天做一件小事</view>
+        <view wx:else class="page-title">今天做一件小事</view>
       </view>
     </view>
     <button class="icon-text-button" bindtap="openArchive">记录</button>
@@ -14,10 +14,10 @@
   <view class="section quote-card">
     <view class="quote-topline">
       <view class="quote-eyebrow">今日摘录</view>
-      <view class="quote-mark">“</view>
+      <view class="quote-source">{{dailyQuote.source}}</view>
     </view>
+    <view class="quote-mark">“</view>
     <view class="quote-text">{{dailyQuote.quote}}</view>
-    <view class="quote-source">{{dailyQuote.source}}</view>
     <view class="quote-reflection-box">
       <view class="quote-reflection-label">饭米粒认为</view>
       <view class="quote-reflection">{{dailyQuote.reflection}}</view>

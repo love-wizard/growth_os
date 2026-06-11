@@ -1,9 +1,9 @@
 .custom-tabbar {
   align-items: flex-end;
-  background: rgba(255, 255, 255, 0.96);
-  border-top: 1rpx solid rgba(231, 224, 215, 0.95);
+  background: rgba(255, 255, 255, 0.9);
+  border-top: 1rpx solid rgba(231, 224, 215, 0.72);
   bottom: 0;
-  box-shadow: 0 -10rpx 32rpx rgba(93, 75, 54, 0.08);
+  box-shadow: 0 -14rpx 42rpx rgba(93, 75, 54, 0.08);
   box-sizing: border-box;
   display: flex;
   height: calc(118rpx + env(safe-area-inset-bottom));
@@ -34,7 +34,7 @@
 
 .tabbar-symbol {
   align-items: center;
-  background: #f8f6f2;
+  background: rgba(248, 246, 242, 0.78);
   border-radius: 50%;
   box-sizing: border-box;
   display: flex;
@@ -72,10 +72,10 @@
 
 .mascot-button {
   align-items: center;
-  background: linear-gradient(180deg, #fff9ef 0%, #f5dbac 100%);
-  border: 4rpx solid #ffffff;
+  background: linear-gradient(180deg, #ffffff 0%, #f3eadb 100%);
+  border: 5rpx solid rgba(255, 255, 255, 0.98);
   border-radius: 50%;
-  box-shadow: 0 12rpx 28rpx rgba(139, 96, 48, 0.18);
+  box-shadow: 0 16rpx 36rpx rgba(99, 77, 49, 0.16);
   box-sizing: border-box;
   display: flex;
   height: 92rpx;
@@ -88,21 +88,21 @@
 }
 
 .mascot-face {
-  background: #fff7e8;
-  border: 2rpx solid #ead5b7;
-  border-radius: 46% 54% 50% 50%;
-  height: 62rpx;
+  background: linear-gradient(180deg, #fffdf8 0%, #f6e6ca 100%);
+  border: 1rpx solid rgba(218, 193, 157, 0.78);
+  border-radius: 48% 52% 50% 50%;
+  height: 60rpx;
   position: relative;
-  width: 54rpx;
+  width: 52rpx;
 }
 
 .mascot-eye {
-  background: #6a5743;
+  background: #5f5143;
   border-radius: 50%;
-  height: 7rpx;
+  height: 6rpx;
   position: absolute;
   top: 24rpx;
-  width: 7rpx;
+  width: 6rpx;
 }
 
 .mascot-eye-left {
@@ -114,22 +114,22 @@
 }
 
 .mascot-smile {
-  border-bottom: 3rpx solid #6a5743;
+  border-bottom: 2rpx solid rgba(95, 81, 67, 0.82);
   border-radius: 0 0 16rpx 16rpx;
-  bottom: 18rpx;
-  height: 10rpx;
+  bottom: 19rpx;
+  height: 8rpx;
   left: 20rpx;
   position: absolute;
-  width: 14rpx;
+  width: 12rpx;
 }
 
 .mascot-cheek {
-  background: rgba(233, 154, 128, 0.42);
+  background: rgba(213, 151, 118, 0.24);
   border-radius: 50%;
-  height: 8rpx;
+  height: 7rpx;
   position: absolute;
   top: 34rpx;
-  width: 10rpx;
+  width: 8rpx;
 }
 
 .mascot-cheek-left {
