@@ -168,6 +168,13 @@ page {
   margin-top: 12rpx;
 }
 
+.quote-source {
+  color: #9b9185;
+  font-size: 24rpx;
+  line-height: 34rpx;
+  margin-top: 8rpx;
+}
+
 .home-focus-card {
   background: #e4f3ec;
   border: 1rpx solid #c9e3d6;
