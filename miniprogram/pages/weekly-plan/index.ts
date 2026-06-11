@@ -13,8 +13,8 @@ const weeklyPlanCacheDisplayMs = 24 * 60 * 60 * 1000;
 const dashboardCacheStorageKey = "growth_os_dashboard_cache";
 
 const emptyPlan = {
-  theme: "本周计划",
-  weekendActivity: "完成首次配置后，会生成适合本周的家庭活动。",
+  theme: "",
+  weekendActivity: "",
   fatherTasks: [],
   motherTasks: [],
   familyTasks: [],
@@ -48,6 +48,35 @@ function formatTask(task: {
     plannedCount: task.planned_count,
     note: task.status === "completed" ? "已完成" : "慢慢来，不需要补任务"
   };
+}
+
+function buildTaskProgressUpdate(task: {
+  completedCount: number;
+  plannedCount: number;
+}) {
+  const completedCount = Math.min(task.completedCount + 1, task.plannedCount);
+  return {
+    completedCount,
+    progress: `${completedCount}/${task.plannedCount}`,
+    note: completedCount >= task.plannedCount ? "已完成" : "慢慢来，不需要补任务"
+  };
+}
+
+function updateTaskInList<T extends {
+  id: string;
+  completedCount: number;
+  plannedCount: number;
+  progress: string;
+  note: string;
+}>(tasks: T[], taskId: string) {
+  return tasks.map((task) =>
+    task.id === taskId
+      ? {
+          ...task,
+          ...buildTaskProgressUpdate(task)
+        }
+      : task
+  );
 }
 
 function formatPlan(plan: {
@@ -116,6 +145,7 @@ function canDisplayCache(savedAt?: number, ttlMs = weeklyPlanCacheDisplayMs) {
 Page({
   data: {
     isLoading: false,
+    hasWeeklyPlanData: false,
     isGeneratingDraft: false,
     isConfirmingDraft: false,
     errorMessage: "",
@@ -138,6 +168,7 @@ Page({
 
     this.setData({
       isLoading: false,
+      hasWeeklyPlanData: true,
       errorMessage: "",
       ...cached.weeklyPlan
     });
@@ -167,6 +198,7 @@ Page({
         });
         this.setData({
           isLoading: false,
+          hasWeeklyPlanData: true,
           errorMessage: "",
           ...weeklyPlan
         });
@@ -174,6 +206,7 @@ Page({
       .catch((error) => {
         this.setData({
           isLoading: false,
+          hasWeeklyPlanData: false,
           errorMessage:
             error.statusCode === 409 ? "请先完成首次配置" : error.error || "周计划加载失败"
         });
@@ -276,16 +309,41 @@ Page({
     }
 
     const nextCompletedCount = Math.min(Number(completedCount) + 1, Number(plannedCount));
+    const previousPlan = {
+      theme: this.data.theme,
+      weekendActivity: this.data.weekendActivity,
+      fatherTasks: this.data.fatherTasks,
+      motherTasks: this.data.motherTasks,
+      familyTasks: this.data.familyTasks,
+      childTasks: this.data.childTasks
+    };
+    const weeklyPlan = {
+      ...previousPlan,
+      fatherTasks: updateTaskInList(this.data.fatherTasks, taskId),
+      motherTasks: updateTaskInList(this.data.motherTasks, taskId),
+      familyTasks: updateTaskInList(this.data.familyTasks, taskId),
+      childTasks: updateTaskInList(this.data.childTasks, taskId)
+    };
+    this.setData(weeklyPlan);
+    wx.setStorageSync(weeklyPlanCacheStorageKey, {
+      savedAt: Date.now(),
+      weeklyPlan
+    });
+
     void patchJson(`/api/weekly-plan/tasks/${taskId}/progress`, {
       completedCount: nextCompletedCount
     })
       .then(() => {
         wx.showToast({ title: "已记录", icon: "success" });
         wx.removeStorageSync(dashboardCacheStorageKey);
-        wx.removeStorageSync(weeklyPlanCacheStorageKey);
-        this.loadWeeklyPlan();
+        this.loadWeeklyPlan({ useLoadingState: false });
       })
       .catch((error) => {
+        this.setData(previousPlan);
+        wx.setStorageSync(weeklyPlanCacheStorageKey, {
+          savedAt: Date.now(),
+          weeklyPlan: previousPlan
+        });
         wx.showToast({ title: error.error || "更新失败", icon: "none" });
       });
   }
