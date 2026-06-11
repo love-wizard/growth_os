@@ -7,7 +7,7 @@ const {
   uploadFile
 } = require("../../services/api");
 const growthRecordPrefillStorageKey = "growth_os_growth_record_prefill";
-const growthRecordsCacheStorageKey = "growth_os_growth_records_cache_v2";
+const growthRecordsCacheStorageKey = "growth_os_growth_records_cache_v3";
 const growthRecordsCacheRefreshMs = 5 * 60 * 1000;
 const growthRecordsCacheDisplayMs = 55 * 60 * 1000;
 const aiRequestTimeoutMs = 30000;
@@ -35,8 +35,17 @@ function buildLocalDateTime(date, time, seconds = currentSecondString()) {
   return new Date(`${date}T${hours}:${minutes}:${seconds}`).toISOString();
 }
 
-function formatDateTimeLabel(value, fallbackDate) {
-  const date = value ? new Date(value) : fallbackDate ? new Date(`${fallbackDate}T00:00:00`) : null;
+function isMidnight(value) {
+  if (!value) {
+    return false;
+  }
+  const date = new Date(value);
+  return !Number.isNaN(date.getTime()) && date.getHours() === 0 && date.getMinutes() === 0 && date.getSeconds() === 0;
+}
+
+function formatDateTimeLabel(value, fallbackDate, fallbackDateTime) {
+  const displayValue = value && !isMidnight(value) ? value : fallbackDateTime;
+  const date = displayValue ? new Date(displayValue) : fallbackDate ? new Date(`${fallbackDate}T00:00:00`) : null;
   if (!date || Number.isNaN(date.getTime())) {
     return fallbackDate || "";
   }
@@ -52,18 +61,21 @@ function formatDateTimeLabel(value, fallbackDate) {
 
 function formatRecord(record) {
   const tags = record.tags && record.tags.length ? record.tags : ["成长瞬间"];
+  const happenedAt = record.happened_at && !isMidnight(record.happened_at)
+    ? record.happened_at
+    : record.created_at || record.happened_at || "";
   return {
     id: record.id,
     date: record.happened_on,
-    happenedAt: record.happened_at || "",
-    dateTimeLabel: formatDateTimeLabel(record.happened_at, record.happened_on),
+    happenedAt,
+    dateTimeLabel: formatDateTimeLabel(record.happened_at, record.happened_on, record.created_at),
     createdAt: record.created_at || "",
     title: tags[0],
     text: record.text,
     tags,
     photoUrls: (record.growth_record_media || [])
-      .filter((media) => media.media_type === "photo" && media.signed_url)
-      .map((media) => media.signed_url),
+      .filter((media) => media.media_type === "photo" && (media.signed_url || media.signedUrl || media.url))
+      .map((media) => media.signed_url || media.signedUrl || media.url),
     shareImageUrl: ""
   };
 }

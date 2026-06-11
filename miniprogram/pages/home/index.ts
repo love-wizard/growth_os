@@ -4,7 +4,7 @@ const growthRecordPrefillStorageKey = "growth_os_growth_record_prefill";
 const childProfileCacheStorageKey = "growth_os_child_profile_cache";
 const dashboardCacheStorageKey = "growth_os_dashboard_cache";
 const weeklyPlanCacheStorageKey = "growth_os_weekly_plan_cache";
-const growthRecordsCacheStorageKey = "growth_os_growth_records_cache_v2";
+const growthRecordsCacheStorageKey = "growth_os_growth_records_cache_v3";
 const dashboardCacheRefreshMs = 5 * 60 * 1000;
 const dashboardCacheDisplayMs = 24 * 60 * 60 * 1000;
 
@@ -137,8 +137,21 @@ function formatWeeklyPlanCache(plan: {
   };
 }
 
-function formatDateTimeLabel(value?: string | null, fallbackDate?: string) {
-  const date = value ? new Date(value) : fallbackDate ? new Date(`${fallbackDate}T00:00:00`) : null;
+function isMidnight(value?: string | null) {
+  if (!value) {
+    return false;
+  }
+
+  const date = new Date(value);
+  return !Number.isNaN(date.getTime()) &&
+    date.getHours() === 0 &&
+    date.getMinutes() === 0 &&
+    date.getSeconds() === 0;
+}
+
+function formatDateTimeLabel(value?: string | null, fallbackDate?: string, fallbackDateTime?: string) {
+  const displayValue = value && !isMidnight(value) ? value : fallbackDateTime;
+  const date = displayValue ? new Date(displayValue) : fallbackDate ? new Date(`${fallbackDate}T00:00:00`) : null;
   if (!date || Number.isNaN(date.getTime())) {
     return fallbackDate || "";
   }
@@ -162,21 +175,26 @@ function formatGrowthRecordCache(record: {
   growth_record_media?: Array<{
     media_type: string;
     signed_url?: string;
+    signedUrl?: string;
+    url?: string;
   }>;
 }) {
   const tags = record.tags && record.tags.length ? record.tags : ["成长瞬间"];
+  const happenedAt = record.happened_at && !isMidnight(record.happened_at)
+    ? record.happened_at
+    : record.created_at || record.happened_at || "";
   return {
     id: record.id,
     date: record.happened_on,
-    happenedAt: record.happened_at || "",
-    dateTimeLabel: formatDateTimeLabel(record.happened_at, record.happened_on),
+    happenedAt,
+    dateTimeLabel: formatDateTimeLabel(record.happened_at, record.happened_on, record.created_at),
     createdAt: record.created_at || "",
     title: tags[0],
     text: record.text,
     tags,
     photoUrls: (record.growth_record_media || [])
-      .filter((media) => media.media_type === "photo" && media.signed_url)
-      .map((media) => media.signed_url as string),
+      .filter((media) => media.media_type === "photo" && (media.signed_url || media.signedUrl || media.url))
+      .map((media) => (media.signed_url || media.signedUrl || media.url) as string),
     shareImageUrl: ""
   };
 }
@@ -387,6 +405,8 @@ Page({
           growth_record_media?: Array<{
             media_type: string;
             signed_url?: string;
+            signedUrl?: string;
+            url?: string;
           }>;
         }>;
       }>("/api/growth-records")
