@@ -9,9 +9,9 @@
         </view>
       </view>
       <view>
-        <view class="caption">饭米粒整理</view>
-        <view wx:if="{{childNickname}}" class="page-title">{{childNickname}}的今日陪伴</view>
-        <view wx:else class="page-title">今日陪伴</view>
+        <view class="caption">饭米粒在这里</view>
+        <view wx:if="{{childNickname}}" class="page-title">今天陪{{childNickname}}慢慢来</view>
+        <view wx:else class="page-title">今天我们慢慢来</view>
       </view>
     </view>
     <button class="icon-text-button" bindtap="openArchive">记录</button>
