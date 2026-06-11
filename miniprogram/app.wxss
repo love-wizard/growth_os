@@ -29,7 +29,6 @@ page {
   padding-bottom: calc(220rpx + env(safe-area-inset-bottom));
 }
 
-.home-page,
 .weekly-page,
 .archive-page,
 .coach-page,

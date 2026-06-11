@@ -305,9 +305,6 @@ Page({
   openCoach() {
     wx.switchTab({ url: "/pages/ai-coach/index" });
   },
-  openArchive() {
-    wx.switchTab({ url: "/pages/archive/index" });
-  },
   openSetup() {
     wx.navigateTo({ url: "/pages/setup/index" });
   }

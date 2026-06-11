@@ -54,7 +54,7 @@
   <view wx:if="{{step === 3}}" class="section card stack">
     <view>
       <view class="title">今天最需要解决什么？</view>
-      <view class="muted">AI建议会围绕这个具体场景生成。</view>
+      <view class="muted">饭米粒会围绕这个具体场景给建议。</view>
     </view>
     <view class="chip-row">
       <view

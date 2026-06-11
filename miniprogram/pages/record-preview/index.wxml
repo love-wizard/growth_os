@@ -11,9 +11,9 @@
   <view wx:if="{{errorMessage}}" class="section card warm-card stack">
     <view>
       <view class="title">{{errorMessage}}</view>
-      <view class="muted">这条分享暂时无法打开，可以先进入 Growth OS 记录自己的家庭瞬间。</view>
+      <view class="muted">这条分享暂时无法打开，可以先进入饭米粒记录自己的家庭瞬间。</view>
     </view>
-    <button class="button-primary" bindtap="openGrowthOs">进入 Growth OS</button>
+    <button class="button-primary" bindtap="openGrowthOs">进入饭米粒</button>
   </view>
 
   <view wx:if="{{preview}}" class="section record-preview-card stack">
@@ -34,6 +34,6 @@
       <view class="caption">{{preview.happenedOn}}</view>
       <view class="title">{{preview.text}}</view>
     </view>
-    <button class="button-primary" bindtap="openGrowthOs">我也记录一个成长瞬间</button>
+    <button class="button-primary" bindtap="openGrowthOs">我也用饭米粒记录</button>
   </view>
 </view>

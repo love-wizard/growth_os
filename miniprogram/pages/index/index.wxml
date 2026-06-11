@@ -1,9 +1,9 @@
 <view class="page splash-page">
   <view class="section splash-card stack">
     <view class="page-heading">
-      <view class="visual-icon">G</view>
+      <view class="visual-icon">饭</view>
       <view>
-        <view class="caption">Growth OS</view>
+        <view class="caption">饭米粒</view>
         <view class="page-title">正在进入家庭成长空间</view>
         <view class="subtitle">为今天的陪伴准备一个轻量建议。</view>
       </view>

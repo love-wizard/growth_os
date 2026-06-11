@@ -23,7 +23,7 @@ Page({
           happenedOn: sharedDate,
           text: sharedText,
           photoUrls: sharedImageUrl ? [sharedImageUrl] : [],
-          familyName: "成长 OS",
+          familyName: "饭米粒陪伴记录",
           subtitle: "把值得记住的小瞬间，好好记下来。"
         },
         errorMessage: ""

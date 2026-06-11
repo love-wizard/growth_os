@@ -122,11 +122,11 @@
     <view class="section card primary-card stack">
       <view>
         <view class="caption">下周计划</view>
-        <view class="title">想换一版节奏，可以让 AI 重新想一版</view>
+        <view class="title">想换一版节奏，可以让饭米粒重新想一版</view>
         <view class="muted">不会改动本周任务，确认后只覆盖下周计划。</view>
       </view>
       <button class="button-secondary" loading="{{isGeneratingDraft}}" bindtap="generateNextWeekDraft">
-        让AI重新想一版下周计划
+        让饭米粒重新想一版下周计划
       </button>
       <view wx:if="{{draftErrorMessage}}" class="muted">{{draftErrorMessage}}</view>
     </view>
