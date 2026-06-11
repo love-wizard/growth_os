@@ -161,6 +161,7 @@ Page({
     isLoading: false,
     hasRecordData: false,
     isSubmitting: false,
+    isRecordComposerOpen: false,
     errorMessage: "",
     recordText: "",
     recordCategory: "成长瞬间",
@@ -293,6 +294,7 @@ Page({
     wx.removeStorageSync(growthRecordPrefillStorageKey);
     const category = (draft.tags || "成长瞬间").split(/[，,]/)[0] || "成长瞬间";
     this.setData({
+      isRecordComposerOpen: true,
       recordText: draft.text,
       recordCategory: category,
       selectedCategoryIndex: Math.max(0, recordCategories.indexOf(category))
@@ -353,6 +355,21 @@ Page({
   onRecordTextInput(event) {
     this.setData({ recordText: event.detail.value });
   },
+  openRecordComposer() {
+    this.setData({
+      isRecordComposerOpen: true,
+      happenedDate: this.data.happenedDate || todayString(),
+      happenedTime: this.data.happenedTime || currentTimeString()
+    });
+  },
+  closeRecordComposer() {
+    if (this.data.isSubmitting) {
+      return;
+    }
+
+    this.setData({ isRecordComposerOpen: false });
+  },
+  noop() {},
   onRecordCategoryChange(event) {
     const selectedCategoryIndex = Number(event.detail.value);
     this.setData({
@@ -530,6 +547,7 @@ Page({
       .then(() => {
         wx.showToast({ title: "已记录", icon: "success" });
         this.setData({
+          isRecordComposerOpen: false,
           recordText: "",
           recordCategory: "成长瞬间",
           selectedCategoryIndex: 0,

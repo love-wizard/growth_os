@@ -1,41 +1,10 @@
-<view class="page">
+<view class="page archive-page">
   <view class="row">
     <view>
       <view class="caption">成长档案</view>
       <view class="page-title">记录真实发生的小瞬间</view>
     </view>
-  </view>
-
-  <view class="section card warm-card stack">
-    <view>
-      <view class="title">今天有什么值得记下？</view>
-      <view class="muted">一句话就可以，也可以顺手附上一张照片。</view>
-    </view>
-    <textarea class="input-box text-area" placeholder="例如：今天第一次主动练琴20分钟。" value="{{recordText}}" bindinput="onRecordTextInput" />
-    <picker mode="selector" range="{{recordCategories}}" value="{{selectedCategoryIndex}}" bindchange="onRecordCategoryChange">
-      <view class="input-box picker-box">类别 {{recordCategory}}</view>
-    </picker>
-    <view class="record-time-row">
-      <picker mode="date" value="{{happenedDate}}" bindchange="onHappenedDateChange">
-        <view class="input-box picker-box">日期 {{happenedDate}}</view>
-      </picker>
-      <picker mode="time" value="{{happenedTime}}" bindchange="onHappenedTimeChange">
-        <view class="input-box picker-box">时间 {{happenedTime}}</view>
-      </picker>
-    </view>
-    <view class="stack">
-      <button class="button-secondary" bindtap="choosePhoto">选择照片（最多3张）</button>
-      <view wx:if="{{selectedPhotos.length}}" class="selected-photo-grid">
-        <view class="photo-preview-card" wx:for="{{selectedPhotos}}" wx:key="path">
-          <image class="photo-preview small-photo-preview" src="{{item.path}}" mode="aspectFill" />
-          <view class="row">
-            <view class="muted">{{item.name}}</view>
-            <button class="button-secondary compact-button" data-index="{{index}}" bindtap="removeSelectedPhoto">移除</button>
-          </view>
-        </view>
-      </view>
-    </view>
-    <button class="button-primary" loading="{{isSubmitting}}" bindtap="addRecord">记录成长瞬间</button>
+    <button class="icon-text-button" bindtap="openRecordComposer">记录</button>
   </view>
 
   <view wx:if="{{errorMessage}}" class="section card">
@@ -63,7 +32,10 @@
       <view class="skeleton-line"></view>
       <view class="skeleton-line short"></view>
     </view>
-    <view wx:elif="{{records.length === 0 && hasRecordData && !errorMessage}}" class="muted">还没有成长记录，先写下今天的一件小事。</view>
+    <view wx:elif="{{records.length === 0 && hasRecordData && !errorMessage}}" class="empty-record-state">
+      <view class="muted">还没有成长记录，先写下今天的一件小事。</view>
+      <button class="button-secondary compact-button" bindtap="openRecordComposer">记录一条</button>
+    </view>
     <block wx:else>
     <view class="timeline-item" wx:for="{{records}}" wx:key="id">
       <view class="caption">{{item.dateTimeLabel || item.date}}</view>
@@ -122,6 +94,45 @@
         <view class="caption">下月建议</view>
         <view class="muted" wx:for="{{monthlyReport.nextActions}}" wx:key="*this">{{item}}</view>
       </view>
+    </view>
+  </view>
+
+  <button class="floating-add-button" bindtap="openRecordComposer">+</button>
+
+  <view wx:if="{{isRecordComposerOpen}}" class="modal-backdrop" bindtap="closeRecordComposer">
+    <view class="record-composer-sheet stack" catchtap="noop">
+      <view class="row">
+        <view>
+          <view class="caption">成长瞬间</view>
+          <view class="title">今天有什么值得记下？</view>
+        </view>
+        <button class="button-secondary compact-button" bindtap="closeRecordComposer">关闭</button>
+      </view>
+      <textarea class="input-box text-area" placeholder="例如：今天第一次主动练琴20分钟。" value="{{recordText}}" bindinput="onRecordTextInput" />
+      <picker mode="selector" range="{{recordCategories}}" value="{{selectedCategoryIndex}}" bindchange="onRecordCategoryChange">
+        <view class="input-box picker-box">类别 {{recordCategory}}</view>
+      </picker>
+      <view class="record-time-row">
+        <picker mode="date" value="{{happenedDate}}" bindchange="onHappenedDateChange">
+          <view class="input-box picker-box">日期 {{happenedDate}}</view>
+        </picker>
+        <picker mode="time" value="{{happenedTime}}" bindchange="onHappenedTimeChange">
+          <view class="input-box picker-box">时间 {{happenedTime}}</view>
+        </picker>
+      </view>
+      <view class="stack">
+        <button class="button-secondary" bindtap="choosePhoto">选择照片（最多3张）</button>
+        <view wx:if="{{selectedPhotos.length}}" class="selected-photo-grid">
+          <view class="photo-preview-card" wx:for="{{selectedPhotos}}" wx:key="path">
+            <image class="photo-preview small-photo-preview" src="{{item.path}}" mode="aspectFill" />
+            <view class="row">
+              <view class="muted">{{item.name}}</view>
+              <button class="button-secondary compact-button" data-index="{{index}}" bindtap="removeSelectedPhoto">移除</button>
+            </view>
+          </view>
+        </view>
+      </view>
+      <button class="button-primary" loading="{{isSubmitting}}" disabled="{{isSubmitting}}" bindtap="addRecord">记录成长瞬间</button>
     </view>
   </view>
 </view>
