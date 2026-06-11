@@ -88,7 +88,7 @@ Page({
           nickname: this.data.nickname,
           savedAt: Date.now()
         });
-        wx.showToast({ title: "已生成成长系统", icon: "success" });
+        wx.showToast({ title: "已更新陪伴方向", icon: "success" });
         wx.switchTab({ url: "/pages/home/index" });
       })
       .catch((error) => {

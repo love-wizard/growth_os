@@ -827,10 +827,6 @@ page {
   width: 168rpx;
 }
 
-.archive-page {
-  padding-bottom: 148rpx;
-}
-
 .archive-timeline-section {
   background: transparent;
 }

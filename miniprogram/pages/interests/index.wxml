@@ -4,7 +4,7 @@
     <view>
       <view class="caption">兴趣参与</view>
       <view class="page-title">记录真实发生的练习</view>
-      <view class="subtitle">留下已经发生的参与情况，帮助 AI 理解孩子最近的兴趣状态。</view>
+      <view class="subtitle">留下已经发生的参与情况，帮助饭米粒理解孩子最近的兴趣状态。</view>
     </view>
   </view>
 

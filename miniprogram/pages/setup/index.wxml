@@ -2,8 +2,8 @@
   <view class="page-heading">
     <view class="visual-icon">启</view>
     <view>
-      <view class="caption">首次配置</view>
-      <view class="page-title">先得到今晚能做的一件事</view>
+      <view class="caption">孩子档案</view>
+      <view class="page-title">设置今天的陪伴方向</view>
       <view class="step-dot-row">
         <view class="step-dot {{step >= 1 ? 'step-dot-active' : ''}}"></view>
         <view class="step-dot {{step >= 2 ? 'step-dot-active' : ''}}"></view>
@@ -85,7 +85,7 @@
     <view class="muted">{{suggestion.action}}</view>
     <view class="row">
       <button class="button-secondary" bindtap="prevStep">调整一下</button>
-      <button class="button-primary" loading="{{isSubmitting}}" disabled="{{isSubmitting}}" bindtap="finishSetup">加入首页</button>
+      <button class="button-primary" loading="{{isSubmitting}}" disabled="{{isSubmitting}}" bindtap="finishSetup">保存并回首页</button>
     </view>
   </view>
 </view>

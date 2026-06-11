@@ -1,6 +1,12 @@
 <view class="page guidance-page">
   <view class="page-heading">
-    <view class="visual-icon">爱</view>
+    <view class="visual-icon fanmili-header-icon">
+      <view class="fanmili-head">
+        <view class="fanmili-eye fanmili-eye-left"></view>
+        <view class="fanmili-eye fanmili-eye-right"></view>
+        <view class="fanmili-smile"></view>
+      </view>
+    </view>
     <view>
       <view class="caption">饭米粒</view>
       <view class="page-title">今天先陪孩子做一件小事</view>
