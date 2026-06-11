@@ -14,7 +14,6 @@
         <view wx:else class="page-title">今天我们慢慢来</view>
       </view>
     </view>
-    <button class="icon-text-button" bindtap="openArchive">记录</button>
   </view>
 
   <view class="section quote-card">
