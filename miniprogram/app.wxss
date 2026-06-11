@@ -392,6 +392,21 @@ page {
   padding-bottom: 12rpx;
 }
 
+.home-task-header {
+  gap: 20rpx;
+}
+
+.home-task-header .title {
+  flex: 1;
+  min-width: 0;
+}
+
+.home-task-header .compact-button {
+  flex: 0 0 auto;
+  margin-left: 0;
+  min-width: 184rpx;
+}
+
 .weekly-page {
   padding-top: 28rpx;
 }

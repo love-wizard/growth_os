@@ -71,7 +71,7 @@
     </view>
 
     <view class="section card home-task-card">
-      <view class="row">
+      <view class="row home-task-header">
         <view class="title">今天可推进</view>
         <button class="button-secondary compact-button" bindtap="startAction">完成后记录</button>
       </view>
