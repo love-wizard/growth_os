@@ -26,27 +26,27 @@ const dailyQuotes = [
   },
   {
     quote: "陪伴不是把时间填满，而是让孩子感到被看见。",
-    source: "饭米粒Love 陪伴笔记",
+    source: "饭米粒 · 陪伴笔记",
     reflection: "今天只抓住一个真实瞬间，回应孩子的感受。"
   },
   {
     quote: "成长发生在重复的小事里。",
-    source: "饭米粒Love 陪伴笔记",
+    source: "饭米粒 · 陪伴笔记",
     reflection: "把任务做小一点，更容易持续。"
   },
   {
     quote: "少一点催促，多一点一起开始。",
-    source: "饭米粒Love 陪伴笔记",
+    source: "饭米粒 · 陪伴笔记",
     reflection: "先陪孩子启动，再慢慢退出。"
   },
   {
     quote: "记录不是打分，是把生命力留下来。",
-    source: "饭米粒Love 陪伴笔记",
+    source: "饭米粒 · 陪伴笔记",
     reflection: "写下一句具体观察，比评价更有用。"
   },
   {
     quote: "孩子需要的不是完美安排，而是稳定回应。",
-    source: "饭米粒Love 陪伴笔记",
+    source: "饭米粒 · 陪伴笔记",
     reflection: "今天先完成一个低压力行动。"
   }
 ];

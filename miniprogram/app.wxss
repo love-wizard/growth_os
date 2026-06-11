@@ -26,6 +26,7 @@ page {
 
 .home-page {
   padding-top: 28rpx;
+  padding-bottom: calc(220rpx + env(safe-area-inset-bottom));
 }
 
 .home-page,
@@ -55,15 +56,25 @@ page {
 
 .home-header {
   align-items: flex-start;
-  background: rgba(255, 255, 255, 0.68);
-  border: 1rpx solid rgba(238, 232, 223, 0.82);
-  border-radius: 28rpx;
-  box-shadow: 0 18rpx 48rpx rgba(88, 74, 56, 0.07);
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
   box-sizing: border-box;
   display: flex;
   gap: 24rpx;
   justify-content: space-between;
-  padding: 28rpx;
+  padding: 12rpx 2rpx 2rpx;
+}
+
+.home-header .page-title {
+  font-size: 42rpx;
+  letter-spacing: 0;
+  line-height: 56rpx;
+}
+
+.home-header .caption {
+  font-weight: 600;
 }
 
 .page-heading {
@@ -163,8 +174,8 @@ page {
 }
 
 .icon-text-button {
-  background: rgba(255, 255, 255, 0.82);
-  border: 1rpx solid rgba(231, 224, 215, 0.86);
+  background: rgba(255, 255, 255, 0.66);
+  border: 1rpx solid rgba(231, 224, 215, 0.72);
   border-radius: 999rpx;
   color: #3f8f6b;
   flex: 0 0 auto;
@@ -177,24 +188,18 @@ page {
 }
 
 .quote-card {
-  background: rgba(255, 255, 255, 0.72);
-  border: 1rpx solid rgba(235, 228, 219, 0.88);
-  border-radius: 28rpx;
+  background: rgba(255, 255, 255, 0.54);
+  border: 1rpx solid rgba(235, 228, 219, 0.62);
+  border-radius: 24rpx;
   box-sizing: border-box;
-  box-shadow: 0 18rpx 52rpx rgba(80, 66, 48, 0.075);
+  box-shadow: 0 10rpx 30rpx rgba(80, 66, 48, 0.04);
   overflow: hidden;
-  padding: 30rpx 32rpx 32rpx;
+  padding: 24rpx 28rpx 26rpx;
   position: relative;
 }
 
 .quote-card::before {
-  background: linear-gradient(90deg, #d7a86e 0%, #8fbfa7 100%);
-  content: "";
-  height: 4rpx;
-  left: 32rpx;
-  position: absolute;
-  right: 32rpx;
-  top: 0;
+  display: none;
 }
 
 .quote-topline {
@@ -205,7 +210,7 @@ page {
 }
 
 .quote-eyebrow {
-  background: rgba(228, 243, 236, 0.76);
+  background: rgba(228, 243, 236, 0.68);
   border-radius: 999rpx;
   color: #3f8f6b;
   font-size: 24rpx;
@@ -215,19 +220,19 @@ page {
 }
 
 .quote-mark {
-  color: rgba(215, 168, 110, 0.35);
+  color: rgba(215, 168, 110, 0.26);
   font-family: Georgia, serif;
-  font-size: 96rpx;
-  height: 52rpx;
-  line-height: 72rpx;
-  margin-top: 10rpx;
+  font-size: 72rpx;
+  height: 38rpx;
+  line-height: 54rpx;
+  margin-top: 8rpx;
 }
 
 .quote-text {
   color: #25211c;
-  font-size: 32rpx;
+  font-size: 29rpx;
   font-weight: 600;
-  line-height: 50rpx;
+  line-height: 44rpx;
   margin-top: 4rpx;
 }
 
@@ -241,17 +246,18 @@ page {
 .quote-source {
   color: #a29a90;
   flex: 1;
-  font-size: 24rpx;
-  line-height: 34rpx;
+  font-size: 22rpx;
+  line-height: 32rpx;
   text-align: right;
 }
 
 .quote-reflection-box {
-  background: rgba(236, 247, 241, 0.72);
-  border: 1rpx solid rgba(201, 227, 214, 0.72);
-  border-radius: 20rpx;
-  margin-top: 24rpx;
-  padding: 24rpx 26rpx;
+  background: transparent;
+  border: 0;
+  border-left: 6rpx solid rgba(143, 191, 167, 0.68);
+  border-radius: 0;
+  margin-top: 18rpx;
+  padding: 0 0 0 18rpx;
 }
 
 .quote-reflection-label {
@@ -262,12 +268,12 @@ page {
 }
 
 .home-focus-card {
-  background: linear-gradient(145deg, rgba(246, 255, 250, 0.94) 0%, rgba(225, 241, 232, 0.94) 100%);
-  border: 1rpx solid rgba(201, 227, 214, 0.84);
-  border-radius: 30rpx;
+  background: linear-gradient(145deg, rgba(252, 255, 253, 0.98) 0%, rgba(230, 244, 236, 0.96) 100%);
+  border: 1rpx solid rgba(201, 227, 214, 0.7);
+  border-radius: 34rpx;
   box-sizing: border-box;
-  box-shadow: 0 22rpx 58rpx rgba(54, 111, 85, 0.12);
-  padding: 36rpx 34rpx;
+  box-shadow: 0 24rpx 64rpx rgba(54, 111, 85, 0.1);
+  padding: 34rpx 34rpx 32rpx;
   position: relative;
 }
 
@@ -278,7 +284,7 @@ page {
 }
 
 .focus-minutes {
-  background: rgba(255, 255, 255, 0.78);
+  background: rgba(255, 255, 255, 0.86);
   border-radius: 999rpx;
   color: #3f8f6b;
   font-size: 24rpx;
@@ -289,21 +295,21 @@ page {
 
 .focus-title {
   color: #25211c;
-  font-size: 42rpx;
+  font-size: 38rpx;
   font-weight: 650;
-  line-height: 58rpx;
+  line-height: 54rpx;
 }
 
 .focus-context {
   color: #495c52;
-  font-size: 29rpx;
-  line-height: 46rpx;
+  font-size: 27rpx;
+  line-height: 42rpx;
 }
 
 .focus-why {
-  background: rgba(255, 255, 255, 0.62);
-  border: 1rpx solid rgba(201, 227, 214, 0.74);
-  border-radius: 22rpx;
+  background: rgba(255, 255, 255, 0.58);
+  border: 0;
+  border-radius: 20rpx;
   color: #5f685f;
   font-size: 26rpx;
   line-height: 40rpx;
@@ -318,12 +324,12 @@ page {
 
 .summary-tile {
   background: rgba(255, 255, 255, 0.72);
-  border: 1rpx solid rgba(231, 224, 215, 0.82);
-  border-radius: 24rpx;
+  border: 1rpx solid rgba(231, 224, 215, 0.66);
+  border-radius: 22rpx;
   box-sizing: border-box;
-  box-shadow: 0 12rpx 34rpx rgba(88, 74, 56, 0.055);
-  min-height: 148rpx;
-  padding: 24rpx;
+  box-shadow: 0 8rpx 24rpx rgba(88, 74, 56, 0.035);
+  min-height: 132rpx;
+  padding: 22rpx;
 }
 
 .summary-title {
