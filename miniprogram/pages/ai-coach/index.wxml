@@ -89,9 +89,12 @@
     </block>
   </view>
 
-  <view class="section card">
+  <view class="section card coach-history-card">
     <view class="row">
-      <view class="title">最近咨询</view>
+      <view>
+        <view class="caption">最近咨询</view>
+        <view class="muted">只显示最近 3 条，方便你接着问。</view>
+      </view>
       <view class="caption">{{isHistoryLoading ? '加载中' : ''}}</view>
     </view>
     <view wx:if="{{history.length === 0}}" class="muted coach-empty-history">还没有历史记录，先问一个具体问题。</view>

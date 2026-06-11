@@ -12,6 +12,20 @@
     <view class="muted">完成首次配置后，就可以记录孩子的真实成长瞬间。</view>
   </view>
 
+  <view class="section card archive-report-card">
+    <view>
+      <view class="caption">本月月报</view>
+      <view class="title">把 {{records.length}} 条成长瞬间整理成报告</view>
+      <view class="muted">饭米粒会结合记录、周计划和兴趣参与，整理本月变化。</view>
+    </view>
+    <button class="button-secondary compact-button" loading="{{isGeneratingMonthlyReport}}" bindtap="generateMonthlyReport">
+      {{monthlyReport ? '重新生成' : '生成月报'}}
+    </button>
+  </view>
+  <view wx:if="{{monthlyReportError}}" class="section card warm-card">
+    <view class="muted">{{monthlyReportError}}</view>
+  </view>
+
   <view class="section archive-timeline-section">
     <view class="timeline-header">
       <view>
@@ -87,24 +101,19 @@
     </block>
   </view>
 
-  <view class="section card primary-card stack">
+  <view wx:if="{{monthlyReport}}" class="section card primary-card stack">
     <view>
-      <view class="title">成长月报</view>
-      <view class="muted">基于本月成长记录、周计划和兴趣记录生成。</view>
-    </view>
-    <button class="button-secondary" loading="{{isGeneratingMonthlyReport}}" bindtap="generateMonthlyReport">生成本月成长月报</button>
-    <view wx:if="{{monthlyReportError}}" class="muted">{{monthlyReportError}}</view>
-    <view wx:if="{{monthlyReport}}" class="stack">
       <view class="title">{{monthlyReport.title}}</view>
-      <view class="note-box" wx:for="{{monthlyReport.sections}}" wx:key="area">
-        <view class="caption">{{item.area}}</view>
-        <view class="muted">{{item.summary}}</view>
-        <view class="caption" wx:for="{{item.evidence}}" wx:for-item="evidence" wx:key="*this">- {{evidence}}</view>
-      </view>
-      <view class="note-box">
-        <view class="caption">下月建议</view>
-        <view class="muted" wx:for="{{monthlyReport.nextActions}}" wx:key="*this">{{item}}</view>
-      </view>
+      <view class="muted">饭米粒已经把本月成长变化整理好了。</view>
+    </view>
+    <view class="note-box" wx:for="{{monthlyReport.sections}}" wx:key="area">
+      <view class="caption">{{item.area}}</view>
+      <view class="muted">{{item.summary}}</view>
+      <view class="caption" wx:for="{{item.evidence}}" wx:for-item="evidence" wx:key="*this">- {{evidence}}</view>
+    </view>
+    <view class="note-box">
+      <view class="caption">下月建议</view>
+      <view class="muted" wx:for="{{monthlyReport.nextActions}}" wx:key="*this">{{item}}</view>
     </view>
   </view>
 

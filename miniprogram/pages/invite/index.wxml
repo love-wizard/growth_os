@@ -3,13 +3,21 @@
     <view class="visual-icon">家</view>
     <view>
       <view class="caption">家庭邀请</view>
-      <view class="page-title">一起维护同一个成长空间</view>
-      <view class="subtitle">邀请另一位家长加入后，双方都可以查看计划、记录瞬间和使用饭米粒。</view>
+      <view wx:if="{{isInviteReceiver}}" class="page-title">加入这个家庭空间</view>
+      <view wx:else class="page-title">一起维护同一个成长空间</view>
+      <view wx:if="{{isInviteReceiver}}" class="subtitle">加入后，你就可以一起查看计划、记录瞬间和使用饭米粒。</view>
+      <view wx:else class="subtitle">邀请另一位家长加入后，双方都可以查看计划、记录瞬间和使用饭米粒。</view>
     </view>
   </view>
 
   <view class="section invite-hero-card stack">
-    <view>
+    <view wx:if="{{isInviteReceiver}}">
+      <view class="caption">收到邀请</view>
+      <view class="title">和家人一起记录孩子成长</view>
+      <view class="muted">{{status}}</view>
+    </view>
+
+    <view wx:else>
       <view class="caption">邀请身份</view>
       <view class="title">{{role === 'mother' ? '邀请妈妈加入' : '邀请爸爸加入'}}</view>
       <view class="muted">{{status}}</view>

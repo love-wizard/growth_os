@@ -564,6 +564,11 @@ page {
   margin-top: 18rpx;
 }
 
+.coach-history-card {
+  background: rgba(255, 255, 255, 0.58);
+  box-shadow: 0 10rpx 30rpx rgba(88, 74, 56, 0.035);
+}
+
 .interest-page {
   padding-top: 28rpx;
 }
@@ -828,6 +833,18 @@ page {
 
 .archive-timeline-section {
   background: transparent;
+}
+
+.archive-report-card {
+  align-items: center;
+  display: flex;
+  gap: 24rpx;
+  justify-content: space-between;
+}
+
+.archive-report-card > view:first-child {
+  flex: 1;
+  min-width: 0;
 }
 
 .timeline-header {
