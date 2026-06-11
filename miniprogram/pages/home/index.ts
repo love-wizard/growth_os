@@ -8,6 +8,29 @@ const growthRecordsCacheStorageKey = "growth_os_growth_records_cache_v2";
 const dashboardCacheRefreshMs = 5 * 60 * 1000;
 const dashboardCacheDisplayMs = 24 * 60 * 60 * 1000;
 
+const dailyQuotes = [
+  {
+    quote: "陪伴不是把时间填满，而是让孩子感到被看见。",
+    reflection: "今天只抓住一个真实瞬间，回应孩子的感受。"
+  },
+  {
+    quote: "成长发生在重复的小事里。",
+    reflection: "把任务做小一点，更容易持续。"
+  },
+  {
+    quote: "少一点催促，多一点一起开始。",
+    reflection: "先陪孩子启动，再慢慢退出。"
+  },
+  {
+    quote: "记录不是打分，是把生命力留下来。",
+    reflection: "写下一句具体观察，比评价更有用。"
+  },
+  {
+    quote: "孩子需要的不是完美安排，而是稳定回应。",
+    reflection: "今天先完成一个低压力行动。"
+  }
+];
+
 const roleLabels: Record<string, string> = {
   father: "爸爸",
   mother: "妈妈",
@@ -44,6 +67,11 @@ function isFreshCache(savedAt?: number, ttlMs = dashboardCacheRefreshMs) {
 
 function canDisplayCache(savedAt?: number, ttlMs = dashboardCacheDisplayMs) {
   return Boolean(savedAt && Date.now() - savedAt <= ttlMs);
+}
+
+function getDailyQuote(referenceDate = new Date()) {
+  const dayIndex = Math.floor(referenceDate.getTime() / (24 * 60 * 60 * 1000));
+  return dailyQuotes[dayIndex % dailyQuotes.length];
 }
 
 function formatWeeklyPlanTask(task: {
@@ -140,6 +168,7 @@ Page({
     setupRequired: false,
     errorMessage: "",
     childNickname: "",
+    dailyQuote: getDailyQuote(),
     weeklyTheme: "",
     taskCount: "",
     todayAction: {

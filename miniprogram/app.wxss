@@ -11,6 +11,17 @@ page {
   padding: 32rpx 32rpx 56rpx;
 }
 
+.home-page {
+  padding-top: 28rpx;
+}
+
+.home-header {
+  align-items: flex-start;
+  display: flex;
+  gap: 24rpx;
+  justify-content: space-between;
+}
+
 .card {
   background: #ffffff;
   border: 1rpx solid #e7e0d7;
@@ -66,6 +77,124 @@ page {
   color: #9b9185;
   font-size: 24rpx;
   line-height: 36rpx;
+}
+
+.icon-text-button {
+  background: #ffffff;
+  border: 1rpx solid #e7e0d7;
+  border-radius: 999rpx;
+  color: #3f8f6b;
+  flex: 0 0 auto;
+  font-size: 26rpx;
+  font-weight: 600;
+  height: 64rpx;
+  line-height: 64rpx;
+  margin: 0;
+  padding: 0 28rpx;
+}
+
+.quote-card {
+  background: #ffffff;
+  border: 1rpx solid #eadfce;
+  border-radius: 16rpx;
+  box-sizing: border-box;
+  padding: 28rpx 32rpx;
+  position: relative;
+}
+
+.quote-mark {
+  color: #d6b17a;
+  font-size: 54rpx;
+  height: 40rpx;
+  line-height: 40rpx;
+}
+
+.quote-text {
+  color: #25211c;
+  font-size: 32rpx;
+  font-weight: 600;
+  line-height: 48rpx;
+}
+
+.quote-reflection {
+  color: #6e665c;
+  font-size: 26rpx;
+  line-height: 40rpx;
+  margin-top: 12rpx;
+}
+
+.home-focus-card {
+  background: #e4f3ec;
+  border: 1rpx solid #c9e3d6;
+  border-radius: 16rpx;
+  box-sizing: border-box;
+  padding: 36rpx 32rpx;
+}
+
+.focus-topline {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.focus-minutes {
+  background: rgba(255, 255, 255, 0.72);
+  border-radius: 999rpx;
+  color: #3f8f6b;
+  font-size: 24rpx;
+  font-weight: 600;
+  line-height: 36rpx;
+  padding: 8rpx 18rpx;
+}
+
+.focus-title {
+  color: #25211c;
+  font-size: 40rpx;
+  font-weight: 650;
+  line-height: 56rpx;
+}
+
+.focus-context {
+  color: #4f5f55;
+  font-size: 29rpx;
+  line-height: 46rpx;
+}
+
+.focus-why {
+  background: rgba(255, 255, 255, 0.58);
+  border: 1rpx solid #c9e3d6;
+  border-radius: 16rpx;
+  color: #5f685f;
+  font-size: 26rpx;
+  line-height: 40rpx;
+  padding: 20rpx 22rpx;
+}
+
+.home-summary-grid {
+  display: grid;
+  gap: 16rpx;
+  grid-template-columns: 1fr 1fr;
+}
+
+.summary-tile {
+  background: #ffffff;
+  border: 1rpx solid #e7e0d7;
+  border-radius: 16rpx;
+  box-sizing: border-box;
+  min-height: 148rpx;
+  padding: 24rpx;
+}
+
+.summary-title {
+  color: #25211c;
+  font-size: 30rpx;
+  font-weight: 600;
+  line-height: 44rpx;
+  margin-top: 10rpx;
+}
+
+.home-task-card {
+  padding-bottom: 12rpx;
 }
 
 .primary-card {

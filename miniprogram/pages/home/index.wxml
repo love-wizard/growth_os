@@ -1,8 +1,17 @@
-<view class="page">
-  <view>
-    <view class="caption">今天的陪伴</view>
-    <view wx:if="{{childNickname}}" class="page-title">{{childNickname}}今天可以这样开始</view>
-    <view wx:else class="page-title">今天可以这样开始</view>
+<view class="page home-page">
+  <view class="home-header">
+    <view>
+      <view class="caption">今天的陪伴</view>
+      <view wx:if="{{childNickname}}" class="page-title">{{childNickname}}今天做一件小事</view>
+      <view wx:else class="page-title">今天做一件小事</view>
+    </view>
+    <button class="icon-text-button" bindtap="openArchive">记录</button>
+  </view>
+
+  <view class="section quote-card">
+    <view class="quote-mark">“</view>
+    <view class="quote-text">{{dailyQuote.quote}}</view>
+    <view class="quote-reflection">{{dailyQuote.reflection}}</view>
   </view>
 
   <view wx:if="{{errorMessage}}" class="section card warm-card stack">
@@ -20,51 +29,44 @@
   </view>
 
   <block wx:if="{{hasDashboardData}}">
-  <view class="section card primary-card stack">
-    <view>
-      <view class="title">{{todayAction.title}}</view>
-      <view class="subtitle">{{todayAction.context}}</view>
-    </view>
-    <view class="chip-row">
-      <view class="chip chip-active">{{todayAction.minutes}}</view>
-      <view class="chip">亲子共读</view>
-      <view class="chip">低压力</view>
-    </view>
-    <view class="muted">{{todayAction.why}}</view>
-    <view class="row">
-      <button class="button-primary" bindtap="startAction">记录成长</button>
-      <button class="button-secondary" bindtap="openCoach">问AI教练</button>
-    </view>
-  </view>
-
-  <view class="section card">
-    <view class="row">
-      <view>
-        <view class="title">本周主题</view>
-        <view class="muted">《{{weeklyTheme}}》</view>
+    <view class="section home-focus-card stack">
+      <view class="focus-topline">
+        <view class="caption">今天最小行动</view>
+        <view class="focus-minutes">{{todayAction.minutes}}</view>
       </view>
-      <view class="progress-pill">{{taskCount}}</view>
-    </view>
-  </view>
-
-  <view class="section card">
-    <view class="title">今天可推进</view>
-    <view class="task-row" wx:for="{{tasks}}" wx:key="title">
-      <view class="role-badge {{item.roleClass}}">{{item.role}}</view>
-      <view class="task-main">
-        <view class="task-title">{{item.title}}</view>
-        <view class="caption">慢慢来，不需要补任务</view>
+      <view class="focus-title">{{todayAction.title}}</view>
+      <view class="focus-context">{{todayAction.context}}</view>
+      <view class="focus-why">{{todayAction.why}}</view>
+      <view class="row">
+        <button class="button-primary" bindtap="startAction">记录这个瞬间</button>
+        <button class="button-secondary" bindtap="openCoach">问AI教练</button>
       </view>
-      <view class="progress-pill">{{item.progress}}</view>
     </view>
-  </view>
+
+    <view class="section home-summary-grid">
+      <view class="summary-tile">
+        <view class="caption">本周主题</view>
+        <view class="summary-title">《{{weeklyTheme}}》</view>
+      </view>
+      <view class="summary-tile">
+        <view class="caption">今日任务</view>
+        <view class="summary-title">{{taskCount}}</view>
+      </view>
+    </view>
+
+    <view class="section card home-task-card">
+      <view class="row">
+        <view class="title">今天可推进</view>
+        <button class="button-secondary compact-button" bindtap="openArchive">完成后记录</button>
+      </view>
+      <view class="task-row" wx:for="{{tasks}}" wx:key="title">
+        <view class="role-badge {{item.roleClass}}">{{item.role}}</view>
+        <view class="task-main">
+          <view class="task-title">{{item.title}}</view>
+          <view class="caption">慢慢来，不需要补任务</view>
+        </view>
+        <view class="progress-pill">{{item.progress}}</view>
+      </view>
+    </view>
   </block>
-
-  <view wx:if="{{hasDashboardData}}" class="section card warm-card stack">
-    <view>
-      <view class="title">刚完成一件小事？</view>
-      <view class="muted">顺手记下这个成长瞬间，文字就够了。</view>
-    </view>
-    <button class="button-secondary" bindtap="openArchive">记录成长瞬间</button>
-  </view>
 </view>
