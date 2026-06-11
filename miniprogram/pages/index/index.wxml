@@ -1,9 +1,12 @@
 <view class="page splash-page">
   <view class="section splash-card stack">
-    <view>
-      <view class="caption">Growth OS</view>
-      <view class="page-title">正在进入家庭成长空间</view>
-      <view class="subtitle">为今天的陪伴准备一个轻量建议。</view>
+    <view class="page-heading">
+      <view class="visual-icon">G</view>
+      <view>
+        <view class="caption">Growth OS</view>
+        <view class="page-title">正在进入家庭成长空间</view>
+        <view class="subtitle">为今天的陪伴准备一个轻量建议。</view>
+      </view>
     </view>
     <view class="skeleton-line skeleton-title"></view>
     <view class="skeleton-line"></view>

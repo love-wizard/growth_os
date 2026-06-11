@@ -174,6 +174,10 @@ function buildHistoryItem(conversation) {
   };
 }
 
+function getVisibleHistory(history) {
+  return history.slice(0, 3);
+}
+
 Page({
   data: {
     isLoading: false,
@@ -192,6 +196,7 @@ Page({
     selectedPrompt: "今晚只有30分钟",
     freeQuestion: "今晚只有30分钟",
     history: [],
+    visibleHistory: [],
     answer: {
       contextLabel: "",
       title: "",
@@ -245,13 +250,15 @@ Page({
             ? [{ id: result.weeklyPlanDraftId, status: "draft" }]
             : []
         });
+        const history = [historyItem, ...this.data.history.filter((item) => item.id !== historyItem.id)].slice(
+          0,
+          8
+        );
         this.setData({
           isLoading: false,
           hasAnswer: true,
-          history: [historyItem, ...this.data.history.filter((item) => item.id !== historyItem.id)].slice(
-            0,
-            8
-          ),
+          history,
+          visibleHistory: getVisibleHistory(history),
           answer: {
             ...answer,
             weeklyPlanDraftId:
@@ -321,9 +328,11 @@ Page({
     this.setData({ isHistoryLoading: true });
     getJson("/api/ai/conversations")
       .then((result) => {
+        const history = (result.conversations || []).map(buildHistoryItem);
         this.setData({
           isHistoryLoading: false,
-          history: (result.conversations || []).map(buildHistoryItem)
+          history,
+          visibleHistory: getVisibleHistory(history)
         });
       })
       .catch(() => {

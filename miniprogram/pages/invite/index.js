@@ -8,15 +8,18 @@ Page({
     role: "mother",
     sharePath: "",
     status: "邀请另一位家长加入同一个成长空间。",
+    isInviteReceiver: false,
     isLoggedIn: false,
     isLoading: false
   },
   onLoad(query) {
+    const isInviteReceiver = Boolean(query.inviteId);
     this.setData({
       inviteId: query.inviteId || "",
       role: query.role || "mother",
+      isInviteReceiver,
       isLoggedIn: hasMiniProgramSession(),
-      status: query.inviteId ? "你收到了一份家庭成长空间邀请。" : "邀请另一位家长加入同一个成长空间。"
+      status: isInviteReceiver ? "你收到了一份家庭成长空间邀请。" : "邀请另一位家长加入同一个成长空间。"
     });
   },
   onShow() {

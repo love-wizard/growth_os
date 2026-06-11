@@ -1,8 +1,11 @@
 <view class="page record-preview-page">
-  <view>
-    <view class="caption">成长瞬间</view>
-    <view class="page-title">{{preview && preview.familyName ? preview.familyName : "一起记录孩子成长"}}</view>
-    <view class="subtitle">{{preview && preview.subtitle ? preview.subtitle : "把值得记住的小瞬间，好好留住。"}}</view>
+  <view class="page-heading">
+    <view class="visual-icon">照</view>
+    <view>
+      <view class="caption">成长瞬间</view>
+      <view class="page-title">{{preview && preview.familyName ? preview.familyName : "一起记录孩子成长"}}</view>
+      <view class="subtitle">{{preview && preview.subtitle ? preview.subtitle : "把值得记住的小瞬间，好好留住。"}}</view>
+    </view>
   </view>
 
   <view wx:if="{{errorMessage}}" class="section card warm-card stack">
@@ -16,7 +19,7 @@
   <view wx:if="{{preview}}" class="section record-preview-card stack">
     <view wx:if="{{preview.photoUrls && preview.photoUrls.length}}" class="record-preview-photo-grid">
       <image
-        class="record-preview-photo"
+        class="record-preview-photo {{index === 0 ? 'record-preview-photo-large' : 'record-preview-photo-small'}}"
         wx:for="{{preview.photoUrls}}"
         wx:for-item="photoUrl"
         wx:key="photoUrl"

@@ -1,12 +1,15 @@
 <view class="page setup-page">
-  <view>
-    <view class="caption">首次配置</view>
-    <view class="page-title">先得到今晚能做的一件事</view>
-    <view class="step-dot-row">
-      <view class="step-dot {{step >= 1 ? 'step-dot-active' : ''}}"></view>
-      <view class="step-dot {{step >= 2 ? 'step-dot-active' : ''}}"></view>
-      <view class="step-dot {{step >= 3 ? 'step-dot-active' : ''}}"></view>
-      <view class="step-dot {{step >= 4 ? 'step-dot-active' : ''}}"></view>
+  <view class="page-heading">
+    <view class="visual-icon">启</view>
+    <view>
+      <view class="caption">首次配置</view>
+      <view class="page-title">先得到今晚能做的一件事</view>
+      <view class="step-dot-row">
+        <view class="step-dot {{step >= 1 ? 'step-dot-active' : ''}}"></view>
+        <view class="step-dot {{step >= 2 ? 'step-dot-active' : ''}}"></view>
+        <view class="step-dot {{step >= 3 ? 'step-dot-active' : ''}}"></view>
+        <view class="step-dot {{step >= 4 ? 'step-dot-active' : ''}}"></view>
+      </view>
     </view>
   </view>
 

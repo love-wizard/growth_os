@@ -1,8 +1,11 @@
 <view class="page guidance-page">
-  <view>
-    <view class="caption">今日陪伴</view>
-    <view class="page-title">先得到一件今晚能做的小事</view>
-    <view class="subtitle">根据当前场景，生成轻量、具体、适合今天尝试的亲子行动。</view>
+  <view class="page-heading">
+    <view class="visual-icon">问</view>
+    <view>
+      <view class="caption">今日陪伴</view>
+      <view class="page-title">先得到一件今晚能做的小事</view>
+      <view class="subtitle">根据当前场景，生成轻量、具体、适合今天尝试的亲子行动。</view>
+    </view>
   </view>
 
   <view class="section guidance-hero-card stack">

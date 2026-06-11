@@ -186,6 +186,10 @@ function buildHistoryItem(conversation: {
 
 type HistoryItem = ReturnType<typeof buildHistoryItem>;
 
+function getVisibleHistory(history: HistoryItem[]) {
+  return history.slice(0, 3);
+}
+
 const emptyAnswer = {
   contextLabel: "",
   title: "",
@@ -217,6 +221,7 @@ Page({
     selectedPrompt: "今晚只有30分钟",
     freeQuestion: "今晚只有30分钟",
     history: [] as HistoryItem[],
+    visibleHistory: [] as HistoryItem[],
     answer: emptyAnswer
   },
   onShow() {
@@ -263,13 +268,15 @@ Page({
             ? [{ id: result.weeklyPlanDraftId, status: "draft" }]
             : []
         });
+        const history = [
+          historyItem,
+          ...this.data.history.filter((item: HistoryItem) => item.id !== historyItem.id)
+        ].slice(0, 8);
         this.setData({
           isLoading: false,
           hasAnswer: true,
-          history: [
-            historyItem,
-            ...this.data.history.filter((item: HistoryItem) => item.id !== historyItem.id)
-          ].slice(0, 8),
+          history,
+          visibleHistory: getVisibleHistory(history),
           answer: {
             ...answer,
             weeklyPlanDraftId:
@@ -351,9 +358,11 @@ Page({
       }>;
     }>("/api/ai/conversations")
       .then((result) => {
+        const history = (result.conversations || []).map(buildHistoryItem);
         this.setData({
           isHistoryLoading: false,
-          history: (result.conversations || []).map(buildHistoryItem)
+          history,
+          visibleHistory: getVisibleHistory(history)
         });
       })
       .catch(() => {

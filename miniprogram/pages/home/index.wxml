@@ -1,9 +1,12 @@
 <view class="page home-page">
   <view class="home-header">
-    <view>
+    <view class="page-heading">
+      <view class="visual-icon">今</view>
+      <view>
       <view class="caption">今天的陪伴</view>
       <view wx:if="{{childNickname}}" class="page-title">{{childNickname}}今天做一件小事</view>
       <view wx:else class="page-title">今天做一件小事</view>
+      </view>
     </view>
     <button class="icon-text-button" bindtap="openArchive">记录</button>
   </view>

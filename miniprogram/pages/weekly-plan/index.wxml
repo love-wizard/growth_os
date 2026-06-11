@@ -1,9 +1,12 @@
 <view class="page weekly-page">
-  <view>
-    <view class="caption">本周计划</view>
-    <view wx:if="{{hasWeeklyPlanData}}" class="page-title">《{{theme}}》</view>
-    <view wx:else class="page-title">本周陪伴节奏</view>
-    <view class="subtitle">少一点压力，多一点真实陪伴。每次只推进一个小动作。</view>
+  <view class="page-heading">
+    <view class="visual-icon">周</view>
+    <view>
+      <view class="caption">本周计划</view>
+      <view wx:if="{{hasWeeklyPlanData}}" class="page-title">《{{theme}}》</view>
+      <view wx:else class="page-title">本周陪伴节奏</view>
+      <view class="subtitle">少一点压力，多一点真实陪伴。每次只推进一个小动作。</view>
+    </view>
   </view>
 
   <view wx:if="{{isLoading && !hasWeeklyPlanData && !errorMessage}}" class="section card blue-card stack">

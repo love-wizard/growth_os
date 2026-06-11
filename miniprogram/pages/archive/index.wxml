@@ -1,10 +1,10 @@
 <view class="page archive-page">
-  <view class="row">
+  <view class="page-heading">
+    <view class="visual-icon">+</view>
     <view>
       <view class="caption">成长档案</view>
       <view class="page-title">记录真实发生的小瞬间</view>
     </view>
-    <button class="icon-text-button" bindtap="openRecordComposer">记录</button>
   </view>
 
   <view wx:if="{{errorMessage}}" class="section card">

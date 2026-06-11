@@ -38,6 +38,35 @@ page {
   justify-content: space-between;
 }
 
+.page-heading {
+  align-items: flex-start;
+  display: flex;
+  gap: 20rpx;
+}
+
+.page-heading > view:last-child {
+  flex: 1;
+  min-width: 0;
+}
+
+.visual-icon {
+  align-items: center;
+  background: #e4f3ec;
+  border: 1rpx solid #c9e3d6;
+  border-radius: 50%;
+  box-sizing: border-box;
+  color: #3f8f6b;
+  display: flex;
+  flex: 0 0 auto;
+  font-size: 26rpx;
+  font-weight: 700;
+  height: 64rpx;
+  justify-content: center;
+  line-height: 64rpx;
+  margin-top: 4rpx;
+  width: 64rpx;
+}
+
 .card {
   background: #ffffff;
   border: 1rpx solid #e7e0d7;
@@ -363,6 +392,10 @@ page {
   margin-top: 20rpx;
 }
 
+.coach-history-note {
+  margin-top: 18rpx;
+}
+
 .interest-page {
   padding-top: 28rpx;
 }
@@ -412,14 +445,24 @@ page {
 .record-preview-photo-grid {
   display: grid;
   gap: 12rpx;
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(3, 1fr);
 }
 
 .record-preview-photo {
   background: #f1eee8;
-  border-radius: 16rpx;
-  height: 520rpx;
+  border-radius: 12rpx;
+  height: 150rpx;
   width: 100%;
+}
+
+.record-preview-photo-large {
+  border-radius: 16rpx;
+  grid-column: 1 / -1;
+  height: 520rpx;
+}
+
+.record-preview-photo-small {
+  height: 150rpx;
 }
 
 .primary-card {

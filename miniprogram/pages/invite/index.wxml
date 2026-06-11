@@ -1,8 +1,11 @@
 <view class="page invite-page">
-  <view>
-    <view class="caption">家庭邀请</view>
-    <view class="page-title">一起维护同一个成长空间</view>
-    <view class="subtitle">邀请另一位家长加入后，双方都可以查看计划、记录瞬间和使用 AI 教练。</view>
+  <view class="page-heading">
+    <view class="visual-icon">家</view>
+    <view>
+      <view class="caption">家庭邀请</view>
+      <view class="page-title">一起维护同一个成长空间</view>
+      <view class="subtitle">邀请另一位家长加入后，双方都可以查看计划、记录瞬间和使用 AI 教练。</view>
+    </view>
   </view>
 
   <view class="section invite-hero-card stack">
@@ -18,7 +21,7 @@
     </view>
 
     <button wx:if="{{!inviteId}}" class="button-primary" loading="{{isLoading}}" disabled="{{isLoading}}" bindtap="shareInvite">生成家庭邀请</button>
-    <button wx:if="{{inviteId}}" class="button-primary" open-type="share">分享给另一位家长</button>
-    <button wx:if="{{inviteId}}" class="button-secondary" loading="{{isLoading}}" disabled="{{isLoading}}" bindtap="loginAndAccept">接受邀请并加入</button>
+    <button wx:if="{{inviteId && !isInviteReceiver}}" class="button-primary" open-type="share">分享给另一位家长</button>
+    <button wx:if="{{inviteId && isInviteReceiver}}" class="button-primary" loading="{{isLoading}}" disabled="{{isLoading}}" bindtap="loginAndAccept">接受邀请并加入</button>
   </view>
 </view>

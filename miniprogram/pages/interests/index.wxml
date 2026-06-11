@@ -1,8 +1,11 @@
 <view class="page interest-page">
-  <view>
-    <view class="caption">兴趣参与</view>
-    <view class="page-title">记录真实发生的练习</view>
-    <view class="subtitle">留下已经发生的参与情况，帮助 AI 理解孩子最近的兴趣状态。</view>
+  <view class="page-heading">
+    <view class="visual-icon">练</view>
+    <view>
+      <view class="caption">兴趣参与</view>
+      <view class="page-title">记录真实发生的练习</view>
+      <view class="subtitle">留下已经发生的参与情况，帮助 AI 理解孩子最近的兴趣状态。</view>
+    </view>
   </view>
 
   <view class="section interest-hero-card stack">
