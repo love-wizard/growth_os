@@ -1,9 +1,9 @@
-<view class="page">
+<view class="page weekly-page">
   <view>
     <view class="caption">本周计划</view>
     <view wx:if="{{hasWeeklyPlanData}}" class="page-title">《{{theme}}》</view>
-    <view wx:else class="page-title">本周计划</view>
-    <view class="subtitle">轻量安排，用来支持陪伴，不用追求完美完成。</view>
+    <view wx:else class="page-title">本周陪伴节奏</view>
+    <view class="subtitle">少打卡，多陪伴。每次只推进一个小动作。</view>
   </view>
 
   <view wx:if="{{isLoading && !hasWeeklyPlanData && !errorMessage}}" class="section card blue-card stack">
@@ -12,131 +12,147 @@
     <view class="skeleton-line short"></view>
   </view>
 
-  <block wx:if="{{hasWeeklyPlanData}}">
-  <view class="section card blue-card">
-    <view class="title">周末活动</view>
-    <view class="muted">{{weekendActivity}}</view>
-  </view>
-
-  <view class="section card primary-card stack">
-    <view>
-      <view class="caption">下周计划</view>
-      <view class="title">想换一版节奏，可以让 AI 重新想一版</view>
-      <view class="muted">不会改动本周任务，确认后只覆盖下周计划。</view>
-    </view>
-    <button class="button-secondary" loading="{{isGeneratingDraft}}" bindtap="generateNextWeekDraft">
-      让AI重新想一版下周计划
-    </button>
-    <view wx:if="{{draftErrorMessage}}" class="muted">{{draftErrorMessage}}</view>
-  </view>
-
-  <view wx:if="{{nextWeekDraft}}" class="section card stack">
-    <view>
-      <view class="caption">下周草案</view>
-      <view class="title">《{{nextWeekDraft.theme}}》</view>
-    </view>
-    <view class="note-box">
-      <view class="caption">阅读建议</view>
-      <view class="muted">{{nextWeekDraft.readingRecommendation}}</view>
-    </view>
-    <view class="note-box">
-      <view class="caption">英语建议</view>
-      <view class="muted">{{nextWeekDraft.englishRecommendation}}</view>
-    </view>
-    <view class="note-box">
-      <view class="caption">周末活动</view>
-      <view class="muted">{{nextWeekDraft.weekendActivity}}</view>
-    </view>
-    <view wx:if="{{nextWeekDraft.fatherTasks.length}}" class="stack">
-      <view class="caption">爸爸任务</view>
-      <view class="task-row" wx:for="{{nextWeekDraft.fatherTasks}}" wx:key="*this">
-        <view class="role-badge role-father">爸爸</view>
-        <view class="task-main">
-          <view class="task-title">{{item}}</view>
-        </view>
-      </view>
-    </view>
-    <view wx:if="{{nextWeekDraft.motherTasks.length}}" class="stack">
-      <view class="caption">妈妈任务</view>
-      <view class="task-row" wx:for="{{nextWeekDraft.motherTasks}}" wx:key="*this">
-        <view class="role-badge role-mother">妈妈</view>
-        <view class="task-main">
-          <view class="task-title">{{item}}</view>
-        </view>
-      </view>
-    </view>
-    <view wx:if="{{nextWeekDraft.childTasks.length}}" class="stack">
-      <view class="caption">孩子任务</view>
-      <view class="task-row" wx:for="{{nextWeekDraft.childTasks}}" wx:key="*this">
-        <view class="role-badge role-family">孩子</view>
-        <view class="task-main">
-          <view class="task-title">{{item}}</view>
-        </view>
-      </view>
-    </view>
-    <button
-      class="button-primary"
-      loading="{{isConfirmingDraft}}"
-      disabled="{{nextWeekDraft.isConfirmed}}"
-      bindtap="confirmNextWeekDraft"
-    >
-      {{nextWeekDraft.isConfirmed ? '已采用到下周' : '采用这份下周计划'}}
-    </button>
-  </view>
-  </block>
-
   <view wx:if="{{errorMessage}}" class="section card warm-card">
     <view class="title">{{errorMessage}}</view>
     <view class="muted">完成首次配置后会自动生成本周任务。</view>
   </view>
 
   <block wx:if="{{hasWeeklyPlanData}}">
-  <view class="section card">
-    <view class="title">爸爸任务</view>
-    <view class="task-row" wx:for="{{fatherTasks}}" wx:key="title">
-      <view class="role-badge role-father">爸爸</view>
-      <view class="task-main">
-        <view class="task-title">{{item.title}}</view>
-        <view class="caption">{{item.note}}</view>
+    <view class="section weekly-hero-card stack">
+      <view class="weekly-hero-top">
+        <view>
+          <view class="caption">本周完成</view>
+          <view class="weekly-progress-number">{{completionLabel}}</view>
+        </view>
+        <view class="weekly-progress-pill">不需要补任务</view>
       </view>
-      <button class="progress-pill" data-task-id="{{item.id}}" data-completed-count="{{item.completedCount}}" data-planned-count="{{item.plannedCount}}" bindtap="completeTask">{{item.progress}}</button>
+      <view>
+        <view class="title">周末活动</view>
+        <view class="weekly-weekend">{{weekendActivity}}</view>
+      </view>
     </view>
-  </view>
 
-  <view class="section card">
-    <view class="title">妈妈任务</view>
-    <view class="task-row" wx:for="{{motherTasks}}" wx:key="title">
-      <view class="role-badge role-mother">妈妈</view>
-      <view class="task-main">
-        <view class="task-title">{{item.title}}</view>
-        <view class="caption">{{item.note}}</view>
+    <view class="section weekly-role-grid">
+      <view class="role-summary-card role-summary-father">
+        <view class="caption">爸爸</view>
+        <view class="role-summary-number">{{fatherTasks.length}}</view>
       </view>
-      <button class="progress-pill" data-task-id="{{item.id}}" data-completed-count="{{item.completedCount}}" data-planned-count="{{item.plannedCount}}" bindtap="completeTask">{{item.progress}}</button>
+      <view class="role-summary-card role-summary-mother">
+        <view class="caption">妈妈</view>
+        <view class="role-summary-number">{{motherTasks.length}}</view>
+      </view>
+      <view class="role-summary-card role-summary-family">
+        <view class="caption">家庭</view>
+        <view class="role-summary-number">{{familyTasks.length}}</view>
+      </view>
+      <view class="role-summary-card role-summary-child">
+        <view class="caption">孩子</view>
+        <view class="role-summary-number">{{childTasks.length}}</view>
+      </view>
     </view>
-  </view>
 
-  <view class="section card">
-    <view class="title">家庭任务</view>
-    <view class="task-row" wx:for="{{familyTasks}}" wx:key="title">
-      <view class="role-badge role-family">家庭</view>
-      <view class="task-main">
-        <view class="task-title">{{item.title}}</view>
-        <view class="caption">{{item.note}}</view>
+    <view class="section card weekly-task-section">
+      <view class="weekly-section-header">
+        <view>
+          <view class="caption">今天从一个开始</view>
+          <view class="title">任务清单</view>
+        </view>
       </view>
-      <button class="progress-pill" data-task-id="{{item.id}}" data-completed-count="{{item.completedCount}}" data-planned-count="{{item.plannedCount}}" bindtap="completeTask">{{item.progress}}</button>
-    </view>
-  </view>
 
-  <view class="section card">
-    <view class="title">孩子任务</view>
-    <view class="task-row" wx:for="{{childTasks}}" wx:key="id">
-      <view class="role-badge role-family">孩子</view>
-      <view class="task-main">
-        <view class="task-title">{{item.title}}</view>
-        <view class="caption">{{item.note}}</view>
+      <view wx:if="{{fatherTasks.length}}" class="weekly-group">
+        <view class="weekly-group-title">
+          <view class="role-badge role-father">爸爸</view>
+          <view class="caption">运动、探索、勇气</view>
+        </view>
+        <view class="weekly-task-row" wx:for="{{fatherTasks}}" wx:key="id">
+          <view class="task-main">
+            <view class="task-title">{{item.title}}</view>
+            <view class="caption">{{item.note}}</view>
+          </view>
+          <button class="progress-pill" data-task-id="{{item.id}}" data-completed-count="{{item.completedCount}}" data-planned-count="{{item.plannedCount}}" bindtap="completeTask">{{item.progress}}</button>
+        </view>
       </view>
-      <button class="progress-pill" data-task-id="{{item.id}}" data-completed-count="{{item.completedCount}}" data-planned-count="{{item.plannedCount}}" bindtap="completeTask">{{item.progress}}</button>
+
+      <view wx:if="{{motherTasks.length}}" class="weekly-group">
+        <view class="weekly-group-title">
+          <view class="role-badge role-mother">妈妈</view>
+          <view class="caption">阅读、英语、表达</view>
+        </view>
+        <view class="weekly-task-row" wx:for="{{motherTasks}}" wx:key="id">
+          <view class="task-main">
+            <view class="task-title">{{item.title}}</view>
+            <view class="caption">{{item.note}}</view>
+          </view>
+          <button class="progress-pill" data-task-id="{{item.id}}" data-completed-count="{{item.completedCount}}" data-planned-count="{{item.plannedCount}}" bindtap="completeTask">{{item.progress}}</button>
+        </view>
+      </view>
+
+      <view wx:if="{{familyTasks.length}}" class="weekly-group">
+        <view class="weekly-group-title">
+          <view class="role-badge role-family">家庭</view>
+          <view class="caption">一起完成</view>
+        </view>
+        <view class="weekly-task-row" wx:for="{{familyTasks}}" wx:key="id">
+          <view class="task-main">
+            <view class="task-title">{{item.title}}</view>
+            <view class="caption">{{item.note}}</view>
+          </view>
+          <button class="progress-pill" data-task-id="{{item.id}}" data-completed-count="{{item.completedCount}}" data-planned-count="{{item.plannedCount}}" bindtap="completeTask">{{item.progress}}</button>
+        </view>
+      </view>
+
+      <view wx:if="{{childTasks.length}}" class="weekly-group">
+        <view class="weekly-group-title">
+          <view class="role-badge role-family">孩子</view>
+          <view class="caption">轻量参与</view>
+        </view>
+        <view class="weekly-task-row" wx:for="{{childTasks}}" wx:key="id">
+          <view class="task-main">
+            <view class="task-title">{{item.title}}</view>
+            <view class="caption">{{item.note}}</view>
+          </view>
+          <button class="progress-pill" data-task-id="{{item.id}}" data-completed-count="{{item.completedCount}}" data-planned-count="{{item.plannedCount}}" bindtap="completeTask">{{item.progress}}</button>
+        </view>
+      </view>
     </view>
-  </view>
+
+    <view class="section card primary-card stack">
+      <view>
+        <view class="caption">下周计划</view>
+        <view class="title">想换一版节奏，可以让 AI 重新想一版</view>
+        <view class="muted">不会改动本周任务，确认后只覆盖下周计划。</view>
+      </view>
+      <button class="button-secondary" loading="{{isGeneratingDraft}}" bindtap="generateNextWeekDraft">
+        让AI重新想一版下周计划
+      </button>
+      <view wx:if="{{draftErrorMessage}}" class="muted">{{draftErrorMessage}}</view>
+    </view>
+
+    <view wx:if="{{nextWeekDraft}}" class="section card stack">
+      <view>
+        <view class="caption">下周草案</view>
+        <view class="title">《{{nextWeekDraft.theme}}》</view>
+      </view>
+      <view class="note-box">
+        <view class="caption">阅读建议</view>
+        <view class="muted">{{nextWeekDraft.readingRecommendation}}</view>
+      </view>
+      <view class="note-box">
+        <view class="caption">英语建议</view>
+        <view class="muted">{{nextWeekDraft.englishRecommendation}}</view>
+      </view>
+      <view class="note-box">
+        <view class="caption">周末活动</view>
+        <view class="muted">{{nextWeekDraft.weekendActivity}}</view>
+      </view>
+      <button
+        class="button-primary"
+        loading="{{isConfirmingDraft}}"
+        disabled="{{nextWeekDraft.isConfirmed}}"
+        bindtap="confirmNextWeekDraft"
+      >
+        {{nextWeekDraft.isConfirmed ? '已采用到下周' : '采用这份下周计划'}}
+      </button>
+    </view>
   </block>
 </view>

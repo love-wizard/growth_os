@@ -18,7 +18,10 @@ const emptyPlan = {
   fatherTasks: [],
   motherTasks: [],
   familyTasks: [],
-  childTasks: []
+  childTasks: [],
+  totalTaskCount: 0,
+  completedTaskCount: 0,
+  completionLabel: "0/0"
 };
 
 const emptyNextWeekDraft = {
@@ -47,6 +50,16 @@ function formatTask(task: {
     completedCount: task.completed_count,
     plannedCount: task.planned_count,
     note: task.status === "completed" ? "已完成" : "慢慢来，不需要补任务"
+  };
+}
+
+function summarizePlan(tasks: Array<{ completedCount: number; plannedCount: number }>) {
+  const completedTaskCount = tasks.reduce((sum, task) => sum + task.completedCount, 0);
+  const totalTaskCount = tasks.reduce((sum, task) => sum + task.plannedCount, 0);
+  return {
+    totalTaskCount,
+    completedTaskCount,
+    completionLabel: `${completedTaskCount}/${totalTaskCount}`
   };
 }
 
@@ -95,13 +108,20 @@ function formatPlan(plan: {
   }
 
   const grouped = plan.groupedTasks || {};
+  const fatherTasks = (grouped.father || []).map(formatTask);
+  const motherTasks = (grouped.mother || []).map(formatTask);
+  const familyTasks = (grouped.family || []).map(formatTask);
+  const childTasks = (grouped.child || []).map(formatTask);
+  const summary = summarizePlan([...fatherTasks, ...motherTasks, ...familyTasks, ...childTasks]);
+
   return {
     theme: plan.theme,
     weekendActivity: plan.weekend_activity || "留一个轻松的家庭陪伴时刻。",
-    fatherTasks: (grouped.father || []).map(formatTask),
-    motherTasks: (grouped.mother || []).map(formatTask),
-    familyTasks: (grouped.family || []).map(formatTask),
-    childTasks: (grouped.child || []).map(formatTask)
+    fatherTasks,
+    motherTasks,
+    familyTasks,
+    childTasks,
+    ...summary
   };
 }
 
@@ -315,14 +335,22 @@ Page({
       fatherTasks: this.data.fatherTasks,
       motherTasks: this.data.motherTasks,
       familyTasks: this.data.familyTasks,
-      childTasks: this.data.childTasks
+      childTasks: this.data.childTasks,
+      totalTaskCount: this.data.totalTaskCount,
+      completedTaskCount: this.data.completedTaskCount,
+      completionLabel: this.data.completionLabel
     };
+    const nextFatherTasks = updateTaskInList(this.data.fatherTasks, taskId);
+    const nextMotherTasks = updateTaskInList(this.data.motherTasks, taskId);
+    const nextFamilyTasks = updateTaskInList(this.data.familyTasks, taskId);
+    const nextChildTasks = updateTaskInList(this.data.childTasks, taskId);
     const weeklyPlan = {
       ...previousPlan,
-      fatherTasks: updateTaskInList(this.data.fatherTasks, taskId),
-      motherTasks: updateTaskInList(this.data.motherTasks, taskId),
-      familyTasks: updateTaskInList(this.data.familyTasks, taskId),
-      childTasks: updateTaskInList(this.data.childTasks, taskId)
+      fatherTasks: nextFatherTasks,
+      motherTasks: nextMotherTasks,
+      familyTasks: nextFamilyTasks,
+      childTasks: nextChildTasks,
+      ...summarizePlan([...nextFatherTasks, ...nextMotherTasks, ...nextFamilyTasks, ...nextChildTasks])
     };
     this.setData(weeklyPlan);
     wx.setStorageSync(weeklyPlanCacheStorageKey, {
