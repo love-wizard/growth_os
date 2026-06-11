@@ -84,4 +84,13 @@
     <view class="title">成长记录默认仅家庭可见</view>
     <view class="muted">分享卡片只展示你选择的成长瞬间，不公开家庭空间里的其他记录。</view>
   </view>
+
+  <view wx:if="{{showDevTools}}" class="section dev-tools-card stack">
+    <view>
+      <view class="caption">开发测试</view>
+      <view class="title">重走首次引导</view>
+      <view class="muted">只清除本机引导和页面缓存，不会删除家庭、孩子、成长记录或周计划。</view>
+    </view>
+    <button class="button-secondary" bindtap="resetLocalOnboardingState">重置本机引导状态</button>
+  </view>
 </view>

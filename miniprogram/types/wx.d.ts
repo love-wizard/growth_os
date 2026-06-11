@@ -41,8 +41,14 @@ declare const wx: {
     current?: string;
     urls: string[];
   }): void;
+  getAccountInfoSync(): {
+    miniProgram: {
+      envVersion: "develop" | "trial" | "release";
+    };
+  };
   switchTab(options: { url: string }): void;
   navigateTo(options: { url: string }): void;
+  redirectTo(options: { url: string }): void;
   showToast(options: { title: string; icon?: "success" | "error" | "loading" | "none" }): void;
   getStorageSync(key: string): unknown;
   setStorageSync(key: string, data: unknown): void;

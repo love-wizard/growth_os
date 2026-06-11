@@ -7,6 +7,15 @@ const {
 const { getJson, patchJson, uploadFile } = require("../../services/api");
 
 const parentProfileStorageKey = "growth_os_parent_profile";
+const localTestStorageKeys = [
+  "growth_os_onboarding_guide_seen",
+  "growth_os_child_profile_cache",
+  "growth_os_dashboard_cache",
+  "growth_os_weekly_plan_cache",
+  "growth_os_growth_records_cache_v2",
+  "growth_os_growth_record_prefill",
+  "growth_os_ai_coach_prefill"
+];
 const reminderDefinitions = [
   {
     type: "evening_companionship",
@@ -82,6 +91,15 @@ function buildReminders(preferences) {
   }));
 }
 
+function shouldShowDevTools() {
+  try {
+    const accountInfo = wx.getAccountInfoSync();
+    return accountInfo.miniProgram.envVersion !== "release";
+  } catch {
+    return false;
+  }
+}
+
 Page({
   data: {
     isLoggedIn: false,
@@ -95,14 +113,16 @@ Page({
       goals: []
     },
     reminders: buildReminders(),
-    reminderStatus: ""
+    reminderStatus: "",
+    showDevTools: false
   },
   onShow() {
     const isLoggedIn = hasMiniProgramSession();
     this.setData({
       isLoggedIn,
       loginStatus: isLoggedIn ? "微信身份已绑定" : "微信身份还未绑定",
-      parentProfile: loadParentProfile()
+      parentProfile: loadParentProfile(),
+      showDevTools: shouldShowDevTools()
     });
     if (isLoggedIn) {
       this.loadFamilyProfile();
@@ -315,5 +335,19 @@ Page({
   },
   openSetup() {
     wx.navigateTo({ url: "/pages/setup/index" });
+  },
+  resetLocalOnboardingState() {
+    localTestStorageKeys.forEach((key) => wx.removeStorageSync(key));
+    this.setData({
+      setupRequired: false,
+      profileStatus: "本机引导和页面缓存已清除，服务端家庭数据不受影响。",
+      child: {
+        nickname: "还未创建孩子档案",
+        age: "",
+        goals: []
+      }
+    });
+    wx.showToast({ title: "已清本机缓存", icon: "success" });
+    wx.redirectTo({ url: "/pages/first-guidance/index" });
   }
 });
