@@ -139,46 +139,76 @@ page {
 }
 
 .quote-card {
-  background: #ffffff;
-  border: 1rpx solid #eadfce;
-  border-radius: 16rpx;
+  background: #fffaf2;
+  border: 1rpx solid #f0e2ce;
+  border-radius: 20rpx;
   box-sizing: border-box;
-  padding: 28rpx 32rpx;
+  box-shadow: 0 12rpx 36rpx rgba(133, 96, 55, 0.08);
+  overflow: hidden;
+  padding: 30rpx 32rpx 32rpx;
   position: relative;
 }
 
+.quote-card::before {
+  background: #d7a86e;
+  content: "";
+  height: 6rpx;
+  left: 32rpx;
+  position: absolute;
+  right: 32rpx;
+  top: 0;
+}
+
+.quote-topline {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.quote-eyebrow {
+  color: #9a7650;
+  font-size: 24rpx;
+  font-weight: 700;
+  line-height: 34rpx;
+}
+
 .quote-mark {
-  color: #d6b17a;
-  font-size: 54rpx;
-  height: 40rpx;
-  line-height: 40rpx;
+  color: #e7cfab;
+  font-family: Georgia, serif;
+  font-size: 72rpx;
+  height: 44rpx;
+  line-height: 58rpx;
 }
 
 .quote-text {
   color: #25211c;
-  font-size: 32rpx;
+  font-size: 34rpx;
   font-weight: 600;
-  line-height: 48rpx;
+  line-height: 52rpx;
+  margin-top: 18rpx;
 }
 
 .quote-reflection {
-  color: #6e665c;
+  color: #5f5a51;
   font-size: 26rpx;
   line-height: 40rpx;
-  margin-top: 12rpx;
-}
-
-.quote-source {
-  color: #9b9185;
-  font-size: 24rpx;
-  line-height: 34rpx;
   margin-top: 8rpx;
 }
 
-.quote-divider {
-  background: #f0e8de;
-  height: 1rpx;
-  margin: 22rpx 0 18rpx;
+.quote-source {
+  color: #9f8f7d;
+  font-size: 24rpx;
+  line-height: 34rpx;
+  margin-top: 12rpx;
+  text-align: right;
+}
+
+.quote-reflection-box {
+  background: rgba(255, 255, 255, 0.68);
+  border: 1rpx solid rgba(225, 207, 181, 0.78);
+  border-radius: 14rpx;
+  margin-top: 24rpx;
+  padding: 22rpx 24rpx;
 }
 
 .quote-reflection-label {
