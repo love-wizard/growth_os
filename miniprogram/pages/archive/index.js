@@ -3,7 +3,7 @@ const { getJson, postJson, uploadFile } = require("../../services/api");
 const growthRecordPrefillStorageKey = "growth_os_growth_record_prefill";
 const growthRecordsCacheStorageKey = "growth_os_growth_records_cache_v2";
 const growthRecordsCacheRefreshMs = 5 * 60 * 1000;
-const growthRecordsCacheDisplayMs = 30 * 60 * 1000;
+const growthRecordsCacheDisplayMs = 55 * 60 * 1000;
 
 function todayString() {
   const now = new Date();
@@ -107,6 +107,7 @@ function mergeCachedMedia(nextRecords, currentRecords) {
 Page({
   data: {
     isLoading: false,
+    hasRecordData: false,
     isSubmitting: false,
     errorMessage: "",
     recordText: "",
@@ -159,6 +160,15 @@ Page({
         savedAt: Date.now(),
         records: nextRecords
       });
+
+      const changed = nextRecords.some((item, index) => {
+        const current = this.data.records[index];
+        return item.shareImageUrl !== (current && current.shareImageUrl);
+      });
+      if (!changed) {
+        return;
+      }
+
       this.setData({
         records: nextRecords
       });
@@ -201,6 +211,7 @@ Page({
 
     this.setData({
       isLoading: false,
+      hasRecordData: true,
       records: cached.records
     });
     return true;
@@ -242,6 +253,7 @@ Page({
         });
         this.setData({
           isLoading: false,
+          hasRecordData: true,
           records
         });
         this.preloadShareImages(records);
@@ -249,6 +261,7 @@ Page({
       .catch((error) => {
         this.setData({
           isLoading: false,
+          hasRecordData: this.data.records.length > 0,
           errorMessage:
             error.statusCode === 409 ? "请先完成首次配置" : error.error || "成长记录加载失败"
         });

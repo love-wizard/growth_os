@@ -41,7 +41,13 @@
 
   <view class="section card">
     <view class="title">时间轴</view>
-    <view wx:if="{{records.length === 0 && !errorMessage}}" class="muted">还没有成长记录，先写下今天的一件小事。</view>
+    <view wx:if="{{isLoading && !hasRecordData && !errorMessage}}" class="stack">
+      <view class="skeleton-line skeleton-title"></view>
+      <view class="skeleton-line"></view>
+      <view class="skeleton-line short"></view>
+    </view>
+    <view wx:elif="{{records.length === 0 && hasRecordData && !errorMessage}}" class="muted">还没有成长记录，先写下今天的一件小事。</view>
+    <block wx:else>
     <view class="timeline-item" wx:for="{{records}}" wx:key="id">
       <view class="caption">{{item.dateTimeLabel || item.date}}</view>
       <view class="task-title">{{item.title}}</view>
@@ -78,5 +84,6 @@
         </button>
       </view>
     </view>
+    </block>
   </view>
 </view>
