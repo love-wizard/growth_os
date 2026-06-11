@@ -60,7 +60,7 @@
     <view class="section card home-task-card">
       <view class="row">
         <view class="title">今天可推进</view>
-        <button class="button-secondary compact-button" bindtap="openArchive">完成后记录</button>
+        <button class="button-secondary compact-button" bindtap="startAction">完成后记录</button>
       </view>
       <view class="task-row" wx:for="{{tasks}}" wx:key="title">
         <view class="role-badge {{item.roleClass}}">{{item.role}}</view>
