@@ -1,7 +1,13 @@
 <view class="page home-page">
   <view class="home-header">
     <view class="page-heading">
-      <view class="visual-icon">米</view>
+      <view class="visual-icon fanmili-header-icon">
+        <view class="fanmili-head">
+          <view class="fanmili-eye fanmili-eye-left"></view>
+          <view class="fanmili-eye fanmili-eye-right"></view>
+          <view class="fanmili-smile"></view>
+        </view>
+      </view>
       <view>
         <view class="caption">饭米粒整理</view>
         <view wx:if="{{childNickname}}" class="page-title">{{childNickname}}的今日陪伴</view>
