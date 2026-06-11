@@ -434,6 +434,22 @@ page {
   padding: 36rpx 32rpx;
 }
 
+.guidance-step-row {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.58);
+  border: 1rpx solid #f3d9b8;
+  border-radius: 16rpx;
+  display: flex;
+  gap: 18rpx;
+  padding: 20rpx;
+}
+
+.guidance-value-grid {
+  display: grid;
+  gap: 16rpx;
+  grid-template-columns: 1fr;
+}
+
 .record-preview-card {
   background: #ffffff;
   border: 1rpx solid #eadfce;

@@ -1,19 +1,56 @@
 <view class="page guidance-page">
   <view class="page-heading">
-    <view class="visual-icon">问</view>
+    <view class="visual-icon">爱</view>
     <view>
-      <view class="caption">今日陪伴</view>
-      <view class="page-title">先得到一件今晚能做的小事</view>
-      <view class="subtitle">根据当前场景，生成轻量、具体、适合今天尝试的亲子行动。</view>
+      <view class="caption">饭米粒Love</view>
+      <view class="page-title">今天先陪孩子做一件小事</view>
+      <view class="subtitle">不用先做完整计划。告诉我们一点孩子的情况，先得到一个今晚能尝试的陪伴建议。</view>
     </view>
   </view>
 
   <view class="section guidance-hero-card stack">
     <view>
-      <view class="caption">当前场景</view>
-      <view class="title">时间有限，也可以好好陪伴</view>
-      <view class="muted">我们会先从孩子年龄、关注方向和今晚的真实情况出发，不需要一次填完整套计划。</view>
+      <view class="caption">首次使用只需要 3 步</view>
+      <view class="title">从一个真实场景开始</view>
     </view>
-    <button class="button-primary" bindtap="openSetup">开始生成建议</button>
+    <view class="guidance-step-row">
+      <view class="progress-pill">1</view>
+      <view class="task-main">
+        <view class="task-title">填写孩子基本信息</view>
+        <view class="caption">昵称、出生日期和关注方向就够了。</view>
+      </view>
+    </view>
+    <view class="guidance-step-row">
+      <view class="progress-pill">2</view>
+      <view class="task-main">
+        <view class="task-title">选择今天的具体困扰</view>
+        <view class="caption">比如时间有限、阅读中断、不想练琴。</view>
+      </view>
+    </view>
+    <view class="guidance-step-row">
+      <view class="progress-pill">3</view>
+      <view class="task-main">
+        <view class="task-title">生成今晚的陪伴建议</view>
+        <view class="caption">建议会尽量轻量、具体、今天就能做。</view>
+      </view>
+    </view>
+    <button class="button-primary" bindtap="openSetup">开始配置</button>
   </view>
+
+  <view class="section guidance-value-grid">
+    <view class="summary-tile">
+      <view class="caption">少一点压力</view>
+      <view class="summary-title">不比较，不排名</view>
+    </view>
+    <view class="summary-tile">
+      <view class="caption">更具体</view>
+      <view class="summary-title">今天就能做</view>
+    </view>
+    <view class="summary-tile">
+      <view class="caption">可持续</view>
+      <view class="summary-title">记录真实成长</view>
+    </view>
+  </view>
+
+  <button class="button-secondary section" bindtap="openHome">已有家庭空间，进入首页</button>
 </view>
