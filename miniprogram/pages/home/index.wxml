@@ -19,7 +19,7 @@
     <view class="quote-text">{{dailyQuote.quote}}</view>
     <view class="quote-source">{{dailyQuote.source}}</view>
     <view class="quote-reflection-box">
-      <view class="quote-reflection-label">饭米粒Love解读</view>
+      <view class="quote-reflection-label">饭米粒认为</view>
       <view class="quote-reflection">{{dailyQuote.reflection}}</view>
     </view>
   </view>
