@@ -49,7 +49,7 @@
       <view class="focus-why">{{todayAction.why}}</view>
       <view class="row">
         <button class="button-primary" bindtap="startAction">记录这个瞬间</button>
-        <button class="button-secondary" bindtap="openCoach">问AI教练</button>
+        <button class="button-secondary" bindtap="openCoach">问饭米粒</button>
       </view>
     </view>
 

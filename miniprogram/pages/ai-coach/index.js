@@ -272,8 +272,8 @@ Page({
         const errorMessage = isTimeoutRequestError(error)
           ? "这次思考稍久，已超过等待时间，请再试一次。"
           : error.statusCode === 409
-            ? "请先完成首次配置，再使用AI教练"
-            : error.error || "AI教练暂时不可用";
+            ? "请先完成首次配置，再使用饭米粒"
+            : error.error || "饭米粒暂时不可用";
         this.setData({
           isLoading: false,
           errorMessage

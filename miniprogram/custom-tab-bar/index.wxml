@@ -1,0 +1,26 @@
+<view class="custom-tabbar">
+  <view
+    wx:for="{{list}}"
+    wx:key="pagePath"
+    class="tabbar-item {{selectedRoute === item.pagePath ? 'active' : ''}} {{item.isCenter ? 'tabbar-center' : ''}}"
+    data-path="{{item.pagePath}}"
+    bindtap="switchTab"
+  >
+    <block wx:if="{{item.isCenter}}">
+      <view class="mascot-button">
+        <view class="mascot-face">
+          <view class="mascot-eye mascot-eye-left"></view>
+          <view class="mascot-eye mascot-eye-right"></view>
+          <view class="mascot-smile"></view>
+          <view class="mascot-cheek mascot-cheek-left"></view>
+          <view class="mascot-cheek mascot-cheek-right"></view>
+        </view>
+      </view>
+      <view class="center-label">{{item.text}}</view>
+    </block>
+    <block wx:else>
+      <view class="tabbar-symbol">{{item.icon}}</view>
+      <view class="tabbar-label">{{item.text}}</view>
+    </block>
+  </view>
+</view>

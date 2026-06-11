@@ -15,6 +15,14 @@ page {
   padding-top: 28rpx;
 }
 
+.home-page,
+.weekly-page,
+.archive-page,
+.coach-page,
+.profile-page {
+  padding-bottom: calc(176rpx + env(safe-area-inset-bottom));
+}
+
 .splash-page,
 .setup-page,
 .guidance-page,

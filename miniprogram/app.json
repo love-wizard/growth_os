@@ -19,6 +19,7 @@
     "backgroundColor": "#F8F6F2"
   },
   "tabBar": {
+    "custom": true,
     "color": "#9B9185",
     "selectedColor": "#3F8F6B",
     "backgroundColor": "#FFFFFF",
@@ -33,12 +34,12 @@
         "text": "周计划"
       },
       {
-        "pagePath": "pages/archive/index",
-        "text": "成长档案"
+        "pagePath": "pages/ai-coach/index",
+        "text": "饭米粒"
       },
       {
-        "pagePath": "pages/ai-coach/index",
-        "text": "AI教练"
+        "pagePath": "pages/archive/index",
+        "text": "成长档案"
       },
       {
         "pagePath": "pages/profile/index",

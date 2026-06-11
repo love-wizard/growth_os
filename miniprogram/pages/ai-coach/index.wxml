@@ -1,8 +1,8 @@
 <view class="page coach-page">
   <view class="page-heading">
-    <view class="visual-icon">AI</view>
+    <view class="visual-icon">米</view>
     <view>
-      <view class="caption">AI成长教练</view>
+      <view class="caption">饭米粒</view>
       <view class="page-title">把今天的陪伴变具体</view>
       <view class="subtitle">结合孩子档案、年度目标和最近记录，生成一个适合当下执行的建议。</view>
     </view>

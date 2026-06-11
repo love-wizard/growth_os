@@ -1,0 +1,145 @@
+.custom-tabbar {
+  align-items: flex-end;
+  background: rgba(255, 255, 255, 0.96);
+  border-top: 1rpx solid rgba(231, 224, 215, 0.95);
+  bottom: 0;
+  box-shadow: 0 -10rpx 32rpx rgba(93, 75, 54, 0.08);
+  box-sizing: border-box;
+  display: flex;
+  height: calc(118rpx + env(safe-area-inset-bottom));
+  justify-content: space-around;
+  left: 0;
+  padding: 12rpx 18rpx calc(12rpx + env(safe-area-inset-bottom));
+  position: fixed;
+  right: 0;
+  z-index: 1000;
+}
+
+.tabbar-item {
+  align-items: center;
+  box-sizing: border-box;
+  color: #9b9185;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 6rpx;
+  height: 88rpx;
+  justify-content: center;
+  min-width: 0;
+}
+
+.tabbar-item.active {
+  color: #3f8f6b;
+}
+
+.tabbar-symbol {
+  align-items: center;
+  background: #f8f6f2;
+  border-radius: 50%;
+  box-sizing: border-box;
+  display: flex;
+  font-size: 22rpx;
+  font-weight: 700;
+  height: 42rpx;
+  justify-content: center;
+  line-height: 42rpx;
+  width: 42rpx;
+}
+
+.tabbar-item.active .tabbar-symbol {
+  background: #e4f3ec;
+}
+
+.tabbar-label,
+.center-label {
+  font-size: 22rpx;
+  font-weight: 600;
+  line-height: 28rpx;
+  white-space: nowrap;
+}
+
+.tabbar-center {
+  color: #9a7650;
+  flex: 1.08;
+  height: 116rpx;
+  justify-content: flex-start;
+  transform: translateY(-30rpx);
+}
+
+.tabbar-center.active {
+  color: #3f8f6b;
+}
+
+.mascot-button {
+  align-items: center;
+  background: linear-gradient(180deg, #fff9ef 0%, #f5dbac 100%);
+  border: 4rpx solid #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 12rpx 28rpx rgba(139, 96, 48, 0.18);
+  box-sizing: border-box;
+  display: flex;
+  height: 92rpx;
+  justify-content: center;
+  width: 92rpx;
+}
+
+.tabbar-center.active .mascot-button {
+  box-shadow: 0 14rpx 32rpx rgba(63, 143, 107, 0.24);
+}
+
+.mascot-face {
+  background: #fff7e8;
+  border: 2rpx solid #ead5b7;
+  border-radius: 46% 54% 50% 50%;
+  height: 62rpx;
+  position: relative;
+  width: 54rpx;
+}
+
+.mascot-eye {
+  background: #6a5743;
+  border-radius: 50%;
+  height: 7rpx;
+  position: absolute;
+  top: 24rpx;
+  width: 7rpx;
+}
+
+.mascot-eye-left {
+  left: 15rpx;
+}
+
+.mascot-eye-right {
+  right: 15rpx;
+}
+
+.mascot-smile {
+  border-bottom: 3rpx solid #6a5743;
+  border-radius: 0 0 16rpx 16rpx;
+  bottom: 18rpx;
+  height: 10rpx;
+  left: 20rpx;
+  position: absolute;
+  width: 14rpx;
+}
+
+.mascot-cheek {
+  background: rgba(233, 154, 128, 0.42);
+  border-radius: 50%;
+  height: 8rpx;
+  position: absolute;
+  top: 34rpx;
+  width: 10rpx;
+}
+
+.mascot-cheek-left {
+  left: 8rpx;
+}
+
+.mascot-cheek-right {
+  right: 8rpx;
+}
+
+.center-label {
+  margin-top: 2rpx;
+}
