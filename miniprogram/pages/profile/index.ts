@@ -162,7 +162,7 @@ Page({
         }
 
         this.setData({
-          profileStatus: error.error || "家庭资料加载失败"
+          profileStatus: error.error || "家庭资料暂时无法同步"
         });
       });
   },
@@ -189,7 +189,7 @@ Page({
         }
 
         this.setData({
-          reminderStatus: error.error || "提醒设置加载失败"
+          reminderStatus: error.error || "提醒设置暂时无法同步"
         });
       });
   },
@@ -200,14 +200,14 @@ Page({
         const status =
           result.errorStage === "wx.login"
             ? "微信登录超时，请检查开发者工具账号和网络"
-            : "微信登录已获取，后端登录失败";
+            : "微信登录已获取，服务端登录未成功";
         const detail = result.errorMessage ? `：${result.errorMessage}` : "";
         this.setData({
           isLoggedIn: false,
           loginStatus: `${status}${detail}`
         });
         console.warn("GrowthOS mini program login failed", result);
-        wx.showToast({ title: "登录失败", icon: "none" });
+        wx.showToast({ title: "登录未成功", icon: "none" });
         return;
       }
 
@@ -224,9 +224,9 @@ Page({
       console.warn("GrowthOS mini program login unexpected error", error);
       this.setData({
         isLoggedIn: false,
-        loginStatus: "登录失败，请稍后重试"
+        loginStatus: "登录未成功，请稍后重试"
       });
-      wx.showToast({ title: "登录失败", icon: "none" });
+      wx.showToast({ title: "登录未成功", icon: "none" });
     });
   },
   logout() {
@@ -274,7 +274,7 @@ Page({
       .catch((error) => {
         this.setData({ parentProfile: previousProfile });
         persistParentProfile(previousProfile);
-        wx.showToast({ title: error.error || "头像同步失败", icon: "none" });
+        wx.showToast({ title: error.error || "头像同步未成功", icon: "none" });
       });
   },
   onNicknameInput(event: { detail: { value: string } }) {
@@ -306,7 +306,7 @@ Page({
         persistParentProfile(parentProfile);
       })
       .catch((error) => {
-        wx.showToast({ title: error.error || "昵称同步失败", icon: "none" });
+        wx.showToast({ title: error.error || "昵称同步未成功", icon: "none" });
       });
   },
   toggleReminder(event: { currentTarget: { dataset: { type: string } }; detail: { value: boolean } }) {
@@ -341,9 +341,9 @@ Page({
           }) =>
             item.type === reminderType ? { ...item, enabled: !enabled } : item
           ),
-          reminderStatus: error.error || "提醒设置失败"
+          reminderStatus: error.error || "提醒设置未成功"
         });
-        wx.showToast({ title: "设置失败", icon: "none" });
+        wx.showToast({ title: "设置未成功", icon: "none" });
       });
   },
   openInvite() {

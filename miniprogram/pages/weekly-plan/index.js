@@ -187,7 +187,7 @@ Page({
           isLoading: false,
           hasWeeklyPlanData: false,
           errorMessage:
-            error.statusCode === 409 ? "请先完成首次配置" : error.error || "周计划加载失败"
+            error.statusCode === 409 ? "请先完成首次配置" : error.error || "周计划暂时无法同步"
         });
       });
   },
@@ -223,7 +223,7 @@ Page({
           ? "这次生成下周计划稍久，已超过等待时间，请再试一次。"
           : error.statusCode === 409
             ? "请先完成首次配置"
-            : error.error || "下周计划草案生成失败";
+            : error.error || "下周计划草案生成未成功";
         this.setData({
           isGeneratingDraft: false,
           draftErrorMessage: errorMessage
@@ -258,7 +258,7 @@ Page({
       .catch((error) => {
         const errorMessage = isTimeoutRequestError(error)
           ? "采用下周计划时等待超时，请再试一次。"
-          : error.error || "采用下周计划失败";
+          : error.error || "采用下周计划未成功";
         this.setData({
           isConfirmingDraft: false,
           draftErrorMessage: errorMessage
@@ -315,7 +315,7 @@ Page({
           savedAt: Date.now(),
           weeklyPlan: previousPlan
         });
-        wx.showToast({ title: error.error || "更新失败", icon: "none" });
+        wx.showToast({ title: error.error || "更新未成功", icon: "none" });
       });
   }
 });

@@ -1,4 +1,4 @@
-/* global Page */
+/* global Page, wx */
 const { postJson } = require("../../services/api");
 
 Page({
@@ -14,5 +14,8 @@ Page({
         surface: "mini_program"
       }
     });
+  },
+  openSetup() {
+    wx.navigateTo({ url: "/pages/setup/index" });
   }
 });

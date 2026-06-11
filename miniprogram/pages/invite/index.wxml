@@ -1,15 +1,24 @@
-<view class="page">
-  <view class="card stack">
-    <view class="title">邀请另一位家长</view>
-    <view class="muted">{{status}}</view>
+<view class="page invite-page">
+  <view>
+    <view class="caption">家庭邀请</view>
+    <view class="page-title">一起维护同一个成长空间</view>
+    <view class="subtitle">邀请另一位家长加入后，双方都可以查看计划、记录瞬间和使用 AI 教练。</view>
+  </view>
 
-    <view wx:if="{{!inviteId}}" class="chip-row">
-      <view class="chip {{role === 'mother' ? 'chip-active' : ''}}" data-role="mother" bindtap="chooseRole">邀请妈妈</view>
-      <view class="chip {{role === 'father' ? 'chip-active' : ''}}" data-role="father" bindtap="chooseRole">邀请爸爸</view>
+  <view class="section invite-hero-card stack">
+    <view>
+      <view class="caption">邀请身份</view>
+      <view class="title">{{role === 'mother' ? '邀请妈妈加入' : '邀请爸爸加入'}}</view>
+      <view class="muted">{{status}}</view>
     </view>
 
-    <button wx:if="{{!inviteId}}" class="button-primary" loading="{{isLoading}}" bindtap="shareInvite">生成邀请</button>
-    <button wx:if="{{inviteId}}" class="button-secondary" open-type="share">分享给另一位家长</button>
-    <button wx:if="{{inviteId}}" class="button-primary" loading="{{isLoading}}" bindtap="loginAndAccept">接受邀请并加入</button>
+    <view wx:if="{{!inviteId}}" class="chip-row">
+      <view class="chip {{role === 'mother' ? 'chip-active' : ''}}" data-role="mother" bindtap="chooseRole">妈妈</view>
+      <view class="chip {{role === 'father' ? 'chip-active' : ''}}" data-role="father" bindtap="chooseRole">爸爸</view>
+    </view>
+
+    <button wx:if="{{!inviteId}}" class="button-primary" loading="{{isLoading}}" disabled="{{isLoading}}" bindtap="shareInvite">生成家庭邀请</button>
+    <button wx:if="{{inviteId}}" class="button-primary" open-type="share">分享给另一位家长</button>
+    <button wx:if="{{inviteId}}" class="button-secondary" loading="{{isLoading}}" disabled="{{isLoading}}" bindtap="loginAndAccept">接受邀请并加入</button>
   </view>
 </view>

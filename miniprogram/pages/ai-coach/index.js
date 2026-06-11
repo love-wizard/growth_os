@@ -310,7 +310,7 @@ Page({
       .catch((error) => {
         const errorMessage = isTimeoutRequestError(error)
           ? "采用草案时等待超时，请再试一次。"
-          : error.error || "采用计划失败";
+          : error.error || "采用计划未成功";
         this.setData({
           isLoading: false,
           errorMessage

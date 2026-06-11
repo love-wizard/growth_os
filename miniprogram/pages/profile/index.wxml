@@ -2,7 +2,7 @@
   <view>
     <view class="caption">我的</view>
     <view class="page-title">家庭成长空间</view>
-    <view class="subtitle">管理家庭成员、陪伴设置和隐私边界。</view>
+    <view class="subtitle">照看家庭成员、陪伴设置和隐私边界。</view>
   </view>
 
   <view class="section profile-family-card stack">
@@ -59,7 +59,7 @@
   <view class="section card">
     <view>
       <view class="title">温和提醒</view>
-      <view class="muted">只提醒自然陪伴场景，不做打卡催促。</view>
+      <view class="muted">只提醒自然陪伴场景，不做连续催促。</view>
       <view wx:if="{{reminderStatus}}" class="muted reminder-status">{{reminderStatus}}</view>
     </view>
     <view class="task-row" wx:for="{{reminders}}" wx:key="type">

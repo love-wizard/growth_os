@@ -1,6 +1,16 @@
-<view class="page">
-  <view class="card">
-    <view class="title">今天如何陪伴孩子成长？</view>
-    <view class="muted">根据当前场景生成一件轻量、具体的亲子行动。</view>
+<view class="page guidance-page">
+  <view>
+    <view class="caption">今日陪伴</view>
+    <view class="page-title">先得到一件今晚能做的小事</view>
+    <view class="subtitle">根据当前场景，生成轻量、具体、适合今天尝试的亲子行动。</view>
+  </view>
+
+  <view class="section guidance-hero-card stack">
+    <view>
+      <view class="caption">当前场景</view>
+      <view class="title">时间有限，也可以好好陪伴</view>
+      <view class="muted">我们会先从孩子年龄、关注方向和今晚的真实情况出发，不需要一次填完整套计划。</view>
+    </view>
+    <button class="button-primary" bindtap="openSetup">开始生成建议</button>
   </view>
 </view>

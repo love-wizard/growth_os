@@ -473,7 +473,7 @@ Page({
           isLoading: false,
           hasRecordData: (this.data.records as unknown[]).length > 0,
           errorMessage:
-            error.statusCode === 409 ? "请先完成首次配置" : error.error || "成长记录加载失败"
+            error.statusCode === 409 ? "请先完成首次配置" : error.error || "成长记录暂时无法同步"
         });
       });
   },
@@ -631,7 +631,7 @@ Page({
       .catch((error) => {
         const message = isTimeoutRequestError(error)
           ? "月报生成时间较长，已超过等待时间，请再试一次。"
-          : error.error || "月报生成失败";
+          : error.error || "月报生成未成功";
         this.setData({
           isGeneratingMonthlyReport: false,
           monthlyReportError: message
@@ -691,7 +691,7 @@ Page({
         this.loadRecords();
       })
       .catch((error) => {
-        wx.showToast({ title: error.error || "记录失败", icon: "none" });
+        wx.showToast({ title: error.error || "记录未成功", icon: "none" });
       })
       .finally(() => {
         this.setData({ isSubmitting: false });

@@ -47,6 +47,9 @@ Page({
   onBirthDateInput(event) {
     this.setData({ birthDate: event.detail.value });
   },
+  onBirthDateChange(event) {
+    this.setData({ birthDate: event.detail.value });
+  },
   chooseGender(event) {
     this.setData({ gender: event.currentTarget.dataset.value });
   },
@@ -94,7 +97,7 @@ Page({
           wx.switchTab({ url: "/pages/home/index" });
           return;
         }
-        wx.showToast({ title: error.error || "创建失败", icon: "none" });
+        wx.showToast({ title: error.error || "创建未成功", icon: "none" });
       })
       .finally(() => {
         this.setData({ isSubmitting: false });

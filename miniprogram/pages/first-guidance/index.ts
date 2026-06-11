@@ -13,5 +13,8 @@ Page({
         surface: "mini_program"
       }
     });
+  },
+  openSetup() {
+    wx.navigateTo({ url: "/pages/setup/index" });
   }
 });

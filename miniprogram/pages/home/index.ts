@@ -317,7 +317,7 @@ Page({
 
         this.setData({
           isLoading: false,
-          errorMessage: error.error || "首页数据加载失败"
+          errorMessage: error.error || "首页数据暂时无法同步"
         });
       });
   },

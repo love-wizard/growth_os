@@ -15,6 +15,22 @@ page {
   padding-top: 28rpx;
 }
 
+.splash-page,
+.setup-page,
+.guidance-page,
+.invite-page,
+.record-preview-page {
+  padding-top: 28rpx;
+}
+
+.splash-card {
+  background: #e4f3ec;
+  border: 1rpx solid #c9e3d6;
+  border-radius: 16rpx;
+  box-sizing: border-box;
+  padding: 36rpx 32rpx;
+}
+
 .home-header {
   align-items: flex-start;
   display: flex;
@@ -374,6 +390,36 @@ page {
 
 .interest-empty {
   margin-top: 20rpx;
+}
+
+.guidance-hero-card,
+.invite-hero-card {
+  background: #fff0df;
+  border: 1rpx solid #f3d9b8;
+  border-radius: 16rpx;
+  box-sizing: border-box;
+  padding: 36rpx 32rpx;
+}
+
+.record-preview-card {
+  background: #ffffff;
+  border: 1rpx solid #eadfce;
+  border-radius: 16rpx;
+  box-sizing: border-box;
+  padding: 24rpx;
+}
+
+.record-preview-photo-grid {
+  display: grid;
+  gap: 12rpx;
+  grid-template-columns: 1fr;
+}
+
+.record-preview-photo {
+  background: #f1eee8;
+  border-radius: 16rpx;
+  height: 520rpx;
+  width: 100%;
 }
 
 .primary-card {

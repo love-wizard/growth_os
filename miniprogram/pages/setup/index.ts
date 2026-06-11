@@ -46,6 +46,9 @@ Page({
   onBirthDateInput(event: { detail: { value: string } }) {
     this.setData({ birthDate: event.detail.value });
   },
+  onBirthDateChange(event: { detail: { value: string } }) {
+    this.setData({ birthDate: event.detail.value });
+  },
   chooseGender(event: { currentTarget: { dataset: { value: string } } }) {
     this.setData({ gender: event.currentTarget.dataset.value });
   },
@@ -93,7 +96,7 @@ Page({
           wx.switchTab({ url: "/pages/home/index" });
           return;
         }
-        wx.showToast({ title: error.error || "创建失败", icon: "none" });
+        wx.showToast({ title: error.error || "创建未成功", icon: "none" });
       })
       .finally(() => {
         this.setData({ isSubmitting: false });

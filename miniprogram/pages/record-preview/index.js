@@ -58,7 +58,7 @@ Page({
       })
       .catch((error) => {
         this.setData({
-          errorMessage: error.error || "记录加载失败"
+          errorMessage: error.error || "记录暂时无法同步"
         });
       });
   },
@@ -85,9 +85,9 @@ Page({
       .then((result) => {
         if (result.requiresBackend) {
           this.setData({
-            errorMessage: result.errorMessage || "登录失败"
+            errorMessage: result.errorMessage || "登录未成功"
           });
-          wx.showToast({ title: "登录失败", icon: "none" });
+          wx.showToast({ title: "登录未成功", icon: "none" });
           return;
         }
 
@@ -96,7 +96,7 @@ Page({
         wx.showToast({ title: "已登录", icon: "success" });
       })
       .catch(() => {
-        wx.showToast({ title: "登录失败", icon: "none" });
+        wx.showToast({ title: "登录未成功", icon: "none" });
       });
   }
 });

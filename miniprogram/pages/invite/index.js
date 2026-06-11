@@ -47,9 +47,9 @@ Page({
       })
       .catch((error) => {
         this.setData({
-          status: error.statusCode === 409 ? "请先完成首次配置" : error.error || "生成邀请失败"
+          status: error.statusCode === 409 ? "请先完成首次配置" : error.error || "生成邀请未成功"
         });
-        wx.showToast({ title: "生成失败", icon: "none" });
+        wx.showToast({ title: "生成未成功", icon: "none" });
       })
       .finally(() => {
         this.setData({ isLoading: false });
@@ -64,7 +64,7 @@ Page({
     loginPromise
       .then((result) => {
         if (result.requiresBackend) {
-          throw new Error(result.errorMessage || "微信登录失败");
+          throw new Error(result.errorMessage || "微信登录未成功");
         }
         return postJson(`/api/wechat/family-invite/${this.data.inviteId}/accept`, {});
       })
@@ -78,9 +78,9 @@ Page({
       })
       .catch((error) => {
         this.setData({
-          status: error.message || error.error || "接受邀请失败"
+          status: error.message || error.error || "接受邀请未成功"
         });
-        wx.showToast({ title: "加入失败", icon: "none" });
+        wx.showToast({ title: "加入未成功", icon: "none" });
       })
       .finally(() => {
         this.setData({ isLoading: false });

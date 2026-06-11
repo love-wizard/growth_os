@@ -1,4 +1,4 @@
-<view class="page">
+<view class="page setup-page">
   <view>
     <view class="caption">首次配置</view>
     <view class="page-title">先得到今晚能做的一件事</view>
@@ -16,7 +16,9 @@
       <view class="muted">先用最少信息生成建议，完整目标可以之后再补。</view>
     </view>
     <input class="input-box" placeholder="例如：柚子" value="{{nickname}}" bindinput="onNicknameInput" />
-    <input class="input-box" placeholder="例如：2021-11-09" value="{{birthDate}}" bindinput="onBirthDateInput" />
+    <picker mode="date" value="{{birthDate}}" bindchange="onBirthDateChange">
+      <view class="input-box picker-box">{{birthDate || '选择出生日期'}}</view>
+    </picker>
     <view class="chip-row">
       <view class="chip {{gender === 'female' ? 'chip-active' : ''}}" data-value="female" bindtap="chooseGender">女孩</view>
       <view class="chip {{gender === 'male' ? 'chip-active' : ''}}" data-value="male" bindtap="chooseGender">男孩</view>
@@ -80,7 +82,7 @@
     <view class="muted">{{suggestion.action}}</view>
     <view class="row">
       <button class="button-secondary" bindtap="prevStep">调整一下</button>
-      <button class="button-primary" loading="{{isSubmitting}}" bindtap="finishSetup">加入首页</button>
+      <button class="button-primary" loading="{{isSubmitting}}" disabled="{{isSubmitting}}" bindtap="finishSetup">加入首页</button>
     </view>
   </view>
 </view>

@@ -92,7 +92,7 @@ Page({
         this.setData({
           isLoading: false,
           errorMessage:
-            error.statusCode === 409 ? "请先完成首次配置" : error.error || "兴趣班记录加载失败"
+            error.statusCode === 409 ? "请先完成首次配置" : error.error || "兴趣参与记录暂时无法同步"
         });
       });
   },
@@ -144,7 +144,7 @@ Page({
         this.loadSnapshot();
       })
       .catch((error) => {
-        wx.showToast({ title: error.error || "记录失败", icon: "none" });
+        wx.showToast({ title: error.error || "记录未成功", icon: "none" });
       })
       .finally(() => {
         this.setData({ isSubmitting: false });

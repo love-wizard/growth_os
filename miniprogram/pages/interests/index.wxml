@@ -2,7 +2,7 @@
   <view>
     <view class="caption">兴趣参与</view>
     <view class="page-title">记录真实发生的练习</view>
-    <view class="subtitle">只记录已经发生的参与情况，帮助 AI 理解孩子最近的兴趣状态。</view>
+    <view class="subtitle">留下已经发生的参与情况，帮助 AI 理解孩子最近的兴趣状态。</view>
   </view>
 
   <view class="section interest-hero-card stack">
@@ -32,7 +32,7 @@
   <view class="section card warm-card stack">
     <view>
       <view class="title">记下一次参与</view>
-      <view class="muted">可以记录上课、练习、缺席或改期，不需要补打卡。</view>
+      <view class="muted">可以记录上课、练习、缺席或改期，不需要补记录。</view>
     </view>
 
     <view wx:if="{{interestOptions.length}}" class="chip-row">
