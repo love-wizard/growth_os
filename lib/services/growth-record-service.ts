@@ -57,7 +57,7 @@ export async function listGrowthRecordsForFamily(
     records.map(async (record) => ({
       ...record,
       growth_record_media: await Promise.all(
-        (record.growth_record_media ?? []).slice(0, 1).map(async (media) => {
+        (record.growth_record_media ?? []).slice(0, 3).map(async (media) => {
           const signed = await createGrowthMediaSignedReadUrl(
             storageSupabase,
             media.storage_path
@@ -127,6 +127,13 @@ export async function deleteGrowthRecordForFamily(
 
   if (!record) {
     throw new GrowthRecordError("Growth record was not found");
+  }
+
+  const existingPhotoCount = (record.growth_record_media ?? []).filter(
+    (media) => media.media_type === "photo"
+  ).length;
+  if (existingPhotoCount >= 3) {
+    throw new GrowthRecordError("A growth record supports up to 3 photos");
   }
 
   const window = buildRestoreWindow(input.referenceDate ?? new Date());

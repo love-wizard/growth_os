@@ -258,6 +258,13 @@ page {
   grid-template-columns: 1fr 1fr;
 }
 
+.filter-grid {
+  display: grid;
+  gap: 16rpx;
+  grid-template-columns: 1fr 1fr;
+  margin: 20rpx 0;
+}
+
 .picker-box {
   color: #6e665c;
 }
@@ -317,6 +324,12 @@ page {
   padding: 20rpx;
 }
 
+.selected-photo-grid {
+  display: grid;
+  gap: 16rpx;
+  grid-template-columns: 1fr;
+}
+
 .photo-preview,
 .timeline-photo {
   background: #f1eee8;
@@ -326,6 +339,10 @@ page {
 .photo-preview {
   height: 280rpx;
   width: 100%;
+}
+
+.small-photo-preview {
+  height: 180rpx;
 }
 
 .timeline-photo-row {

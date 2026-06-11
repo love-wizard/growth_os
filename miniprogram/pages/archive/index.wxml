@@ -12,7 +12,9 @@
       <view class="muted">一句话就可以，也可以顺手附上一张照片。</view>
     </view>
     <textarea class="input-box text-area" placeholder="例如：今天第一次主动练琴20分钟。" value="{{recordText}}" bindinput="onRecordTextInput" />
-    <input class="input-box" placeholder="标签，用逗号分隔" value="{{recordTags}}" bindinput="onRecordTagsInput" />
+    <picker mode="selector" range="{{recordCategories}}" value="{{selectedCategoryIndex}}" bindchange="onRecordCategoryChange">
+      <view class="input-box picker-box">类别 {{recordCategory}}</view>
+    </picker>
     <view class="record-time-row">
       <picker mode="date" value="{{happenedDate}}" bindchange="onHappenedDateChange">
         <view class="input-box picker-box">日期 {{happenedDate}}</view>
@@ -22,12 +24,14 @@
       </picker>
     </view>
     <view class="stack">
-      <button class="button-secondary" bindtap="choosePhoto">选择一张照片</button>
-      <view wx:if="{{selectedPhotoPath}}" class="photo-preview-card">
-        <image class="photo-preview" src="{{selectedPhotoPath}}" mode="aspectFill" />
-        <view class="row">
-          <view class="muted">{{selectedPhotoName}}</view>
-          <button class="button-secondary compact-button" bindtap="clearPhoto">移除</button>
+      <button class="button-secondary" bindtap="choosePhoto">选择照片（最多3张）</button>
+      <view wx:if="{{selectedPhotos.length}}" class="selected-photo-grid">
+        <view class="photo-preview-card" wx:for="{{selectedPhotos}}" wx:key="path">
+          <image class="photo-preview small-photo-preview" src="{{item.path}}" mode="aspectFill" />
+          <view class="row">
+            <view class="muted">{{item.name}}</view>
+            <button class="button-secondary compact-button" data-index="{{index}}" bindtap="removeSelectedPhoto">移除</button>
+          </view>
         </view>
       </view>
     </view>
@@ -41,6 +45,19 @@
 
   <view class="section card">
     <view class="title">时间轴</view>
+    <view class="filter-grid">
+      <picker mode="date" value="{{filterStartDate}}" bindchange="onFilterStartDateChange">
+        <view class="input-box picker-box">{{filterStartDate || '开始日期'}}</view>
+      </picker>
+      <picker mode="date" value="{{filterEndDate}}" bindchange="onFilterEndDateChange">
+        <view class="input-box picker-box">{{filterEndDate || '结束日期'}}</view>
+      </picker>
+      <picker mode="selector" range="{{filterCategoryOptions}}" value="{{selectedFilterCategoryIndex}}" bindchange="onFilterCategoryChange">
+        <view class="input-box picker-box">{{filterCategoryOptions[selectedFilterCategoryIndex]}}</view>
+      </picker>
+      <input class="input-box" placeholder="搜索关键字" value="{{filterKeyword}}" bindinput="onFilterKeywordInput" />
+    </view>
+    <button class="button-secondary compact-button" bindtap="clearFilters">清除筛选</button>
     <view wx:if="{{isLoading && !hasRecordData && !errorMessage}}" class="stack">
       <view class="skeleton-line skeleton-title"></view>
       <view class="skeleton-line"></view>
@@ -85,5 +102,26 @@
       </view>
     </view>
     </block>
+  </view>
+
+  <view class="section card primary-card stack">
+    <view>
+      <view class="title">成长月报</view>
+      <view class="muted">基于本月成长记录、周计划和兴趣记录生成。</view>
+    </view>
+    <button class="button-secondary" loading="{{isGeneratingMonthlyReport}}" bindtap="generateMonthlyReport">生成本月成长月报</button>
+    <view wx:if="{{monthlyReportError}}" class="muted">{{monthlyReportError}}</view>
+    <view wx:if="{{monthlyReport}}" class="stack">
+      <view class="title">{{monthlyReport.title}}</view>
+      <view class="note-box" wx:for="{{monthlyReport.sections}}" wx:key="area">
+        <view class="caption">{{item.area}}</view>
+        <view class="muted">{{item.summary}}</view>
+        <view class="caption" wx:for="{{item.evidence}}" wx:for-item="evidence" wx:key="*this">- {{evidence}}</view>
+      </view>
+      <view class="note-box">
+        <view class="caption">下月建议</view>
+        <view class="muted" wx:for="{{monthlyReport.nextActions}}" wx:key="*this">{{item}}</view>
+      </view>
+    </view>
   </view>
 </view>

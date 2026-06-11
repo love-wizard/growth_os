@@ -1,9 +1,17 @@
-import { getJson, postJson, uploadFile } from "../../services/api";
+import {
+  getJson,
+  isTimeoutRequestError,
+  postJson,
+  postJsonWithOptions,
+  uploadFile
+} from "../../services/api";
 
 const growthRecordPrefillStorageKey = "growth_os_growth_record_prefill";
 const growthRecordsCacheStorageKey = "growth_os_growth_records_cache_v2";
 const growthRecordsCacheRefreshMs = 5 * 60 * 1000;
 const growthRecordsCacheDisplayMs = 55 * 60 * 1000;
+const aiRequestTimeoutMs = 30000;
+const recordCategories = ["成长瞬间", "运动健康", "阅读表达", "英语启蒙", "兴趣培养", "情绪关系", "户外探索"];
 
 function todayString() {
   const now = new Date();
@@ -68,6 +76,67 @@ function formatRecord(record: {
       .filter((media) => media.media_type === "photo" && media.signed_url)
       .map((media) => media.signed_url as string),
     shareImageUrl: ""
+  };
+}
+
+function getRecordCategory(record: { tags?: string[] }) {
+  return record.tags?.[0] || "成长瞬间";
+}
+
+function filterRecords<T extends {
+  date: string;
+  title: string;
+  text: string;
+  tags?: string[];
+}>(
+  records: T[],
+  filters: {
+    startDate?: string;
+    endDate?: string;
+    category?: string;
+    keyword?: string;
+  }
+) {
+  const keyword = (filters.keyword || "").trim().toLowerCase();
+  return records.filter((record) => {
+    if (filters.startDate && record.date < filters.startDate) {
+      return false;
+    }
+
+    if (filters.endDate && record.date > filters.endDate) {
+      return false;
+    }
+
+    if (filters.category && filters.category !== "全部" && getRecordCategory(record) !== filters.category) {
+      return false;
+    }
+
+    if (!keyword) {
+      return true;
+    }
+
+    const searchable = `${record.title} ${record.text} ${(record.tags || []).join(" ")}`.toLowerCase();
+    return searchable.includes(keyword);
+  });
+}
+
+function formatMonthlyReport(response: any) {
+  if (!response || response.mode !== "growth_analysis") {
+    return null;
+  }
+
+  return {
+    title: response.title || "本月成长月报",
+    sections: (response.sections || []).map((section: {
+      area: string;
+      summary: string;
+      evidence?: string[];
+    }) => ({
+      area: section.area,
+      summary: section.summary,
+      evidence: section.evidence || []
+    })),
+    nextActions: response.nextActions || []
   };
 }
 
@@ -147,7 +216,25 @@ Page({
     isSubmitting: false,
     errorMessage: "",
     recordText: "",
-    recordTags: "成长瞬间",
+    recordCategory: "成长瞬间",
+    selectedCategoryIndex: 0,
+    recordCategories,
+    filterCategoryOptions: ["全部", ...recordCategories],
+    selectedFilterCategoryIndex: 0,
+    filterStartDate: "",
+    filterEndDate: "",
+    filterKeyword: "",
+    isGeneratingMonthlyReport: false,
+    monthlyReportError: "",
+    monthlyReport: null as null | {
+      title: string;
+      sections: Array<{
+        area: string;
+        summary: string;
+        evidence: string[];
+      }>;
+      nextActions: string[];
+    },
     shareRecord: null as null | {
       id: string;
       title: string;
@@ -158,8 +245,10 @@ Page({
     },
     selectedPhotoName: "",
     selectedPhotoPath: "",
+    selectedPhotos: [] as Array<{ name: string; path: string }>,
     happenedDate: todayString(),
     happenedTime: currentTimeString(),
+    allRecords: [] as unknown[],
     records: []
   },
   preloadShareImages(records: Array<{ id: string; photoUrls?: string[]; shareImageUrl?: string }>) {
@@ -198,10 +287,11 @@ Page({
         return;
       }
 
-      const nextRecords = (this.data.records as Array<{
+      const currentAllRecords = this.data.allRecords as Array<{
         id: string;
         shareImageUrl?: string;
-      }>).map((item) =>
+      }>;
+      const nextRecords = currentAllRecords.map((item) =>
         updates.has(item.id) ? { ...item, shareImageUrl: updates.get(item.id) } : item
       );
 
@@ -211,7 +301,7 @@ Page({
       });
 
       const changed = nextRecords.some((item, index) => {
-        const current = (this.data.records as Array<{ shareImageUrl?: string }>)[index];
+        const current = currentAllRecords[index];
         return item.shareImageUrl !== current?.shareImageUrl;
       });
       if (!changed) {
@@ -219,7 +309,8 @@ Page({
       }
 
       this.setData({
-        records: nextRecords
+        allRecords: nextRecords,
+        records: this.getFilteredRecords(nextRecords)
       });
     });
   },
@@ -266,7 +357,8 @@ Page({
     this.setData({
       isLoading: false,
       hasRecordData: true,
-      records: cached.records
+      allRecords: cached.records,
+      records: this.getFilteredRecords(cached.records)
     });
     return true;
   },
@@ -282,7 +374,35 @@ Page({
     wx.removeStorageSync(growthRecordPrefillStorageKey);
     this.setData({
       recordText: draft.text,
-      recordTags: draft.tags || "成长瞬间"
+      recordCategory: (draft.tags || "成长瞬间").split(/[，,]/)[0] || "成长瞬间",
+      selectedCategoryIndex: Math.max(
+        0,
+        recordCategories.indexOf((draft.tags || "成长瞬间").split(/[，,]/)[0] || "成长瞬间")
+      )
+    });
+  },
+  getFilteredRecords(records?: unknown[]) {
+    return filterRecords(
+      sortRecords((records || this.data.allRecords) as Array<{
+        id: string;
+        date: string;
+        happenedAt?: string;
+        createdAt?: string;
+        title: string;
+        text: string;
+        tags: string[];
+      }>),
+      {
+        startDate: this.data.filterStartDate,
+        endDate: this.data.filterEndDate,
+        category: this.data.filterCategoryOptions[this.data.selectedFilterCategoryIndex],
+        keyword: this.data.filterKeyword
+      }
+    );
+  },
+  applyFilters() {
+    this.setData({
+      records: this.getFilteredRecords()
     });
   },
   loadRecords(options?: { useLoadingState?: boolean; skipIfFresh?: boolean }) {
@@ -337,7 +457,8 @@ Page({
         this.setData({
           isLoading: false,
           hasRecordData: true,
-          records
+          allRecords: records,
+          records: this.getFilteredRecords(records)
         });
         this.preloadShareImages(records);
       })
@@ -353,8 +474,37 @@ Page({
   onRecordTextInput(event: { detail: { value: string } }) {
     this.setData({ recordText: event.detail.value });
   },
-  onRecordTagsInput(event: { detail: { value: string } }) {
-    this.setData({ recordTags: event.detail.value });
+  onRecordCategoryChange(event: { detail: { value: string } }) {
+    const selectedCategoryIndex = Number(event.detail.value);
+    this.setData({
+      selectedCategoryIndex,
+      recordCategory: recordCategories[selectedCategoryIndex] || "成长瞬间"
+    });
+  },
+  onFilterStartDateChange(event: { detail: { value: string } }) {
+    this.setData({ filterStartDate: event.detail.value });
+    this.applyFilters();
+  },
+  onFilterEndDateChange(event: { detail: { value: string } }) {
+    this.setData({ filterEndDate: event.detail.value });
+    this.applyFilters();
+  },
+  onFilterCategoryChange(event: { detail: { value: string } }) {
+    this.setData({ selectedFilterCategoryIndex: Number(event.detail.value) });
+    this.applyFilters();
+  },
+  onFilterKeywordInput(event: { detail: { value: string } }) {
+    this.setData({ filterKeyword: event.detail.value });
+    this.applyFilters();
+  },
+  clearFilters() {
+    this.setData({
+      filterStartDate: "",
+      filterEndDate: "",
+      filterKeyword: "",
+      selectedFilterCategoryIndex: 0
+    });
+    this.applyFilters();
   },
   onHappenedDateChange(event: { detail: { value: string } }) {
     this.setData({ happenedDate: event.detail.value });
@@ -363,27 +513,47 @@ Page({
     this.setData({ happenedTime: event.detail.value });
   },
   choosePhoto() {
+    const selectedPhotos = this.data.selectedPhotos as Array<{ name: string; path: string }>;
+    const remainingCount = 3 - selectedPhotos.length;
+    if (remainingCount <= 0) {
+      wx.showToast({ title: "最多选择3张照片", icon: "none" });
+      return;
+    }
+
     wx.chooseImage({
-      count: 1,
+      count: remainingCount,
       sizeType: ["compressed"],
       sourceType: ["album", "camera"],
       success: (response) => {
-        const path = response.tempFilePaths?.[0];
-        if (!path) {
+        const nextPhotos = (response.tempFilePaths || [])
+          .map((path, index) => ({
+            name: path.split("/").pop() || `成长照片${selectedPhotos.length + index + 1}.jpg`,
+            path: response.tempFiles?.[index]?.path || path
+          }))
+          .filter((photo) => photo.path);
+
+        if (!nextPhotos.length) {
           return;
         }
 
         this.setData({
-          selectedPhotoName: path.split("/").pop() || "成长照片.jpg",
-          selectedPhotoPath: response.tempFiles?.[0]?.path || path
+          selectedPhotos: [...selectedPhotos, ...nextPhotos].slice(0, 3),
+          selectedPhotoName: "",
+          selectedPhotoPath: ""
         });
       }
     });
   },
-  clearPhoto() {
+  removeSelectedPhoto(event: { currentTarget: { dataset: { index?: string | number } } }) {
+    const index = Number(event.currentTarget.dataset.index);
+    const selectedPhotos = [...(this.data.selectedPhotos as Array<{ name: string; path: string }>)] ;
+    if (Number.isNaN(index)) {
+      return;
+    }
+
+    selectedPhotos.splice(index, 1);
     this.setData({
-      selectedPhotoName: "",
-      selectedPhotoPath: ""
+      selectedPhotos
     });
   },
   previewRecordPhoto(event: { currentTarget: { dataset: { current?: string; urls?: string[] } } }) {
@@ -414,6 +584,39 @@ Page({
       }
     });
   },
+  generateMonthlyReport() {
+    this.setData({
+      isGeneratingMonthlyReport: true,
+      monthlyReportError: "",
+      monthlyReport: null
+    });
+
+    void postJsonWithOptions<{
+      response?: any;
+    }>("/api/ai/coach", {
+      mode: "growth_analysis",
+      message: "请基于本月成长记录、兴趣记录和周计划，产出一份成长月报，按身体发展、阅读表达、兴趣培养、英语启蒙、情绪关系总结。"
+    }, {
+      timeoutMs: aiRequestTimeoutMs
+    })
+      .then((result) => {
+        const monthlyReport = formatMonthlyReport(result.response);
+        this.setData({
+          isGeneratingMonthlyReport: false,
+          monthlyReport,
+          monthlyReportError: monthlyReport ? "" : "月报生成结果格式不完整，请再试一次。"
+        });
+      })
+      .catch((error) => {
+        const message = isTimeoutRequestError(error)
+          ? "月报生成时间较长，已超过等待时间，请再试一次。"
+          : error.error || "月报生成失败";
+        this.setData({
+          isGeneratingMonthlyReport: false,
+          monthlyReportError: message
+        });
+      });
+  },
   addRecord() {
     const text = this.data.recordText.trim();
     if (!text) {
@@ -421,10 +624,7 @@ Page({
       return;
     }
 
-    const tags = this.data.recordTags
-      .split(/[，,]/)
-      .map((tag: string) => tag.trim())
-      .filter(Boolean);
+    const tags = [this.data.recordCategory || "成长瞬间"];
 
     this.setData({ isSubmitting: true });
     void postJson<{
@@ -441,19 +641,28 @@ Page({
       tags: tags.length ? tags : ["成长瞬间"]
     })
       .then((response) => {
-        if (!this.data.selectedPhotoPath || !response.record?.id) {
+        const selectedPhotos = this.data.selectedPhotos as Array<{ path: string }>;
+        if (!selectedPhotos.length || !response.record?.id) {
           return response;
         }
 
-        return uploadFile(`/api/growth-records/${response.record.id}/media`, this.data.selectedPhotoPath);
+        return selectedPhotos.reduce(
+          (promise, photo) =>
+            promise.then(() =>
+              uploadFile(`/api/growth-records/${response.record?.id}/media`, photo.path)
+            ),
+          Promise.resolve<unknown>(response)
+        );
       })
       .then(() => {
         wx.showToast({ title: "已记录", icon: "success" });
         this.setData({
           recordText: "",
-          recordTags: "成长瞬间",
+          recordCategory: "成长瞬间",
+          selectedCategoryIndex: 0,
           selectedPhotoName: "",
           selectedPhotoPath: "",
+          selectedPhotos: [],
           happenedDate: todayString(),
           happenedTime: currentTimeString()
         });
