@@ -307,6 +307,46 @@ page {
   padding: 20rpx 0;
 }
 
+.coach-page {
+  padding-top: 28rpx;
+}
+
+.coach-ask-card {
+  background: #fff0df;
+  border: 1rpx solid #f3d9b8;
+  border-radius: 16rpx;
+  box-sizing: border-box;
+  padding: 32rpx;
+}
+
+.coach-question-box {
+  background: rgba(255, 255, 255, 0.76);
+  min-height: 180rpx;
+}
+
+.coach-prompt-panel {
+  background: rgba(255, 255, 255, 0.5);
+  border: 1rpx solid #f3d9b8;
+  border-radius: 16rpx;
+  padding: 22rpx;
+}
+
+.coach-chip-row {
+  margin-top: 14rpx;
+}
+
+.coach-answer-text {
+  white-space: pre-line;
+}
+
+.coach-action-list {
+  border-top: 1rpx solid rgba(201, 227, 214, 0.9);
+}
+
+.coach-empty-history {
+  margin-top: 20rpx;
+}
+
 .primary-card {
   background: #e4f3ec;
   border-color: #c9e3d6;

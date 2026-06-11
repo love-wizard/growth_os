@@ -178,6 +178,7 @@ Page({
   data: {
     isLoading: false,
     isHistoryLoading: false,
+    hasAnswer: false,
     errorMessage: "",
     prompts: [
       "孩子不想练琴怎么办？",
@@ -189,14 +190,14 @@ Page({
       "本周末适合做什么？"
     ],
     selectedPrompt: "今晚只有30分钟",
-    freeQuestion: "",
+    freeQuestion: "今晚只有30分钟",
     history: [],
     answer: {
-      contextLabel: "基于真实成长档案",
-      title: "今晚可以做：绘本找宝藏",
-      text: "结合孩子最近的成长目标，先做一个10-15分钟的亲子共读小游戏。让孩子选一本书，你负责读，他负责找一个画面里的小线索。",
-      actions: ["孩子选一本书", "家长读一页", "孩子找一个画面线索"],
-      fallback: "如果孩子不想读，就只看图讲一个喜欢的角色，也算完成陪伴。",
+      contextLabel: "",
+      title: "",
+      text: "",
+      actions: [],
+      fallback: "",
       weeklyPlanDraftId: "",
       isWeeklyPlanDraft: false,
       isDraftConfirmed: false,
@@ -209,13 +210,14 @@ Page({
     this.consumePrefilledPrompt();
   },
   selectPrompt(event) {
-    this.setData({ selectedPrompt: event.currentTarget.dataset.prompt, freeQuestion: "" });
+    const prompt = event.currentTarget.dataset.prompt;
+    this.setData({ selectedPrompt: prompt, freeQuestion: prompt });
   },
   onQuestionInput(event) {
     this.setData({ freeQuestion: event.detail.value });
   },
   askCoach() {
-    const message = this.data.freeQuestion || this.data.selectedPrompt;
+    const message = (this.data.freeQuestion || this.data.selectedPrompt).trim();
     if (!message) {
       wx.showToast({ title: "请输入问题", icon: "none" });
       return;
@@ -245,6 +247,7 @@ Page({
         });
         this.setData({
           isLoading: false,
+          hasAnswer: true,
           history: [historyItem, ...this.data.history.filter((item) => item.id !== historyItem.id)].slice(
             0,
             8
@@ -255,7 +258,7 @@ Page({
               answer.isWeeklyPlanDraft && result.weeklyPlanDraftId ? result.weeklyPlanDraftId : ""
           },
           selectedPrompt: message,
-          freeQuestion: ""
+          freeQuestion: message
         });
       })
       .catch((error) => {
@@ -280,7 +283,7 @@ Page({
     wx.removeStorageSync(aiCoachPrefillStorageKey);
     this.setData({
       selectedPrompt: message,
-      freeQuestion: ""
+      freeQuestion: message
     });
     this.runCoachMessage(message);
   },
@@ -337,6 +340,7 @@ Page({
 
     this.setData({
       answer: historyItem.answer,
+      hasAnswer: true,
       errorMessage: ""
     });
   }

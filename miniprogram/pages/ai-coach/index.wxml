@@ -1,22 +1,83 @@
-<view class="page">
+<view class="page coach-page">
   <view>
     <view class="caption">AI成长教练</view>
-    <view class="page-title">结合孩子情况，给一个可执行建议</view>
+    <view class="page-title">把今天的陪伴变具体</view>
+    <view class="subtitle">结合孩子档案、年度目标和最近记录，生成一个适合当下执行的建议。</view>
   </view>
 
-  <view class="section card">
-    <view class="title">快捷问题</view>
-    <view class="chip-row">
-      <view
-        class="chip {{selectedPrompt === item ? 'chip-active' : ''}}"
-        data-prompt="{{item}}"
-        bindtap="selectPrompt"
-        wx:for="{{prompts}}"
-        wx:key="*this"
-      >
-        {{item}}
+  <view class="section coach-ask-card stack">
+    <view>
+      <view class="caption">先说一个具体场景</view>
+      <textarea
+        class="input-box coach-question-box"
+        placeholder="例如：孩子不想练琴怎么办？今晚只有30分钟可以做什么？"
+        value="{{freeQuestion}}"
+        maxlength="160"
+        bindinput="onQuestionInput"
+      />
+    </view>
+
+    <view class="coach-prompt-panel">
+      <view class="caption">可直接提问</view>
+      <view class="chip-row coach-chip-row">
+        <view
+          class="chip {{selectedPrompt === item ? 'chip-active' : ''}}"
+          data-prompt="{{item}}"
+          bindtap="selectPrompt"
+          wx:for="{{prompts}}"
+          wx:key="*this"
+        >
+          {{item}}
+        </view>
       </view>
     </view>
+
+    <button class="button-primary" loading="{{isLoading}}" disabled="{{isLoading}}" bindtap="askCoach">
+      生成建议
+    </button>
+  </view>
+
+  <view wx:if="{{hasAnswer || isLoading || errorMessage}}" class="section card primary-card stack">
+    <view wx:if="{{isLoading}}" class="stack">
+      <view class="caption">正在结合成长档案</view>
+      <view class="skeleton-line skeleton-title"></view>
+      <view class="skeleton-line"></view>
+      <view class="skeleton-line short"></view>
+    </view>
+
+    <block wx:else>
+      <view wx:if="{{hasAnswer}}">
+        <view class="caption">{{answer.contextLabel}}</view>
+        <view class="title">{{answer.title}}</view>
+      </view>
+      <view wx:if="{{hasAnswer}}" class="muted coach-answer-text">{{answer.text}}</view>
+      <view wx:if="{{hasAnswer}}" class="coach-action-list">
+        <view class="task-row" wx:for="{{answer.actions}}" wx:key="*this">
+          <view class="progress-pill">{{index + 1}}</view>
+          <view class="task-main">
+            <view class="task-title">{{item}}</view>
+          </view>
+        </view>
+      </view>
+      <view wx:if="{{hasAnswer && answer.fallback}}" class="note-box">
+        <view class="caption">温和备选</view>
+        <view class="muted">{{answer.fallback}}</view>
+      </view>
+      <view wx:if="{{answer.isWeeklyPlanDraft}}" class="note-box">
+        <view class="caption">采用说明</view>
+        <view class="muted">{{answer.confirmHint}}</view>
+      </view>
+      <view wx:if="{{errorMessage}}" class="muted">{{errorMessage}}</view>
+      <button
+        wx:if="{{answer.weeklyPlanDraftId}}"
+        class="button-secondary"
+        loading="{{isLoading}}"
+        disabled="{{answer.isDraftConfirmed}}"
+        bindtap="confirmWeeklyPlanDraft"
+      >
+        {{answer.confirmLabel}}
+      </button>
+    </block>
   </view>
 
   <view class="section card">
@@ -24,7 +85,7 @@
       <view class="title">最近咨询</view>
       <view class="caption">{{isHistoryLoading ? '加载中' : ''}}</view>
     </view>
-    <view wx:if="{{history.length === 0}}" class="muted">还没有历史记录，先问一个具体问题。</view>
+    <view wx:if="{{history.length === 0}}" class="muted coach-empty-history">还没有历史记录，先问一个具体问题。</view>
     <view
       wx:for="{{history}}"
       wx:key="id"
@@ -38,43 +99,5 @@
         <view class="muted">{{item.title}}</view>
       </view>
     </view>
-  </view>
-
-  <view class="section card primary-card stack">
-    <view>
-      <view class="caption">{{answer.contextLabel}}</view>
-      <view class="title">{{answer.title}}</view>
-    </view>
-    <view class="muted">{{answer.text}}</view>
-    <view class="task-row" wx:for="{{answer.actions}}" wx:key="*this">
-      <view class="progress-pill">{{index + 1}}</view>
-      <view class="task-main">
-        <view class="task-title">{{item}}</view>
-      </view>
-    </view>
-    <view class="note-box">
-      <view class="caption">温和备选</view>
-      <view class="muted">{{answer.fallback}}</view>
-    </view>
-    <view wx:if="{{answer.isWeeklyPlanDraft}}" class="note-box">
-      <view class="caption">采用说明</view>
-      <view class="muted">{{answer.confirmHint}}</view>
-    </view>
-    <view wx:if="{{errorMessage}}" class="muted">{{errorMessage}}</view>
-    <button
-      wx:if="{{answer.weeklyPlanDraftId}}"
-      class="button-secondary"
-      loading="{{isLoading}}"
-      disabled="{{answer.isDraftConfirmed}}"
-      bindtap="confirmWeeklyPlanDraft"
-    >
-      {{answer.confirmLabel}}
-    </button>
-    <button class="button-primary" loading="{{isLoading}}" bindtap="askCoach">生成新的建议</button>
-  </view>
-
-  <view class="section card">
-    <view class="title">自由提问</view>
-    <input class="input-box" placeholder="请输入育儿问题" value="{{freeQuestion}}" bindinput="onQuestionInput" />
   </view>
 </view>
