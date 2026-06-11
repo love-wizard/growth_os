@@ -175,6 +175,19 @@ page {
   margin-top: 8rpx;
 }
 
+.quote-divider {
+  background: #f0e8de;
+  height: 1rpx;
+  margin: 22rpx 0 18rpx;
+}
+
+.quote-reflection-label {
+  color: #3f8f6b;
+  font-size: 24rpx;
+  font-weight: 700;
+  line-height: 34rpx;
+}
+
 .home-focus-card {
   background: #e4f3ec;
   border: 1rpx solid #c9e3d6;

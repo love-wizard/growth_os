@@ -14,7 +14,9 @@
   <view class="section quote-card">
     <view class="quote-mark">“</view>
     <view class="quote-text">{{dailyQuote.quote}}</view>
-    <view class="quote-source">出处：{{dailyQuote.source}}</view>
+    <view class="quote-source">摘录出处：{{dailyQuote.source}}</view>
+    <view class="quote-divider"></view>
+    <view class="quote-reflection-label">饭米粒Love解读</view>
     <view class="quote-reflection">{{dailyQuote.reflection}}</view>
   </view>
 
