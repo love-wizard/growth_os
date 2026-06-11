@@ -215,6 +215,7 @@ Page({
     hasRecordData: false,
     isSubmitting: false,
     isRecordComposerOpen: false,
+    isFilterOpen: false,
     errorMessage: "",
     recordText: "",
     recordCategory: "成长瞬间",
@@ -406,6 +407,9 @@ Page({
     this.setData({
       records: this.getFilteredRecords()
     });
+  },
+  toggleFilters() {
+    this.setData({ isFilterOpen: !this.data.isFilterOpen });
   },
   loadRecords(options?: { useLoadingState?: boolean; skipIfFresh?: boolean }) {
     if (options?.skipIfFresh) {

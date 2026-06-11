@@ -545,6 +545,84 @@ page {
   padding-bottom: 148rpx;
 }
 
+.archive-timeline-section {
+  background: transparent;
+}
+
+.timeline-header {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 24rpx;
+}
+
+.archive-filter-panel {
+  background: #ffffff;
+  border: 1rpx solid #e7e0d7;
+  border-radius: 16rpx;
+  box-sizing: border-box;
+  margin-bottom: 28rpx;
+  padding: 24rpx;
+}
+
+.archive-timeline-item {
+  border-left: 4rpx solid #e7e0d7;
+  margin-left: 12rpx;
+  padding: 0 0 28rpx 28rpx;
+  position: relative;
+}
+
+.archive-timeline-item:last-child {
+  padding-bottom: 0;
+}
+
+.archive-timeline-dot {
+  background: #3f8f6b;
+  border: 6rpx solid #f8f6f2;
+  border-radius: 50%;
+  height: 18rpx;
+  left: -11rpx;
+  position: absolute;
+  top: 28rpx;
+  width: 18rpx;
+}
+
+.archive-record-card {
+  background: #ffffff;
+  border: 1rpx solid #e7e0d7;
+  border-radius: 16rpx;
+  box-sizing: border-box;
+  padding: 28rpx;
+}
+
+.archive-record-card-with-photo {
+  border-color: #eadfce;
+  padding-top: 20rpx;
+}
+
+.archive-record-photo-grid {
+  display: grid;
+  gap: 12rpx;
+  grid-template-columns: repeat(3, 1fr);
+  margin-bottom: 20rpx;
+}
+
+.archive-record-photo {
+  background: #f1eee8;
+  border-radius: 12rpx;
+  height: 150rpx;
+  width: 100%;
+}
+
+.archive-record-photo-large {
+  grid-column: 1 / -1;
+  height: 340rpx;
+}
+
+.archive-tag-row {
+  margin-top: 18rpx;
+}
+
 .empty-record-state {
   align-items: flex-start;
   display: flex;
@@ -677,6 +755,60 @@ page {
 
 .profile-card {
   padding: 28rpx 32rpx;
+}
+
+.profile-page {
+  padding-top: 28rpx;
+}
+
+.profile-family-card {
+  background: #e4f3ec;
+  border: 1rpx solid #c9e3d6;
+  border-radius: 16rpx;
+  box-sizing: border-box;
+  padding: 36rpx 32rpx;
+}
+
+.profile-child-name {
+  color: #25211c;
+  font-size: 42rpx;
+  font-weight: 650;
+  line-height: 58rpx;
+}
+
+.profile-child-meta {
+  color: #4f5f55;
+  font-size: 28rpx;
+  line-height: 44rpx;
+  margin-top: 8rpx;
+}
+
+.profile-empty-note {
+  background: rgba(255, 255, 255, 0.58);
+  border: 1rpx solid #c9e3d6;
+  border-radius: 16rpx;
+  color: #5f685f;
+  font-size: 26rpx;
+  line-height: 40rpx;
+  padding: 20rpx 22rpx;
+}
+
+.profile-login-button {
+  margin-top: 24rpx;
+}
+
+.profile-action-grid {
+  display: grid;
+  gap: 16rpx;
+  grid-template-columns: 1fr;
+}
+
+.profile-privacy-card {
+  background: #eaf2ff;
+  border: 1rpx solid #d4e4fa;
+  border-radius: 16rpx;
+  box-sizing: border-box;
+  padding: 32rpx;
 }
 
 .profile-row {

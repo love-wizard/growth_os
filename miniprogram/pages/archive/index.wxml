@@ -12,21 +12,29 @@
     <view class="muted">完成首次配置后，就可以记录孩子的真实成长瞬间。</view>
   </view>
 
-  <view class="section card">
-    <view class="title">时间轴</view>
-    <view class="filter-grid">
-      <picker mode="date" value="{{filterStartDate}}" bindchange="onFilterStartDateChange">
-        <view class="input-box picker-box">{{filterStartDate || '开始日期'}}</view>
-      </picker>
-      <picker mode="date" value="{{filterEndDate}}" bindchange="onFilterEndDateChange">
-        <view class="input-box picker-box">{{filterEndDate || '结束日期'}}</view>
-      </picker>
-      <picker mode="selector" range="{{filterCategoryOptions}}" value="{{selectedFilterCategoryIndex}}" bindchange="onFilterCategoryChange">
-        <view class="input-box picker-box">{{filterCategoryOptions[selectedFilterCategoryIndex]}}</view>
-      </picker>
-      <input class="input-box" placeholder="搜索关键字" value="{{filterKeyword}}" bindinput="onFilterKeywordInput" />
+  <view class="section archive-timeline-section">
+    <view class="timeline-header">
+      <view>
+        <view class="title">时间轴</view>
+        <view class="muted">{{records.length}} 条成长瞬间</view>
+      </view>
+      <button class="button-secondary compact-button" bindtap="toggleFilters">{{isFilterOpen ? '收起筛选' : '筛选'}}</button>
     </view>
-    <button class="button-secondary compact-button" bindtap="clearFilters">清除筛选</button>
+    <view wx:if="{{isFilterOpen}}" class="archive-filter-panel">
+      <view class="filter-grid">
+        <picker mode="date" value="{{filterStartDate}}" bindchange="onFilterStartDateChange">
+          <view class="input-box picker-box">{{filterStartDate || '开始日期'}}</view>
+        </picker>
+        <picker mode="date" value="{{filterEndDate}}" bindchange="onFilterEndDateChange">
+          <view class="input-box picker-box">{{filterEndDate || '结束日期'}}</view>
+        </picker>
+        <picker mode="selector" range="{{filterCategoryOptions}}" value="{{selectedFilterCategoryIndex}}" bindchange="onFilterCategoryChange">
+          <view class="input-box picker-box">{{filterCategoryOptions[selectedFilterCategoryIndex]}}</view>
+        </picker>
+        <input class="input-box" placeholder="搜索关键字" value="{{filterKeyword}}" bindinput="onFilterKeywordInput" />
+      </view>
+      <button class="button-secondary compact-button" bindtap="clearFilters">清除筛选</button>
+    </view>
     <view wx:if="{{isLoading && !hasRecordData && !errorMessage}}" class="stack">
       <view class="skeleton-line skeleton-title"></view>
       <view class="skeleton-line"></view>
@@ -37,40 +45,43 @@
       <button class="button-secondary compact-button" bindtap="openRecordComposer">记录一条</button>
     </view>
     <block wx:else>
-    <view class="timeline-item" wx:for="{{records}}" wx:key="id">
-      <view class="caption">{{item.dateTimeLabel || item.date}}</view>
-      <view class="task-title">{{item.title}}</view>
-      <view class="muted">{{item.text}}</view>
-      <view wx:if="{{item.photoUrls && item.photoUrls.length}}" class="timeline-photo-row">
-        <image
-          class="timeline-photo"
-          wx:for="{{item.photoUrls}}"
-          wx:for-item="photoUrl"
-          wx:key="photoUrl"
-          src="{{photoUrl}}"
-          mode="aspectFill"
-          lazy-load="{{true}}"
-          data-current="{{photoUrl}}"
-          data-urls="{{item.photoUrls}}"
-          bindtap="previewRecordPhoto"
-        />
-      </view>
-      <view class="chip-row">
-        <view class="chip" wx:for="{{item.tags}}" wx:for-item="tag" wx:key="tag">{{tag}}</view>
-      </view>
-      <view class="row action-row">
-        <button
-          class="button-secondary compact-button"
-          open-type="share"
-          data-id="{{item.id}}"
-          data-title="{{item.title}}"
-          data-text="{{item.text}}"
-          data-date="{{item.dateTimeLabel || item.date}}"
-          data-image-url="{{item.shareImageUrl || item.photoUrls[0]}}"
-          bindtap="prepareShareRecord"
-        >
-          分享记录
-        </button>
+    <view class="archive-timeline-item" wx:for="{{records}}" wx:key="id">
+      <view class="archive-timeline-dot"></view>
+      <view class="archive-record-card {{item.photoUrls && item.photoUrls.length ? 'archive-record-card-with-photo' : ''}}">
+        <view wx:if="{{item.photoUrls && item.photoUrls.length}}" class="archive-record-photo-grid">
+          <image
+            class="archive-record-photo {{item.photoUrls.length === 1 ? 'archive-record-photo-large' : ''}}"
+            wx:for="{{item.photoUrls}}"
+            wx:for-item="photoUrl"
+            wx:key="photoUrl"
+            src="{{photoUrl}}"
+            mode="aspectFill"
+            lazy-load="{{true}}"
+            data-current="{{photoUrl}}"
+            data-urls="{{item.photoUrls}}"
+            bindtap="previewRecordPhoto"
+          />
+        </view>
+        <view class="caption">{{item.dateTimeLabel || item.date}}</view>
+        <view class="task-title">{{item.title}}</view>
+        <view class="muted">{{item.text}}</view>
+        <view class="chip-row archive-tag-row">
+          <view class="chip" wx:for="{{item.tags}}" wx:for-item="tag" wx:key="tag">{{tag}}</view>
+        </view>
+        <view class="row action-row">
+          <button
+            class="button-secondary compact-button"
+            open-type="share"
+            data-id="{{item.id}}"
+            data-title="{{item.title}}"
+            data-text="{{item.text}}"
+            data-date="{{item.dateTimeLabel || item.date}}"
+            data-image-url="{{item.shareImageUrl || item.photoUrls[0]}}"
+            bindtap="prepareShareRecord"
+          >
+            分享记录
+          </button>
+        </view>
       </view>
     </view>
     </block>
