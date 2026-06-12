@@ -44,7 +44,10 @@ export const growthAnalysisJsonSchema = {
 
 export function buildGrowthAnalysisPrompt(context: AIContextSnapshot, message: string) {
   return JSON.stringify({
-    task: "分析最近成长情况，必须引用周计划、兴趣班记录或成长记录中的真实证据。",
+    task:
+      context.scope === "family"
+        ? "分析最近全家成长情况，必须引用共同成长记录或各孩子成长记录中的真实证据，避免孩子之间的排名和比较。"
+        : "分析最近成长情况，必须引用周计划、兴趣班记录或成长记录中的真实证据。",
     message,
     context
   });
@@ -55,7 +58,37 @@ export function createGrowthAnalysisFallback(
 ): GrowthAnalysisResponse {
   const growthEvidence = context.growthRecords
     .slice(0, 2)
-    .map((record) => `${record.happened_on}: ${record.text}`);
+    .map((record) => {
+      const childNames = record.child_names?.length ? `（${record.child_names.join("、")}）` : "";
+      return `${record.happened_on}${childNames}: ${record.text}`;
+    });
+
+  if (context.scope === "family") {
+    const childNames = context.familyChildren.map((child) => child.nickname).join("、") || "孩子们";
+    return {
+      mode: "growth_analysis",
+      title: "本月家庭成长小结",
+      sections: [
+        {
+          area: "共同陪伴",
+          summary: `这个月可以优先看见${childNames}一起参与过的真实瞬间，而不是比较每个孩子完成了多少。`,
+          evidence:
+            growthEvidence.length > 0
+              ? growthEvidence
+              : ["最近还没有足够共同成长记录，可以从一次共读、户外或家庭复盘开始。"]
+        },
+        {
+          area: "分别被看见",
+          summary: "多孩家庭需要同时保留共同活动和单独陪伴，让每个孩子都有被认真看见的时刻。",
+          evidence: context.familyChildren.map((child) => `${child.nickname}: ${child.birth_date}`)
+        }
+      ],
+      nextActions: [
+        "下周安排一次共同活动，只记录一个真实画面。",
+        "再给每个孩子各留一个10分钟单独陪伴，不做比较，只写下当时的反应。"
+      ]
+    };
+  }
 
   return {
     mode: "growth_analysis",

@@ -17,7 +17,8 @@
       <view class="caption">本月月报</view>
       <view wx:if="{{records.length > 0}}" class="title">把 {{records.length}} 条成长瞬间整理成报告</view>
       <view wx:else class="title">先记录几个瞬间，饭米粒再帮你整理月报</view>
-      <view class="muted">饭米粒会结合记录、周计划和兴趣参与，整理本月变化。</view>
+      <view wx:if="{{selectedRecordScopeIndex === 1}}" class="muted">饭米粒会整理共同陪伴和每个孩子被看见的瞬间。</view>
+      <view wx:else class="muted">饭米粒会结合记录、周计划和兴趣参与，整理本月变化。</view>
     </view>
     <button class="button-secondary compact-button" loading="{{isGeneratingMonthlyReport}}" disabled="{{records.length === 0 || isGeneratingMonthlyReport}}" bindtap="generateMonthlyReport">
       {{monthlyReport ? '重新生成' : '生成月报'}}

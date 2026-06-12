@@ -601,16 +601,19 @@ Page({
     });
   },
   generateMonthlyReport() {
+    const isFamilyScope = this.data.selectedRecordScopeIndex === 1;
     this.setData({
       isGeneratingMonthlyReport: true,
       monthlyReportError: "",
       monthlyReport: null
     });
 
-    postJsonWithOptions("/api/ai/coach", {
+    const path = isFamilyScope ? "/api/ai/coach?scope=family" : "/api/ai/coach";
+    postJsonWithOptions(path, {
       mode: "growth_analysis",
-      message:
-        "请基于本月成长记录、兴趣记录和周计划，产出一份成长月报，按身体发展、阅读表达、兴趣培养、英语启蒙、情绪关系总结。"
+      message: isFamilyScope
+        ? "请基于本月全家成长记录，产出一份家庭成长月报，重点看共同陪伴、每个孩子被看见的瞬间和下月温和建议，不要做孩子之间的排名或比较。"
+        : "请基于本月成长记录、兴趣记录和周计划，产出一份成长月报，按身体发展、阅读表达、兴趣培养、英语启蒙、情绪关系总结。"
     }, {
       timeoutMs: aiRequestTimeoutMs
     })

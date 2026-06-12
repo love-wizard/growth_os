@@ -32,6 +32,22 @@ describe("AI coach API support logic", () => {
     expect(response.motherTasks.length).toBeGreaterThan(0);
   });
 
+  it("generates family-scope growth analysis without ranking children", () => {
+    const response = generateLocalResponse(
+      "growth_analysis",
+      "最近全家成长情况如何",
+      familyScopeContext
+    );
+
+    expect(response.mode).toBe("growth_analysis");
+    if (response.mode !== "growth_analysis") {
+      throw new Error("Expected growth analysis response");
+    }
+    expect(response.title).toContain("家庭");
+    expect(JSON.stringify(response)).toMatch(/共同陪伴|被看见/);
+    expect(JSON.stringify(response)).not.toMatch(/排名|更优秀/);
+  });
+
   it("includes a family task when confirming a weekly plan draft", () => {
     const tasks = buildConfirmedWeeklyPlanTasks("weekly-plan-id", {
       father_tasks: [{ title: "户外探索", plannedCount: 2 }],
@@ -50,6 +66,16 @@ describe("AI coach API support logic", () => {
 });
 
 const sampleContext: AIContextSnapshot = {
+  scope: "child",
+  activeChildId: "child-id",
+  familyChildren: [
+    {
+      id: "child-id",
+      nickname: "小钟",
+      birth_date: "2020-06-01",
+      gender: "male"
+    }
+  ],
   childProfile: {
     id: "child-id",
     nickname: "小钟",
@@ -72,6 +98,34 @@ const sampleContext: AIContextSnapshot = {
       id: "growth-record-id",
       happened_on: "2026-06-08",
       text: "第一次主动读完一本绘本"
+    }
+  ]
+};
+
+const familyScopeContext: AIContextSnapshot = {
+  ...sampleContext,
+  scope: "family",
+  familyChildren: [
+    {
+      id: "child-id",
+      nickname: "柚子",
+      birth_date: "2020-06-01",
+      gender: "female"
+    },
+    {
+      id: "child-id-2",
+      nickname: "弟弟",
+      birth_date: "2023-03-01",
+      gender: "male"
+    }
+  ],
+  growthRecords: [
+    {
+      id: "shared-record-id",
+      child_id: "child-id",
+      happened_on: "2026-06-08",
+      text: "两个孩子一起完成了一次亲子阅读",
+      child_names: ["柚子", "弟弟"]
     }
   ]
 };

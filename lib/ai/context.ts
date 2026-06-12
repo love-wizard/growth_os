@@ -1,14 +1,17 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { UUID } from "@/lib/domain/types";
 import { resolveActiveChildId } from "@/lib/services/active-child-service";
+import { listFamilyChildren, type ChildProfileRecord } from "@/lib/repositories/child-repo";
 
 export interface AIContextGrowthRecord {
   id: UUID;
+  child_id?: UUID;
   happened_on: string;
   text: string;
   tags?: string[] | null;
   parent_notes?: string | null;
   deleted_at?: string | null;
+  child_names?: string[];
 }
 
 export interface AIContextInterestParticipationRecord {
@@ -30,6 +33,14 @@ export interface AIContextWeeklyPlan {
 }
 
 export interface AIContextSnapshot {
+  scope: "child" | "family";
+  familyChildren: Array<{
+    id: UUID;
+    nickname: string;
+    birth_date: string;
+    gender: string;
+  }>;
+  activeChildId: UUID | null;
   childProfile: unknown | null;
   annualGoals: unknown[];
   weeklyPlans: AIContextWeeklyPlan[];
@@ -55,10 +66,12 @@ export function stripGrowthRecordMedia(
 ): AIContextGrowthRecord[] {
   return records.map((record) => ({
     id: record.id,
+    ...(record.child_id ? { child_id: record.child_id } : {}),
     happened_on: record.happened_on,
     text: record.text,
     tags: record.tags ?? [],
-    parent_notes: record.parent_notes ?? null
+    parent_notes: record.parent_notes ?? null,
+    ...(record.child_names?.length ? { child_names: record.child_names } : {})
   }));
 }
 
@@ -66,15 +79,22 @@ export async function assembleAIContext(
   supabase: SupabaseClient,
   familyId: UUID,
   referenceDate = new Date(),
-  childId?: UUID
+  childId?: UUID,
+  scope: "child" | "family" = "child"
 ): Promise<AIContextSnapshot> {
-  const activeChildId = await resolveActiveChildId(supabase, { familyId, childId });
+  const [familyChildren, activeChildId] = await Promise.all([
+    listFamilyChildren(supabase, familyId),
+    resolveActiveChildId(supabase, { familyId, childId })
+  ]);
   const childProfile = activeChildId
     ? await fetchChildProfile(supabase, familyId, activeChildId)
     : null;
 
   if (!childProfile) {
     return {
+      scope,
+      familyChildren: normalizeFamilyChildren(familyChildren),
+      activeChildId: null,
       childProfile: null,
       annualGoals: [],
       weeklyPlans: [],
@@ -92,16 +112,33 @@ export async function assembleAIContext(
       fetchAnnualGoals(supabase, profileChildId),
       fetchWeeklyPlans(supabase, profileChildId, fourWeekStart),
       fetchInterestRecords(supabase, profileChildId, ninetyDayStart),
-      fetchGrowthRecords(supabase, profileChildId, ninetyDayStart)
+      fetchGrowthRecords(supabase, {
+        familyId,
+        childId: profileChildId,
+        scope,
+        happenedOnCutoff: ninetyDayStart
+      })
     ]);
 
   return {
+    scope,
+    familyChildren: normalizeFamilyChildren(familyChildren),
+    activeChildId,
     childProfile,
     annualGoals,
     weeklyPlans,
     interestParticipationRecords: interestRecords,
     growthRecords: stripGrowthRecordMedia(growthRecords)
   };
+}
+
+function normalizeFamilyChildren(children: ChildProfileRecord[]) {
+  return children.map((child) => ({
+    id: child.id,
+    nickname: child.nickname,
+    birth_date: child.birth_date,
+    gender: child.gender
+  }));
 }
 
 async function fetchChildProfile(
@@ -181,20 +218,66 @@ async function fetchInterestRecords(
 
 async function fetchGrowthRecords(
   supabase: SupabaseClient,
-  childId: string,
-  happenedOnCutoff: string
+  input: {
+    familyId: UUID;
+    childId: string;
+    scope: "child" | "family";
+    happenedOnCutoff: string;
+  }
 ) {
   const { data, error } = await supabase
     .from("growth_records")
-    .select("id,happened_on,text,tags,parent_notes,deleted_at")
-    .eq("child_id", childId)
+    .select(
+      "id,child_id,happened_on,text,tags,parent_notes,deleted_at,growth_record_children(child_id,child_profiles(nickname)),child_profiles!inner(family_id)"
+    )
+    .eq("child_profiles.family_id", input.familyId)
     .is("deleted_at", null)
-    .gte("happened_on", happenedOnCutoff)
-    .order("happened_on", { ascending: false });
+    .gte("happened_on", input.happenedOnCutoff)
+    .order("happened_on", { ascending: false })
+    .limit(input.scope === "family" ? 80 : 120);
 
   if (error) {
     throw error;
   }
 
-  return (data ?? []) as AIContextGrowthRecord[];
+  const records = (data ?? []).map((record) => {
+    const links = Array.isArray(record.growth_record_children)
+      ? record.growth_record_children
+      : [];
+    const childNames = links
+      .map((link: { child_profiles?: { nickname?: string } | Array<{ nickname?: string }> }) => {
+        const profile = Array.isArray(link.child_profiles)
+          ? link.child_profiles[0]
+          : link.child_profiles;
+        return profile?.nickname ?? "";
+      })
+      .filter(Boolean);
+
+    return {
+      id: record.id,
+      child_id: record.child_id,
+      happened_on: record.happened_on,
+      text: record.text,
+      tags: record.tags,
+      parent_notes: record.parent_notes,
+      deleted_at: record.deleted_at,
+      child_names: childNames
+    };
+  }) as AIContextGrowthRecord[];
+
+  if (input.scope === "family") {
+    return records;
+  }
+
+  return records.filter((record) => {
+    if (record.child_id === input.childId) {
+      return true;
+    }
+
+    const raw = data?.find((item) => item.id === record.id);
+    const links = Array.isArray(raw?.growth_record_children)
+      ? raw.growth_record_children
+      : [];
+    return links.some((link: { child_id?: string }) => link.child_id === input.childId);
+  });
 }

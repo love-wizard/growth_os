@@ -62,9 +62,16 @@ export async function askAICoach(
     mode: AICoachMode;
     message: string;
     childId?: UUID;
+    scope?: "child" | "family";
   }
 ) {
-  const context = await assembleAIContext(supabase, input.familyId, new Date(), input.childId);
+  const context = await assembleAIContext(
+    supabase,
+    input.familyId,
+    new Date(),
+    input.childId,
+    input.scope ?? "child"
+  );
   const response = await generateAICoachResponse(input.mode, input.message, context);
   const conversationId = await createAIConversation(supabase, {
     familyId: input.familyId,

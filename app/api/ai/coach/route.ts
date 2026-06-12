@@ -18,13 +18,15 @@ export async function POST(request: NextRequest) {
     }
 
     const body = aiCoachRequestSchema.parse(await request.json());
+    const scope = new URL(request.url).searchParams.get("scope") === "family" ? "family" : "child";
     const result = await askAICoach(supabase, {
       familyId: membership.family_id,
       userId: user.id,
       userRole: membership.role,
       mode: body.mode,
       message: body.message,
-      childId: getChildIdFromRequestUrl(request.url)
+      childId: getChildIdFromRequestUrl(request.url),
+      scope
     });
 
     return NextResponse.json(result);
