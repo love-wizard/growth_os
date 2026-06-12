@@ -196,6 +196,10 @@ function patchJson(path, data) {
   return requestJson("PATCH", path, data);
 }
 
+function deleteJson(path) {
+  return requestJson("DELETE", path);
+}
+
 function getJson(path) {
   return requestJson("GET", path);
 }
@@ -269,6 +273,7 @@ function isTimeoutRequestError(error) {
 module.exports = {
   clearActiveChildId,
   clearSession,
+  deleteJson,
   getActiveChildId,
   getJson,
   getSession,

@@ -5,6 +5,8 @@ const {
   logoutMiniProgram
 } = require("../../services/session");
 const {
+  clearActiveChildId,
+  deleteJson,
   getActiveChildId,
   getJson,
   patchJson,
@@ -159,6 +161,7 @@ Page({
     children: [],
     isChildEditorOpen: false,
     isSavingChild: false,
+    isArchivingChild: false,
     childColorOptions,
     editingChildId: "",
     editingChildName: "",
@@ -487,6 +490,43 @@ Page({
         this.setData({ isSavingChild: false });
         wx.showToast({ title: error.error || "保存未成功", icon: "none" });
       });
+  },
+  archiveChildProfile() {
+    const childId = this.data.editingChildId;
+    if (!childId || this.data.children.length <= 1) {
+      wx.showToast({ title: "至少保留一个孩子档案", icon: "none" });
+      return;
+    }
+
+    wx.showModal({
+      title: "归档孩子档案",
+      content: "归档后不会删除历史记录，只是不再出现在日常计划和默认视图里。",
+      confirmText: "归档",
+      confirmColor: "#3F8F6B",
+      success: (result) => {
+        if (!result.confirm) {
+          return;
+        }
+
+        this.setData({ isArchivingChild: true });
+        deleteJson(`/api/children/${childId}`)
+          .then(() => {
+            clearActiveChildId();
+            clearChildScopedCaches();
+            wx.showToast({ title: "已归档", icon: "success" });
+            this.setData({
+              isArchivingChild: false,
+              isChildEditorOpen: false,
+              profileStatus: "孩子档案已归档，历史记录仍保留"
+            });
+            this.loadFamilyProfile();
+          })
+          .catch((error) => {
+            this.setData({ isArchivingChild: false });
+            wx.showToast({ title: error.error || "归档未成功", icon: "none" });
+          });
+      }
+    });
   },
   openSetup() {
     wx.navigateTo({ url: "/pages/setup/index" });

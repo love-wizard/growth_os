@@ -1306,6 +1306,10 @@ page {
   box-shadow: 0 0 0 4rpx rgba(63, 143, 107, 0.28);
 }
 
+.profile-archive-button {
+  color: #8b5d42;
+}
+
 .profile-login-button {
   margin-top: 24rpx;
 }

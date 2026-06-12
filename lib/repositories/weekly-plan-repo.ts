@@ -58,6 +58,7 @@ export async function getFamilyChildId(supabase: SupabaseClient, familyId: UUID)
     .from("child_profiles")
     .select("id")
     .eq("family_id", familyId)
+    .is("archived_at", null)
     .order("created_at", { ascending: true })
     .limit(1)
     .maybeSingle();

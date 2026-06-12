@@ -215,6 +215,10 @@ export function patchJson<T = unknown>(path: string, data: unknown) {
   return requestJson<T>("PATCH", path, data);
 }
 
+export function deleteJson<T = unknown>(path: string) {
+  return requestJson<T>("DELETE", path);
+}
+
 export function getJson<T = unknown>(path: string) {
   return requestJson<T>("GET", path);
 }

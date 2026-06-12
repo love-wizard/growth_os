@@ -10,6 +10,7 @@ export interface ChildProfileRecord {
   birth_date: string;
   gender: string;
   profile_color?: string;
+  archived_at?: string | null;
   created_at: string;
 }
 
@@ -36,12 +37,23 @@ export async function createChildProfile(
   return data.id as UUID;
 }
 
-export async function listFamilyChildren(supabase: SupabaseClient, familyId: UUID) {
-  const { data, error } = await supabase
+const childProfileSelect = "id,family_id,name,nickname,birth_date,gender,profile_color,archived_at,created_at";
+
+export async function listFamilyChildren(
+  supabase: SupabaseClient,
+  familyId: UUID,
+  options?: { includeArchived?: boolean }
+) {
+  let query = supabase
     .from("child_profiles")
-    .select("id,family_id,name,nickname,birth_date,gender,profile_color,created_at")
-    .eq("family_id", familyId)
-    .order("created_at", { ascending: true });
+    .select(childProfileSelect)
+    .eq("family_id", familyId);
+
+  if (!options?.includeArchived) {
+    query = query.is("archived_at", null);
+  }
+
+  const { data, error } = await query.order("created_at", { ascending: true });
 
   if (error) {
     throw error;
@@ -52,14 +64,19 @@ export async function listFamilyChildren(supabase: SupabaseClient, familyId: UUI
 
 export async function getFamilyChild(
   supabase: SupabaseClient,
-  input: { familyId: UUID; childId: UUID }
+  input: { familyId: UUID; childId: UUID; includeArchived?: boolean }
 ) {
-  const { data, error } = await supabase
+  let query = supabase
     .from("child_profiles")
-    .select("id,family_id,name,nickname,birth_date,gender,profile_color,created_at")
+    .select(childProfileSelect)
     .eq("family_id", input.familyId)
-    .eq("id", input.childId)
-    .maybeSingle();
+    .eq("id", input.childId);
+
+  if (!input.includeArchived) {
+    query = query.is("archived_at", null);
+  }
+
+  const { data, error } = await query.maybeSingle();
 
   if (error) {
     throw error;
@@ -104,7 +121,28 @@ export async function updateFamilyChildProfile(
     .update(updates)
     .eq("family_id", input.familyId)
     .eq("id", input.childId)
-    .select("id,family_id,name,nickname,birth_date,gender,profile_color,created_at")
+    .is("archived_at", null)
+    .select(childProfileSelect)
+    .maybeSingle();
+
+  if (error) {
+    throw error;
+  }
+
+  return data as ChildProfileRecord | null;
+}
+
+export async function archiveFamilyChildProfile(
+  supabase: SupabaseClient,
+  input: { familyId: UUID; childId: UUID }
+) {
+  const { data, error } = await supabase
+    .from("child_profiles")
+    .update({ archived_at: new Date().toISOString() })
+    .eq("family_id", input.familyId)
+    .eq("id", input.childId)
+    .is("archived_at", null)
+    .select(childProfileSelect)
     .maybeSingle();
 
   if (error) {

@@ -250,9 +250,9 @@
 
 ### P2 Later
 
-- [ ] T143 [P2] Support archived children instead of hard deletion so historical records remain stable
-- [ ] T144 [P2] Add gentle companionship distribution insights without scoreboards or sibling comparisons
-- [ ] T145 [P2] Add annual family report sections for shared moments and parent letters
+- [X] T144 [P2] Support archived children instead of hard deletion so historical records remain stable
+- [ ] T145 [P2] Add gentle companionship distribution insights without scoreboards or sibling comparisons
+- [ ] T146 [P2] Add annual family report sections for shared moments and parent letters
 
 ## Dependencies
 

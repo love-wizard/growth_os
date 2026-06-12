@@ -50,6 +50,15 @@ declare const wx: {
   navigateTo(options: { url: string }): void;
   redirectTo(options: { url: string }): void;
   showToast(options: { title: string; icon?: "success" | "error" | "loading" | "none" }): void;
+  showModal(options: {
+    title?: string;
+    content?: string;
+    confirmText?: string;
+    confirmColor?: string;
+    cancelText?: string;
+    success?: (response: { confirm: boolean; cancel: boolean }) => void;
+    fail?: (error: { errMsg?: string }) => void;
+  }): void;
   getStorageSync(key: string): unknown;
   setStorageSync(key: string, data: unknown): void;
   removeStorageSync(key: string): void;

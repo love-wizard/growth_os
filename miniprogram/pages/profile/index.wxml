@@ -82,7 +82,17 @@
           ></button>
         </view>
       </view>
-      <button class="button-primary" loading="{{isSavingChild}}" disabled="{{isSavingChild}}" bindtap="saveChildProfile">保存孩子档案</button>
+      <button class="button-primary" loading="{{isSavingChild}}" disabled="{{isSavingChild || isArchivingChild}}" bindtap="saveChildProfile">保存孩子档案</button>
+      <button
+        wx:if="{{children.length > 1}}"
+        class="button-secondary profile-archive-button"
+        loading="{{isArchivingChild}}"
+        disabled="{{isSavingChild || isArchivingChild}}"
+        bindtap="archiveChildProfile"
+      >
+        归档这个孩子
+      </button>
+      <view wx:if="{{children.length > 1}}" class="muted">归档不会删除成长记录，只会从日常视图中隐藏。</view>
     </view>
   </view>
 
