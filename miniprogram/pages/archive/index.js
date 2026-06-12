@@ -7,7 +7,7 @@ const {
   uploadFile
 } = require("../../services/api");
 const growthRecordPrefillStorageKey = "growth_os_growth_record_prefill";
-const growthRecordsCacheStorageKey = "growth_os_growth_records_cache_v4";
+const growthRecordsCacheStorageKey = "growth_os_growth_records_cache_v5";
 const aiCoachPrefillStorageKey = "growth_os_ai_coach_prefill";
 const growthRecordsCacheRefreshMs = 5 * 60 * 1000;
 const growthRecordsCacheDisplayMs = 55 * 60 * 1000;
@@ -44,11 +44,34 @@ function isMidnight(value) {
   return !Number.isNaN(date.getTime()) && date.getHours() === 0 && date.getMinutes() === 0 && date.getSeconds() === 0;
 }
 
-function formatDateTimeLabel(value, fallbackDate, fallbackDateTime) {
-  const displayValue = value && !isMidnight(value) ? value : fallbackDateTime;
-  const date = displayValue ? new Date(displayValue) : fallbackDate ? new Date(`${fallbackDate}T00:00:00`) : null;
+function combineDateWithTime(dateValue, timeSource) {
+  if (!dateValue) {
+    return timeSource || "";
+  }
+
+  const time = timeSource ? new Date(timeSource) : null;
+  if (!time || Number.isNaN(time.getTime())) {
+    return `${dateValue}T00:00:00`;
+  }
+
+  const hours = `${time.getHours()}`.padStart(2, "0");
+  const minutes = `${time.getMinutes()}`.padStart(2, "0");
+  const seconds = `${time.getSeconds()}`.padStart(2, "0");
+  return `${dateValue}T${hours}:${minutes}:${seconds}`;
+}
+
+function getDisplayDateTime(value, happenedOn, createdAt) {
+  if (value && !isMidnight(value)) {
+    return value;
+  }
+
+  return combineDateWithTime(happenedOn, createdAt || value);
+}
+
+function formatDateTimeLabel(value, happenedOn, createdAt) {
+  const date = new Date(getDisplayDateTime(value, happenedOn, createdAt));
   if (!date || Number.isNaN(date.getTime())) {
-    return fallbackDate || "";
+    return happenedOn || "";
   }
 
   const year = date.getFullYear();
@@ -70,9 +93,7 @@ function formatRecord(record) {
       return (profile && profile.nickname) || "";
     })
     .filter(Boolean);
-  const happenedAt = record.happened_at && !isMidnight(record.happened_at)
-    ? record.happened_at
-    : record.created_at || record.happened_at || "";
+  const happenedAt = getDisplayDateTime(record.happened_at, record.happened_on, record.created_at);
   return {
     id: record.id,
     date: record.happened_on,
