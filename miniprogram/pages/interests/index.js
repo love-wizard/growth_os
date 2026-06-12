@@ -1,7 +1,34 @@
 "use strict";
 var import_api = require("../../services/api");
 function todayString() {
-  return (/* @__PURE__ */ new Date()).toISOString().slice(0, 10);
+  const now = /* @__PURE__ */ new Date();
+  const year = now.getFullYear();
+  const month = `${now.getMonth() + 1}`.padStart(2, "0");
+  const day = `${now.getDate()}`.padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+function currentTimeString() {
+  const now = /* @__PURE__ */ new Date();
+  return `${now.getHours()}`.padStart(2, "0") + ":" + `${now.getMinutes()}`.padStart(2, "0");
+}
+function currentSecondString() {
+  return `${(/* @__PURE__ */ new Date()).getSeconds()}`.padStart(2, "0");
+}
+function buildLocalDateTime(date, time, seconds = currentSecondString()) {
+  const [hours = "00", minutes = "00"] = time.split(":");
+  return (/* @__PURE__ */ new Date(`${date}T${hours}:${minutes}:${seconds}`)).toISOString();
+}
+function formatDateTimeLabel(value, fallbackDate) {
+  const date = value ? new Date(value) : null;
+  if (!date || Number.isNaN(date.getTime())) {
+    return fallbackDate || "";
+  }
+  const year = date.getFullYear();
+  const month = `${date.getMonth() + 1}`.padStart(2, "0");
+  const day = `${date.getDate()}`.padStart(2, "0");
+  const hours = `${date.getHours()}`.padStart(2, "0");
+  const minutes = `${date.getMinutes()}`.padStart(2, "0");
+  return `${year}-${month}-${day} ${hours}:${minutes}`;
 }
 const outcomeOptions = [
   { value: "completed", label: "已完成" },
@@ -20,6 +47,7 @@ function formatRecord(record) {
   return {
     id: record.id,
     date: record.happened_on,
+    dateTimeLabel: formatDateTimeLabel(record.happened_at, record.happened_on),
     interestName: ((_a = record.child_interests) == null ? void 0 : _a.name) || "兴趣活动",
     outcomeLabel: outcomeLabels[record.participation_outcome] || "已记录",
     outcome: record.participation_outcome,
@@ -38,7 +66,7 @@ function buildSummary(records) {
     totalRecords: `${records.length}`,
     completedRecords: `${completedRecords.length}`,
     totalMinutes: `${totalMinutes}`,
-    latestLabel: records[0] ? `${records[0].date} · ${records[0].interestName}` : "还没有记录"
+    latestLabel: records[0] ? `${records[0].dateTimeLabel || records[0].date} · ${records[0].interestName}` : "还没有记录"
   };
 }
 Page({
@@ -61,6 +89,7 @@ Page({
     selectedInterestId: "",
     selectedOutcome: "completed",
     happenedOn: todayString(),
+    happenedTime: currentTimeString(),
     durationMinutes: "30",
     notes: ""
   },
@@ -128,6 +157,9 @@ Page({
   onDateInput(event) {
     this.setData({ happenedOn: event.detail.value });
   },
+  onTimeInput(event) {
+    this.setData({ happenedTime: event.detail.value });
+  },
   chooseOutcome(event) {
     const selectedOutcome = event.currentTarget.dataset.value;
     this.setData({
@@ -149,6 +181,10 @@ Page({
     const payload = {
       interestId: this.data.selectedInterestId,
       happenedOn: this.data.happenedOn,
+      happenedAt: buildLocalDateTime(
+        this.data.happenedOn || todayString(),
+        this.data.happenedTime || currentTimeString()
+      ),
       participationOutcome: this.data.selectedOutcome,
       notes: this.data.notes.trim()
     };
@@ -161,6 +197,8 @@ Page({
       wx.showToast({ title: "已记录", icon: "success" });
       this.setData({
         selectedOutcome: "completed",
+        happenedOn: todayString(),
+        happenedTime: currentTimeString(),
         durationMinutes: "30",
         notes: ""
       });

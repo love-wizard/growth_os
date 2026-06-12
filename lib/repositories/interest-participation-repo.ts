@@ -5,6 +5,7 @@ export interface InterestParticipationRecordInput {
   childId: UUID;
   interestId: UUID;
   happenedOn: string;
+  happenedAt?: string;
   participationOutcome: ParticipationOutcome;
   durationMinutes?: number;
   count?: number;
@@ -21,12 +22,13 @@ export async function createInterestParticipationRecord(
       child_id: input.childId,
       interest_id: input.interestId,
       happened_on: input.happenedOn,
+      happened_at: input.happenedAt ?? null,
       participation_outcome: input.participationOutcome,
       duration_minutes: input.durationMinutes ?? null,
       count: input.count ?? null,
       notes: input.notes ?? null
     })
-    .select("id,happened_on,participation_outcome,duration_minutes,count,notes")
+    .select("id,happened_on,happened_at,participation_outcome,duration_minutes,count,notes")
     .single();
 
   if (error) {
@@ -43,7 +45,7 @@ export async function getInterestParticipationRecordForFamily(
   const { data, error } = await supabase
     .from("interest_participation_records")
     .select(
-      "id,child_id,interest_id,happened_on,participation_outcome,duration_minutes,count,notes,deleted_at,restore_until,child_profiles!inner(family_id)"
+      "id,child_id,interest_id,happened_on,happened_at,participation_outcome,duration_minutes,count,notes,deleted_at,restore_until,child_profiles!inner(family_id)"
     )
     .eq("id", input.recordId)
     .eq("child_profiles.family_id", input.familyId)
@@ -63,10 +65,11 @@ export async function listRecentInterestParticipationRecords(
   const { data, error } = await supabase
     .from("interest_participation_records")
     .select(
-      "id,happened_on,participation_outcome,duration_minutes,count,notes,interest_id,child_interests(id,name,source)"
+      "id,happened_on,happened_at,participation_outcome,duration_minutes,count,notes,interest_id,child_interests(id,name,source)"
     )
     .eq("child_id", childId)
     .is("deleted_at", null)
+    .order("happened_at", { ascending: false, nullsFirst: false })
     .order("happened_on", { ascending: false })
     .limit(10);
 
@@ -89,10 +92,11 @@ export async function listRecentInterestParticipationRecordsForChildren(
   const { data, error } = await supabase
     .from("interest_participation_records")
     .select(
-      "id,child_id,happened_on,participation_outcome,duration_minutes,count,notes,interest_id,child_interests(id,name,source),child_profiles!inner(nickname)"
+      "id,child_id,happened_on,happened_at,participation_outcome,duration_minutes,count,notes,interest_id,child_interests(id,name,source),child_profiles!inner(nickname)"
     )
     .in("child_id", childIds)
     .is("deleted_at", null)
+    .order("happened_at", { ascending: false, nullsFirst: false })
     .order("happened_on", { ascending: false })
     .limit(limit);
 
@@ -156,6 +160,7 @@ export interface InterestParticipationRecord {
   child_id: UUID;
   interest_id: UUID | null;
   happened_on: string;
+  happened_at?: string | null;
   participation_outcome: ParticipationOutcome;
   duration_minutes: number | null;
   count: number | null;

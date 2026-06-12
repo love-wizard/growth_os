@@ -84,6 +84,7 @@ export const updateTaskProgressRequestSchema = z.object({
 export const interestParticipationRecordInputSchema = z.object({
   interestId: uuid,
   happenedOn: dateString,
+  happenedAt: dateTimeString.optional(),
   participationOutcome: z.enum(participationOutcomes),
   durationMinutes: z.number().int().min(0).optional(),
   count: z.number().int().min(0).optional(),

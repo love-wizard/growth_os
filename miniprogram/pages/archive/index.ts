@@ -172,6 +172,7 @@ function formatCourseRecord(record: {
   id: string;
   child_id?: string;
   happened_on: string;
+  happened_at?: string | null;
   participation_outcome: string;
   duration_minutes?: number | null;
   count?: number | null;
@@ -192,8 +193,8 @@ function formatCourseRecord(record: {
     sourceId: record.id,
     itemKind: "course",
     date: record.happened_on,
-    happenedAt: `${record.happened_on}T00:00:00`,
-    dateTimeLabel: record.happened_on,
+    happenedAt: getDisplayDateTime(record.happened_at, record.happened_on),
+    dateTimeLabel: formatDateTimeLabel(record.happened_at, record.happened_on),
     createdAt: "",
     title: `${interestName}课程`,
     text: detailParts.join(" · "),
@@ -705,6 +706,7 @@ Page({
             id: string;
             child_id?: string;
             happened_on: string;
+            happened_at?: string | null;
             participation_outcome: string;
             duration_minutes?: number | null;
             count?: number | null;

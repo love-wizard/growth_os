@@ -83,6 +83,7 @@ export async function recordInterestParticipation(
     childId,
     interestId: input.record.interestId,
     happenedOn: input.record.happenedOn,
+    happenedAt: input.record.happenedAt ?? new Date().toISOString(),
     participationOutcome: input.record.participationOutcome,
     durationMinutes: input.record.durationMinutes,
     count: input.record.count,

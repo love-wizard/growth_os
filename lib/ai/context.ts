@@ -18,6 +18,7 @@ export interface AIContextInterestParticipationRecord {
   id: UUID;
   child_id?: UUID;
   happened_on: string;
+  happened_at?: string | null;
   participation_outcome: string;
   duration_minutes?: number | null;
   count?: number | null;
@@ -281,10 +282,11 @@ async function fetchInterestRecords(
 ) {
   const { data, error } = await supabase
     .from("interest_participation_records")
-    .select("id,happened_on,participation_outcome,duration_minutes,count,notes,deleted_at")
+    .select("id,happened_on,happened_at,participation_outcome,duration_minutes,count,notes,deleted_at")
     .eq("child_id", childId)
     .is("deleted_at", null)
     .gte("happened_on", happenedOnCutoff)
+    .order("happened_at", { ascending: false, nullsFirst: false })
     .order("happened_on", { ascending: false });
 
   if (error) {
@@ -301,10 +303,11 @@ async function fetchInterestRecordsForChildren(
 ) {
   const { data, error } = await supabase
     .from("interest_participation_records")
-    .select("id,child_id,happened_on,participation_outcome,duration_minutes,count,notes,deleted_at")
+    .select("id,child_id,happened_on,happened_at,participation_outcome,duration_minutes,count,notes,deleted_at")
     .in("child_id", childIds)
     .is("deleted_at", null)
     .gte("happened_on", happenedOnCutoff)
+    .order("happened_at", { ascending: false, nullsFirst: false })
     .order("happened_on", { ascending: false });
 
   if (error) {

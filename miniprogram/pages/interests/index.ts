@@ -7,7 +7,39 @@ type InterestChild = {
 };
 
 function todayString() {
-  return new Date().toISOString().slice(0, 10);
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = `${now.getMonth() + 1}`.padStart(2, "0");
+  const day = `${now.getDate()}`.padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function currentTimeString() {
+  const now = new Date();
+  return `${now.getHours()}`.padStart(2, "0") + ":" + `${now.getMinutes()}`.padStart(2, "0");
+}
+
+function currentSecondString() {
+  return `${new Date().getSeconds()}`.padStart(2, "0");
+}
+
+function buildLocalDateTime(date: string, time: string, seconds = currentSecondString()) {
+  const [hours = "00", minutes = "00"] = time.split(":");
+  return new Date(`${date}T${hours}:${minutes}:${seconds}`).toISOString();
+}
+
+function formatDateTimeLabel(value?: string | null, fallbackDate?: string) {
+  const date = value ? new Date(value) : null;
+  if (!date || Number.isNaN(date.getTime())) {
+    return fallbackDate || "";
+  }
+
+  const year = date.getFullYear();
+  const month = `${date.getMonth() + 1}`.padStart(2, "0");
+  const day = `${date.getDate()}`.padStart(2, "0");
+  const hours = `${date.getHours()}`.padStart(2, "0");
+  const minutes = `${date.getMinutes()}`.padStart(2, "0");
+  return `${year}-${month}-${day} ${hours}:${minutes}`;
 }
 
 const outcomeOptions = [
@@ -25,6 +57,7 @@ const outcomeLabels = outcomeOptions.reduce<Record<string, string>>((acc, item) 
 function formatRecord(record: {
   id: string;
   happened_on: string;
+  happened_at?: string | null;
   participation_outcome: string;
   duration_minutes?: number | null;
   count?: number | null;
@@ -37,6 +70,7 @@ function formatRecord(record: {
   return {
     id: record.id,
     date: record.happened_on,
+    dateTimeLabel: formatDateTimeLabel(record.happened_at, record.happened_on),
     interestName: record.child_interests?.name || "兴趣活动",
     outcomeLabel: outcomeLabels[record.participation_outcome] || "已记录",
     outcome: record.participation_outcome,
@@ -57,7 +91,9 @@ function buildSummary(records: ReturnType<typeof formatRecord>[]) {
     totalRecords: `${records.length}`,
     completedRecords: `${completedRecords.length}`,
     totalMinutes: `${totalMinutes}`,
-    latestLabel: records[0] ? `${records[0].date} · ${records[0].interestName}` : "还没有记录"
+    latestLabel: records[0]
+      ? `${records[0].dateTimeLabel || records[0].date} · ${records[0].interestName}`
+      : "还没有记录"
   };
 }
 
@@ -73,6 +109,7 @@ Page({
     records: [] as Array<{
       id: string;
       date: string;
+      dateTimeLabel: string;
       interestName: string;
       outcomeLabel: string;
       outcome: string;
@@ -90,6 +127,7 @@ Page({
     selectedInterestId: "",
     selectedOutcome: "completed",
     happenedOn: todayString(),
+    happenedTime: currentTimeString(),
     durationMinutes: "30",
     notes: ""
   },
@@ -132,6 +170,7 @@ Page({
       records: Array<{
         id: string;
         happened_on: string;
+        happened_at?: string | null;
         participation_outcome: string;
         duration_minutes?: number | null;
         count?: number | null;
@@ -183,6 +222,9 @@ Page({
   onDateInput(event: { detail: { value: string } }) {
     this.setData({ happenedOn: event.detail.value });
   },
+  onTimeInput(event: { detail: { value: string } }) {
+    this.setData({ happenedTime: event.detail.value });
+  },
   chooseOutcome(event: { currentTarget: { dataset: { value: string } } }) {
     const selectedOutcome = event.currentTarget.dataset.value;
     this.setData({
@@ -205,12 +247,17 @@ Page({
     const payload: {
       interestId: string;
       happenedOn: string;
+      happenedAt: string;
       participationOutcome: string;
       notes: string;
       durationMinutes?: number;
     } = {
       interestId: this.data.selectedInterestId,
       happenedOn: this.data.happenedOn,
+      happenedAt: buildLocalDateTime(
+        this.data.happenedOn || todayString(),
+        this.data.happenedTime || currentTimeString()
+      ),
       participationOutcome: this.data.selectedOutcome,
       notes: this.data.notes.trim()
     };
@@ -229,6 +276,8 @@ Page({
         wx.showToast({ title: "已记录", icon: "success" });
         this.setData({
           selectedOutcome: "completed",
+          happenedOn: todayString(),
+          happenedTime: currentTimeString(),
           durationMinutes: "30",
           notes: ""
         });

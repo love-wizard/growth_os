@@ -64,9 +64,14 @@
     </view>
     <view wx:else class="muted">请先在首次配置里补充兴趣方向。</view>
 
-    <picker mode="date" value="{{happenedOn}}" bindchange="onDateInput">
-      <view class="input-box picker-box">日期 {{happenedOn}}</view>
-    </picker>
+    <view class="record-time-row">
+      <picker mode="date" value="{{happenedOn}}" bindchange="onDateInput">
+        <view class="input-box picker-box">日期 {{happenedOn}}</view>
+      </picker>
+      <picker mode="time" value="{{happenedTime}}" bindchange="onTimeInput">
+        <view class="input-box picker-box">时间 {{happenedTime}}</view>
+      </picker>
+    </view>
 
     <view class="chip-row">
       <view
@@ -107,7 +112,7 @@
     <view wx:for="{{records}}" wx:key="id" class="task-row interest-row">
       <view class="task-main">
         <view class="task-title">{{item.interestName}}</view>
-        <view class="muted">{{item.date}} · {{item.outcomeLabel}}</view>
+        <view class="muted">{{item.dateTimeLabel || item.date}} · {{item.outcomeLabel}}</view>
         <view wx:if="{{item.detail}}" class="caption">{{item.detail}}</view>
       </view>
       <view wx:if="{{item.badge}}" class="progress-pill">{{item.badge}}</view>
