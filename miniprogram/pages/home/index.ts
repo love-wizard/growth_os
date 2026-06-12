@@ -4,7 +4,7 @@ const growthRecordPrefillStorageKey = "growth_os_growth_record_prefill";
 const childProfileCacheStorageKey = "growth_os_child_profile_cache";
 const dashboardCacheStorageKey = "growth_os_dashboard_cache";
 const weeklyPlanCacheStorageKey = "growth_os_weekly_plan_cache";
-const growthRecordsCacheStorageKey = "growth_os_growth_records_cache_v3";
+const growthRecordsCacheStorageKey = "growth_os_growth_records_cache_v4";
 const dashboardCacheRefreshMs = 5 * 60 * 1000;
 const dashboardCacheDisplayMs = 24 * 60 * 60 * 1000;
 

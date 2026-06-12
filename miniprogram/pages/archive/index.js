@@ -9,7 +9,7 @@ const {
   uploadFile
 } = require("../../services/api");
 const growthRecordPrefillStorageKey = "growth_os_growth_record_prefill";
-const growthRecordsCacheStorageKey = "growth_os_growth_records_cache_v3";
+const growthRecordsCacheStorageKey = "growth_os_growth_records_cache_v4";
 const growthRecordsCacheRefreshMs = 5 * 60 * 1000;
 const growthRecordsCacheDisplayMs = 55 * 60 * 1000;
 const aiRequestTimeoutMs = 30000;

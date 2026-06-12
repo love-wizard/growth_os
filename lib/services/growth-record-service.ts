@@ -129,7 +129,7 @@ export async function saveGrowthRecord(
     childId,
     childIds,
     happenedOn: input.record.happenedOn,
-    happenedAt: input.record.happenedAt,
+    happenedAt: input.record.happenedAt ?? new Date().toISOString(),
     text: input.record.text,
     tags: input.record.tags,
     parentNotes: input.record.parentNotes,
