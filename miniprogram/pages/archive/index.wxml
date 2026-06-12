@@ -33,7 +33,12 @@
         <view class="title">时间轴</view>
         <view class="muted">{{records.length}} 条成长瞬间</view>
       </view>
-      <button class="button-secondary compact-button" bindtap="toggleFilters">{{isFilterOpen ? '收起筛选' : '筛选'}}</button>
+      <view class="row compact-row">
+        <picker mode="selector" range="{{recordScopeOptions}}" value="{{selectedRecordScopeIndex}}" bindchange="onRecordScopeChange">
+          <view class="button-secondary compact-button">{{recordScopeOptions[selectedRecordScopeIndex]}}</view>
+        </picker>
+        <button class="button-secondary compact-button" bindtap="toggleFilters">{{isFilterOpen ? '收起筛选' : '筛选'}}</button>
+      </view>
     </view>
     <view wx:if="{{isFilterOpen}}" class="archive-filter-panel">
       <view class="filter-grid">
@@ -78,6 +83,7 @@
           />
         </view>
         <view class="caption">{{item.dateTimeLabel || item.date}}</view>
+        <view wx:if="{{item.childLabel}}" class="archive-child-label">关联：{{item.childLabel}}</view>
         <view class="task-title">{{item.title}}</view>
         <view class="muted">{{item.text}}</view>
         <view class="chip-row archive-tag-row">
@@ -133,6 +139,23 @@
       <picker mode="selector" range="{{recordCategories}}" value="{{selectedCategoryIndex}}" bindchange="onRecordCategoryChange">
         <view class="input-box picker-box">类别 {{recordCategory}}</view>
       </picker>
+      <view wx:if="{{children.length > 1}}" class="record-child-selector">
+        <view>
+          <view class="caption">关联给</view>
+          <view class="muted">共同活动可以同时放进多个孩子的时间轴。</view>
+        </view>
+        <view class="chip-row">
+          <button
+            wx:for="{{children}}"
+            wx:key="id"
+            class="child-select-chip {{item.selected ? 'child-select-chip-active' : ''}}"
+            data-id="{{item.id}}"
+            bindtap="toggleRecordChild"
+          >
+            {{item.nickname}}
+          </button>
+        </view>
+      </view>
       <view class="record-time-row">
         <picker mode="date" value="{{happenedDate}}" bindchange="onHappenedDateChange">
           <view class="input-box picker-box">日期 {{happenedDate}}</view>

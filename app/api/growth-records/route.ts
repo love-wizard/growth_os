@@ -33,7 +33,11 @@ export async function GET(request: NextRequest) {
     }
 
     const childId = getChildIdFromRequestUrl(request.url);
-    const cacheKey = familyGrowthRecordsCacheKey(membership.family_id, childId);
+    const scope = new URL(request.url).searchParams.get("scope") === "family" ? "family" : "child";
+    const cacheKey = familyGrowthRecordsCacheKey(
+      membership.family_id,
+      `${scope}:${childId ?? "default"}`
+    );
     const cachedRecords = getCachedResponse(cacheKey);
     if (cachedRecords) {
       logPerf("api.growth-records", {
@@ -49,6 +53,7 @@ export async function GET(request: NextRequest) {
     const records = await listGrowthRecordsForFamily(supabase, serviceRoleSupabase, {
       familyId: membership.family_id,
       childId,
+      scope,
       limit: 20
     });
 

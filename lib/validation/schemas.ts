@@ -87,7 +87,8 @@ export const growthRecordInputSchema = z.object({
   happenedAt: dateTimeString.optional(),
   text: nonEmptyText,
   tags: z.array(nonEmptyText).optional(),
-  parentNotes: z.string().trim().optional()
+  parentNotes: z.string().trim().optional(),
+  childIds: z.array(uuid).min(1).max(6).optional()
 });
 
 export const growthRecordDraftRequestSchema = z.object({

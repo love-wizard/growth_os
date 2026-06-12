@@ -227,6 +227,32 @@
 - [X] T129 [P] Update quickstart implementation notes and test commands in `specs/001-growth-os-mvp/quickstart.md`
 - [X] T130 Run and document full validation test suite results in `specs/001-growth-os-mvp/implementation-validation.md`
 
+## Multi-Child Family Increment
+
+### P0 Implemented Foundation
+
+- [X] T131 [P0] Allow multiple child profiles in one family by removing the `child_profiles.family_id` uniqueness constraint in `supabase/migrations/011_support_multiple_children.sql`
+- [X] T132 [P0] Add active-child resolution and child list APIs in `lib/services/active-child-service.ts` and `app/api/children/route.ts`
+- [X] T133 [P0] Scope dashboard, weekly plan, growth archive, interest participation, and AI coach APIs by active child context
+- [X] T134 [P0] Add Mini Program child switching on Home and active-child request propagation in `miniprogram/services/api.ts`
+- [X] T135 [P0] Model shared growth moments with `growth_record_children` in `supabase/migrations/012_growth_record_child_links.sql`
+- [X] T136 [P0] Let parents associate one growth moment with multiple children from `miniprogram/pages/archive/index.wxml`
+- [X] T137 [P0] Add current-child and whole-family timeline views in the Mini Program growth archive
+
+### P1 Next Product Slice
+
+- [ ] T138 [P1] Add a dedicated children management panel for editing child profiles, colors, and avatars in `miniprogram/pages/profile`
+- [ ] T139 [P1] Add whole-family growth report generation alongside single-child monthly reports in `lib/services/ai-coach-service.ts`
+- [ ] T140 [P1] Add sibling/family relationship prompts to AI coach context without ranking or comparison language in `lib/ai/context.ts`
+- [ ] T141 [P1] Split weekly plan into child-specific tasks and shared family tasks in `lib/services/weekly-plan-service.ts`
+- [ ] T142 [P1] Add Home family-view guidance that suggests a balanced companionship action across children in `miniprogram/pages/home`
+
+### P2 Later
+
+- [ ] T143 [P2] Support archived children instead of hard deletion so historical records remain stable
+- [ ] T144 [P2] Add gentle companionship distribution insights without scoreboards or sibling comparisons
+- [ ] T145 [P2] Add annual family report sections for shared moments and parent letters
+
 ## Dependencies
 
 ### Phase Dependencies

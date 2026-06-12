@@ -1,9 +1,11 @@
 /* global Page, wx */
 const {
+  getActiveChildId,
   getJson,
   isTimeoutRequestError,
   postJson,
   postJsonWithOptions,
+  setActiveChildId,
   uploadFile
 } = require("../../services/api");
 const growthRecordPrefillStorageKey = "growth_os_growth_record_prefill";
@@ -12,6 +14,7 @@ const growthRecordsCacheRefreshMs = 5 * 60 * 1000;
 const growthRecordsCacheDisplayMs = 55 * 60 * 1000;
 const aiRequestTimeoutMs = 30000;
 const recordCategories = ["成长瞬间", "运动健康", "阅读表达", "英语启蒙", "兴趣培养", "情绪关系", "户外探索"];
+const recordScopeOptions = ["当前孩子", "全家"];
 
 function todayString() {
   const now = new Date();
@@ -61,6 +64,14 @@ function formatDateTimeLabel(value, fallbackDate, fallbackDateTime) {
 
 function formatRecord(record) {
   const tags = record.tags && record.tags.length ? record.tags : ["成长瞬间"];
+  const childLabels = (record.growth_record_children || [])
+    .map((link) => {
+      const profile = Array.isArray(link.child_profiles)
+        ? link.child_profiles[0]
+        : link.child_profiles;
+      return (profile && profile.nickname) || "";
+    })
+    .filter(Boolean);
   const happenedAt = record.happened_at && !isMidnight(record.happened_at)
     ? record.happened_at
     : record.created_at || record.happened_at || "";
@@ -73,6 +84,8 @@ function formatRecord(record) {
     title: tags[0],
     text: record.text,
     tags,
+    childLabels,
+    childLabel: childLabels.length ? childLabels.join("、") : "",
     photoUrls: (record.growth_record_media || [])
       .filter((media) => media.media_type === "photo" && (media.signed_url || media.signedUrl || media.url))
       .map((media) => media.signed_url || media.signedUrl || media.url),
@@ -185,6 +198,10 @@ Page({
     filterStartDate: "",
     filterEndDate: "",
     filterKeyword: "",
+    recordScopeOptions,
+    selectedRecordScopeIndex: 0,
+    children: [],
+    selectedChildIds: [],
     isGeneratingMonthlyReport: false,
     monthlyReportError: "",
     monthlyReport: null,
@@ -274,6 +291,7 @@ Page({
     };
   },
   onShow() {
+    this.loadChildren();
     this.consumePrefilledRecord();
     const usedCache = this.hydrateRecordCache();
     this.loadRecords({ useLoadingState: !usedCache, skipIfFresh: usedCache });
@@ -282,6 +300,13 @@ Page({
     const cached = wx.getStorageSync(growthRecordsCacheStorageKey);
 
     if (!cached || !cached.savedAt || !cached.records) {
+      return false;
+    }
+
+    if (
+      cached.scopeIndex !== this.data.selectedRecordScopeIndex ||
+      cached.activeChildId !== getActiveChildId()
+    ) {
       return false;
     }
 
@@ -296,6 +321,31 @@ Page({
       records: this.getFilteredRecords(cached.records)
     });
     return true;
+  },
+  loadChildren() {
+    getJson("/api/children")
+      .then((response) => {
+        const rawChildren = response.children || [];
+        const activeChildId = getActiveChildId() || (rawChildren[0] && rawChildren[0].id) || "";
+        if (activeChildId && !getActiveChildId()) {
+          setActiveChildId(activeChildId);
+        }
+        const selectedChildIds = this.data.selectedChildIds.length
+          ? this.data.selectedChildIds
+          : activeChildId
+            ? [activeChildId]
+            : [];
+        const children = rawChildren.map((child) => ({
+          ...child,
+          selected: selectedChildIds.includes(child.id)
+        }));
+
+        this.setData({
+          children,
+          selectedChildIds
+        });
+      })
+      .catch(() => {});
   },
   consumePrefilledRecord() {
     const draft = wx.getStorageSync(growthRecordPrefillStorageKey);
@@ -329,6 +379,16 @@ Page({
   toggleFilters() {
     this.setData({ isFilterOpen: !this.data.isFilterOpen });
   },
+  onRecordScopeChange(event) {
+    this.setData({
+      selectedRecordScopeIndex: Number(event.detail.value),
+      hasRecordData: false,
+      records: [],
+      allRecords: []
+    });
+    wx.removeStorageSync(growthRecordsCacheStorageKey);
+    this.loadRecords({ useLoadingState: true });
+  },
   loadRecords(options) {
     if (options && options.skipIfFresh) {
       const cached = wx.getStorageSync(growthRecordsCacheStorageKey);
@@ -341,7 +401,12 @@ Page({
       this.setData({ isLoading: true, errorMessage: "" });
     }
 
-    getJson("/api/growth-records")
+    const path =
+      this.data.selectedRecordScopeIndex === 1
+        ? "/api/growth-records?scope=family"
+        : "/api/growth-records";
+
+    getJson(path)
       .then((response) => {
         const records = mergeCachedMedia(
           (response.records || []).map(formatRecord),
@@ -349,6 +414,8 @@ Page({
         );
         wx.setStorageSync(growthRecordsCacheStorageKey, {
           savedAt: Date.now(),
+          scopeIndex: this.data.selectedRecordScopeIndex,
+          activeChildId: getActiveChildId(),
           records
         });
         this.setData({
@@ -372,10 +439,21 @@ Page({
     this.setData({ recordText: event.detail.value });
   },
   openRecordComposer() {
+    const activeChildId = getActiveChildId();
+    const selectedChildIds = this.data.selectedChildIds.length
+      ? this.data.selectedChildIds
+      : activeChildId
+        ? [activeChildId]
+        : [];
     this.setData({
       isRecordComposerOpen: true,
       happenedDate: this.data.happenedDate || todayString(),
-      happenedTime: this.data.happenedTime || currentTimeString()
+      happenedTime: this.data.happenedTime || currentTimeString(),
+      selectedChildIds,
+      children: this.data.children.map((child) => ({
+        ...child,
+        selected: selectedChildIds.includes(child.id)
+      }))
     });
   },
   closeRecordComposer() {
@@ -386,6 +464,33 @@ Page({
     this.setData({ isRecordComposerOpen: false });
   },
   noop() {},
+  toggleRecordChild(event) {
+    const childId = event.currentTarget.dataset.id;
+    if (!childId) {
+      return;
+    }
+
+    const selected = new Set(this.data.selectedChildIds);
+    if (selected.has(childId)) {
+      selected.delete(childId);
+    } else {
+      selected.add(childId);
+    }
+
+    if (!selected.size) {
+      wx.showToast({ title: "至少关联一个孩子", icon: "none" });
+      return;
+    }
+
+    const selectedChildIds = [...selected];
+    this.setData({
+      selectedChildIds,
+      children: this.data.children.map((child) => ({
+        ...child,
+        selected: selectedChildIds.includes(child.id)
+      }))
+    });
+  },
   onRecordCategoryChange(event) {
     const selectedCategoryIndex = Number(event.detail.value);
     this.setData({
@@ -535,6 +640,11 @@ Page({
     }
 
     const tags = [this.data.recordCategory || "成长瞬间"];
+    const childIds = this.data.selectedChildIds.length
+      ? this.data.selectedChildIds
+      : getActiveChildId()
+        ? [getActiveChildId()]
+        : [];
 
     this.setData({ isSubmitting: true });
     postJson("/api/growth-records", {
@@ -544,7 +654,8 @@ Page({
         this.data.happenedTime || currentTimeString()
       ),
       text,
-      tags: tags.length ? tags : ["成长瞬间"]
+      tags: tags.length ? tags : ["成长瞬间"],
+      childIds
     })
       .then((response) => {
         const selectedPhotos = this.data.selectedPhotos;
@@ -570,6 +681,7 @@ Page({
           selectedPhotoName: "",
           selectedPhotoPath: "",
           selectedPhotos: [],
+          selectedChildIds: getActiveChildId() ? [getActiveChildId()] : [],
           happenedDate: todayString(),
           happenedTime: currentTimeString()
         });

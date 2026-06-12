@@ -8,8 +8,10 @@ import {
   getGrowthRecordForFamily,
   listRecentGrowthRecords,
   restoreGrowthRecord,
-  softDeleteGrowthRecord
+  softDeleteGrowthRecord,
+  upsertGrowthRecordChildren
 } from "@/lib/repositories/growth-record-repo";
+import { listFamilyChildren } from "@/lib/repositories/child-repo";
 import {
   buildGrowthMediaStoragePath,
   createGrowthMediaSignedReadUrl,
@@ -31,17 +33,20 @@ export type GrowthRecordRequest = z.infer<typeof growthRecordInputSchema>;
 export async function listGrowthRecordsForFamily(
   supabase: SupabaseClient,
   storageSupabase: SupabaseClient,
-  input: { familyId: UUID; childId?: UUID; limit?: number }
+  input: { familyId: UUID; childId?: UUID; scope?: "child" | "family"; limit?: number }
 ) {
   const startedAt = nowMs();
   const childStartedAt = nowMs();
-  const childId = await resolveActiveChildId(supabase, {
-    familyId: input.familyId,
-    childId: input.childId
-  });
+  const childId =
+    input.scope === "family"
+      ? undefined
+      : await resolveActiveChildId(supabase, {
+          familyId: input.familyId,
+          childId: input.childId
+        });
   const childMs = elapsedMs(childStartedAt);
 
-  if (!childId) {
+  if (!childId && input.scope !== "family") {
     logPerf("service.growth-records.list", {
       totalMs: elapsedMs(startedAt),
       childMs,
@@ -52,7 +57,15 @@ export async function listGrowthRecordsForFamily(
   }
 
   const recordsStartedAt = nowMs();
-  const records = await listRecentGrowthRecords(supabase, childId, input.limit ?? 20);
+  const records = await listRecentGrowthRecords(
+    supabase,
+    {
+      familyId: input.familyId,
+      childId,
+      scope: input.scope ?? "child"
+    },
+    input.limit ?? 20
+  );
   const recordsMs = elapsedMs(recordsStartedAt);
 
   const signingStartedAt = nowMs();
@@ -106,14 +119,25 @@ export async function saveGrowthRecord(
     throw new GrowthRecordError("Child profile is required");
   }
 
+  const childIds = await normalizeGrowthRecordChildIds(supabase, {
+    familyId: input.familyId,
+    primaryChildId: childId,
+    requestedChildIds: input.record.childIds
+  });
+
   const record = await createGrowthRecord(supabase, {
     childId,
+    childIds,
     happenedOn: input.record.happenedOn,
     happenedAt: input.record.happenedAt,
     text: input.record.text,
     tags: input.record.tags,
     parentNotes: input.record.parentNotes,
     createdByUserId: input.userId
+  });
+  await upsertGrowthRecordChildren(supabase, {
+    growthRecordId: String(record.id),
+    childIds
   });
 
   await recordGrowthRecordCreated(supabase, {
@@ -123,6 +147,24 @@ export async function saveGrowthRecord(
   });
 
   return record;
+}
+
+async function normalizeGrowthRecordChildIds(
+  supabase: SupabaseClient,
+  input: { familyId: UUID; primaryChildId: UUID; requestedChildIds?: UUID[] }
+) {
+  const requested = input.requestedChildIds?.length
+    ? input.requestedChildIds
+    : [input.primaryChildId];
+  const uniqueRequested = [...new Set([input.primaryChildId, ...requested])];
+  const familyChildren = await listFamilyChildren(supabase, input.familyId);
+  const familyChildIds = new Set(familyChildren.map((child) => child.id));
+
+  if (uniqueRequested.some((childId) => !familyChildIds.has(childId))) {
+    throw new GrowthRecordError("Selected children must belong to this family");
+  }
+
+  return uniqueRequested;
 }
 
 export async function deleteGrowthRecordForFamily(

@@ -8,6 +8,7 @@ import type {
 
 export interface GrowthRecordInput {
   childId: UUID;
+  childIds?: UUID[];
   happenedOn: string;
   happenedAt?: string;
   text: string;
@@ -45,6 +46,33 @@ export async function createGrowthRecord(
   }
 
   return data;
+}
+
+export async function upsertGrowthRecordChildren(
+  supabase: SupabaseClient,
+  input: { growthRecordId: UUID; childIds: UUID[] }
+) {
+  const uniqueChildIds = [...new Set(input.childIds)];
+  if (!uniqueChildIds.length) {
+    return [];
+  }
+
+  const { data, error } = await supabase
+    .from("growth_record_children")
+    .upsert(
+      uniqueChildIds.map((childId) => ({
+        growth_record_id: input.growthRecordId,
+        child_id: childId
+      })),
+      { onConflict: "growth_record_id,child_id" }
+    )
+    .select("growth_record_id,child_id");
+
+  if (error) {
+    throw error;
+  }
+
+  return data ?? [];
 }
 
 export async function createGrowthRecordMedia(
@@ -133,26 +161,42 @@ export async function getGrowthRecordForSharePreview(
 
 export async function listRecentGrowthRecords(
   supabase: SupabaseClient,
-  childId: UUID,
+  input: { familyId: UUID; childId?: UUID; scope?: "child" | "family" },
   limit = 20
 ) {
   const { data, error } = await supabase
     .from("growth_records")
     .select(
-      "id,happened_on,happened_at,text,tags,parent_notes,draft_status,created_at,growth_record_media(id,storage_path,media_type,file_name,mime_type,size_bytes)"
+      "id,child_id,happened_on,happened_at,text,tags,parent_notes,draft_status,created_at,growth_record_media(id,storage_path,media_type,file_name,mime_type,size_bytes),growth_record_children(child_id,child_profiles(nickname)),child_profiles!inner(family_id)"
     )
-    .eq("child_id", childId)
+    .eq("child_profiles.family_id", input.familyId)
     .is("deleted_at", null)
     .order("happened_at", { ascending: false, nullsFirst: false })
     .order("happened_on", { ascending: false })
     .order("created_at", { ascending: false })
-    .limit(limit);
+    .limit(input.scope === "family" ? limit : Math.max(limit * 3, 60));
 
   if (error) {
     throw error;
   }
 
-  return data ?? [];
+  const records = data ?? [];
+  if (input.scope === "family" || !input.childId) {
+    return records.slice(0, limit);
+  }
+
+  return records
+    .filter((record) => {
+      const childLinks =
+        "growth_record_children" in record && Array.isArray(record.growth_record_children)
+          ? record.growth_record_children
+          : [];
+      return (
+        record.child_id === input.childId ||
+        childLinks.some((link: { child_id?: string }) => link.child_id === input.childId)
+      );
+    })
+    .slice(0, limit);
 }
 
 export async function softDeleteGrowthRecord(
@@ -199,4 +243,8 @@ export interface GrowthRecord {
   deleted_at: string | null;
   restore_until: string | null;
   growth_record_media?: GrowthRecordMedia[];
+  growth_record_children?: Array<{
+    child_id: UUID;
+    child_profiles?: { nickname?: string } | { nickname?: string }[];
+  }>;
 }
