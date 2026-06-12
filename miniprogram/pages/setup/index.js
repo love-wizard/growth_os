@@ -1,7 +1,10 @@
 /* global Page, wx */
-const { postJson } = require("../../services/api");
+const { postJson, setActiveChildId } = require("../../services/api");
 
 const childProfileCacheStorageKey = "growth_os_child_profile_cache";
+const dashboardCacheStorageKey = "growth_os_dashboard_cache";
+const weeklyPlanCacheStorageKey = "growth_os_weekly_plan_cache";
+const growthRecordsCacheStorageKey = "growth_os_growth_records_cache_v3";
 
 const focusOptions = [
   { label: "阅读习惯", selected: true },
@@ -71,7 +74,7 @@ Page({
     }
 
     this.setData({ isSubmitting: true });
-    postJson("/api/onboarding", {
+    const payload = {
       childProfile: {
         name: this.data.nickname,
         nickname: this.data.nickname,
@@ -83,20 +86,31 @@ Page({
         title: item.label,
         category: item.label
       }))
-    })
-      .then(() => {
+    };
+
+    postJson("/api/onboarding", payload)
+      .catch((error) => {
+        if (error.statusCode === 409) {
+          return postJson("/api/children", payload);
+        }
+
+        throw error;
+      })
+      .then((response) => {
+        if (response.childId) {
+          setActiveChildId(response.childId);
+        }
         wx.setStorageSync(childProfileCacheStorageKey, {
           nickname: this.data.nickname,
           savedAt: Date.now()
         });
+        wx.removeStorageSync(dashboardCacheStorageKey);
+        wx.removeStorageSync(weeklyPlanCacheStorageKey);
+        wx.removeStorageSync(growthRecordsCacheStorageKey);
         wx.showToast({ title: "已更新陪伴方向", icon: "success" });
         wx.switchTab({ url: "/pages/home/index" });
       })
       .catch((error) => {
-        if (error.statusCode === 409) {
-          wx.switchTab({ url: "/pages/home/index" });
-          return;
-        }
         wx.showToast({ title: error.error || "创建未成功", icon: "none" });
       })
       .finally(() => {

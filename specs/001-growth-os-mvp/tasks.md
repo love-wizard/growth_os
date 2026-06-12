@@ -75,7 +75,7 @@
 
 ## Phase 4: User Story 2 - Configure a Child Growth System (P1)
 
-**Goal**: A first parent creates one family, one child profile, interests, annual goals, second-parent invitation, and the initial growth system.
+**Goal**: A first parent creates one family, at least one child profile, interests, annual goals, second-parent invitation, and the initial growth system. The family can add another child profile later and switch the active child context.
 
 **Independent Test**: Complete onboarding for one child and verify annual goals, current theme, supportive progress signal, today tasks, and second-parent invitation.
 

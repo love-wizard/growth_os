@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { requireAuthenticatedUser } from "@/lib/auth/family-access";
 import { getAcceptedFamilyMembership } from "@/lib/repositories/family-repo";
+import { getChildIdFromRequestUrl } from "@/lib/services/active-child-service";
 import {
   GrowthRecordError,
   listGrowthRecordsForFamily,
@@ -18,7 +19,7 @@ import { growthRecordInputSchema } from "@/lib/validation/schemas";
 
 const growthRecordsCacheTtlMs = 60 * 1000;
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   const startedAt = nowMs();
   const supabase = await createServerSupabaseClient();
   const serviceRoleSupabase = createServiceRoleSupabaseClient();
@@ -31,7 +32,8 @@ export async function GET() {
       return NextResponse.json({ error: "Family workspace is required" }, { status: 409 });
     }
 
-    const cacheKey = familyGrowthRecordsCacheKey(membership.family_id);
+    const childId = getChildIdFromRequestUrl(request.url);
+    const cacheKey = familyGrowthRecordsCacheKey(membership.family_id, childId);
     const cachedRecords = getCachedResponse(cacheKey);
     if (cachedRecords) {
       logPerf("api.growth-records", {
@@ -46,6 +48,7 @@ export async function GET() {
     const loadStartedAt = nowMs();
     const records = await listGrowthRecordsForFamily(supabase, serviceRoleSupabase, {
       familyId: membership.family_id,
+      childId,
       limit: 20
     });
 
@@ -85,8 +88,10 @@ export async function POST(request: NextRequest) {
     }
 
     const body = growthRecordInputSchema.parse(await request.json());
+    const childId = getChildIdFromRequestUrl(request.url);
     const record = await saveGrowthRecord(supabase, {
       familyId: membership.family_id,
+      childId,
       userId: user.id,
       record: body
     });

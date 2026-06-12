@@ -1,7 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { UUID } from "@/lib/domain/types";
 import { recordGrowthRecordCreated } from "@/lib/metrics/growth-record-events";
-import { getFamilyChildId } from "@/lib/repositories/weekly-plan-repo";
+import { resolveActiveChildId } from "@/lib/services/active-child-service";
 import {
   createGrowthRecord,
   createGrowthRecordMedia,
@@ -31,11 +31,14 @@ export type GrowthRecordRequest = z.infer<typeof growthRecordInputSchema>;
 export async function listGrowthRecordsForFamily(
   supabase: SupabaseClient,
   storageSupabase: SupabaseClient,
-  input: { familyId: UUID; limit?: number }
+  input: { familyId: UUID; childId?: UUID; limit?: number }
 ) {
   const startedAt = nowMs();
   const childStartedAt = nowMs();
-  const childId = await getFamilyChildId(supabase, input.familyId);
+  const childId = await resolveActiveChildId(supabase, {
+    familyId: input.familyId,
+    childId: input.childId
+  });
   const childMs = elapsedMs(childStartedAt);
 
   if (!childId) {
@@ -92,9 +95,12 @@ export async function listGrowthRecordsForFamily(
 
 export async function saveGrowthRecord(
   supabase: SupabaseClient,
-  input: { familyId: UUID; userId: UUID; record: GrowthRecordRequest }
+  input: { familyId: UUID; childId?: UUID; userId: UUID; record: GrowthRecordRequest }
 ) {
-  const childId = await getFamilyChildId(supabase, input.familyId);
+  const childId = await resolveActiveChildId(supabase, {
+    familyId: input.familyId,
+    childId: input.childId
+  });
 
   if (!childId) {
     throw new GrowthRecordError("Child profile is required");

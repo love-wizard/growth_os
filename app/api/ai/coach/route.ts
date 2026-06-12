@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { requireAuthenticatedUser } from "@/lib/auth/family-access";
 import { getAcceptedFamilyMembership } from "@/lib/repositories/family-repo";
+import { getChildIdFromRequestUrl } from "@/lib/services/active-child-service";
 import { askAICoach } from "@/lib/services/ai-coach-service";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { aiCoachRequestSchema } from "@/lib/validation/schemas";
@@ -22,7 +23,8 @@ export async function POST(request: NextRequest) {
       userId: user.id,
       userRole: membership.role,
       mode: body.mode,
-      message: body.message
+      message: body.message,
+      childId: getChildIdFromRequestUrl(request.url)
     });
 
     return NextResponse.json(result);

@@ -2,7 +2,7 @@
 
 ## Overview
 
-The model supports exactly one family workspace and one child profile in v0.1, while still using family-scoped tables so future multi-family support does not require rewriting every relationship. Supabase Auth owns user identities; application tables store family membership, child data, plans, records, and AI history. A lightweight first-guidance session can exist before full onboarding so parents receive value before completing the full growth system.
+The model supports one family workspace with one or more child profiles in v0.1. Child-scoped tables keep annual goals, weekly plans, interest participation, growth records, and AI context separated by `child_id`, while parent access remains family-scoped. Supabase Auth owns user identities; application tables store family membership, child data, plans, records, and AI history. A lightweight first-guidance session can exist before full onboarding so parents receive value before completing the full growth system.
 
 ## Common Fields
 
@@ -151,7 +151,8 @@ Fields:
 
 Rules:
 
-- Exactly one child profile per family in v0.1.
+- One family can contain multiple child profiles in v0.1.
+- Parent clients keep one active child selected for child-scoped reads and writes.
 - Age is derived from `birth_date`.
 
 ### ChildInterest

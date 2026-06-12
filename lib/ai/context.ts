@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { UUID } from "@/lib/domain/types";
+import { resolveActiveChildId } from "@/lib/services/active-child-service";
 
 export interface AIContextGrowthRecord {
   id: UUID;
@@ -64,9 +65,13 @@ export function stripGrowthRecordMedia(
 export async function assembleAIContext(
   supabase: SupabaseClient,
   familyId: UUID,
-  referenceDate = new Date()
+  referenceDate = new Date(),
+  childId?: UUID
 ): Promise<AIContextSnapshot> {
-  const childProfile = await fetchChildProfile(supabase, familyId);
+  const activeChildId = await resolveActiveChildId(supabase, { familyId, childId });
+  const childProfile = activeChildId
+    ? await fetchChildProfile(supabase, familyId, activeChildId)
+    : null;
 
   if (!childProfile) {
     return {
@@ -78,16 +83,16 @@ export async function assembleAIContext(
     };
   }
 
-  const childId = String(childProfile.id);
+  const profileChildId = String(childProfile.id);
   const fourWeekStart = getDateWindowStart(referenceDate, 28);
   const ninetyDayStart = getDateWindowStart(referenceDate, 90);
 
   const [annualGoals, weeklyPlans, interestRecords, growthRecords] =
     await Promise.all([
-      fetchAnnualGoals(supabase, childId),
-      fetchWeeklyPlans(supabase, childId, fourWeekStart),
-      fetchInterestRecords(supabase, childId, ninetyDayStart),
-      fetchGrowthRecords(supabase, childId, ninetyDayStart)
+      fetchAnnualGoals(supabase, profileChildId),
+      fetchWeeklyPlans(supabase, profileChildId, fourWeekStart),
+      fetchInterestRecords(supabase, profileChildId, ninetyDayStart),
+      fetchGrowthRecords(supabase, profileChildId, ninetyDayStart)
     ]);
 
   return {
@@ -99,11 +104,16 @@ export async function assembleAIContext(
   };
 }
 
-async function fetchChildProfile(supabase: SupabaseClient, familyId: UUID) {
+async function fetchChildProfile(
+  supabase: SupabaseClient,
+  familyId: UUID,
+  childId: UUID
+) {
   const { data, error } = await supabase
     .from("child_profiles")
     .select("id,family_id,name,nickname,birth_date,gender,child_interests(name)")
     .eq("family_id", familyId)
+    .eq("id", childId)
     .maybeSingle();
 
   if (error) {

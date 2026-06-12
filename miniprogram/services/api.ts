@@ -1,5 +1,6 @@
 const apiBaseUrl = "https://growth.familylove.space";
 const sessionStorageKey = "growth_os_session";
+const activeChildStorageKey = "growth_os_active_child_id";
 
 type GrowthOSSession = {
   accessToken?: string;
@@ -32,6 +33,29 @@ function getAuthHeader() {
   return {
     Authorization: `Bearer ${session.accessToken}`
   } as Record<string, string>;
+}
+
+function shouldAppendActiveChild(path: string) {
+  return (
+    path.startsWith("/api/dashboard") ||
+    path.startsWith("/api/weekly-plan") ||
+    path.startsWith("/api/growth-records") ||
+    path.startsWith("/api/interest-participation-records") ||
+    path.startsWith("/api/ai/coach")
+  );
+}
+
+function appendActiveChildId(path: string) {
+  if (!shouldAppendActiveChild(path) || path.includes("childId=")) {
+    return path;
+  }
+
+  const childId = getActiveChildId();
+  if (!childId) {
+    return path;
+  }
+
+  return `${path}${path.includes("?") ? "&" : "?"}childId=${encodeURIComponent(childId)}`;
 }
 
 function refreshMiniProgramSession() {
@@ -90,9 +114,10 @@ function requestJson<T = unknown>(
   data?: unknown,
   options?: RequestOptions
 ) {
+  const requestPath = appendActiveChildId(path);
   return new Promise<T>((resolve, reject) => {
     wx.request({
-      url: `${apiBaseUrl}${path}`,
+      url: `${apiBaseUrl}${requestPath}`,
       method,
       data,
       timeout: options?.timeoutMs ?? defaultRequestTimeoutMs,
@@ -175,9 +200,10 @@ export function uploadFile<T = unknown>(
   name = "file",
   formData?: Record<string, string>
 ) {
+  const requestPath = appendActiveChildId(path);
   return new Promise<T>((resolve, reject) => {
     wx.uploadFile({
-      url: `${apiBaseUrl}${path}`,
+      url: `${apiBaseUrl}${requestPath}`,
       filePath,
       name,
       formData,
@@ -206,6 +232,18 @@ export function uploadFile<T = unknown>(
 
 export function getSession() {
   return wx.getStorageSync(sessionStorageKey) as GrowthOSSession | undefined;
+}
+
+export function getActiveChildId() {
+  return wx.getStorageSync(activeChildStorageKey) as string | undefined;
+}
+
+export function setActiveChildId(childId: string) {
+  wx.setStorageSync(activeChildStorageKey, childId);
+}
+
+export function clearActiveChildId() {
+  wx.removeStorageSync(activeChildStorageKey);
 }
 
 export function setSession(session: GrowthOSSession) {

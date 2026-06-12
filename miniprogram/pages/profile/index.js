@@ -12,7 +12,8 @@ const localTestStorageKeys = [
   "growth_os_child_profile_cache",
   "growth_os_dashboard_cache",
   "growth_os_weekly_plan_cache",
-  "growth_os_growth_records_cache_v2",
+  "growth_os_growth_records_cache_v3",
+  "growth_os_active_child_id",
   "growth_os_growth_record_prefill",
   "growth_os_ai_coach_prefill"
 ];

@@ -1,6 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { UUID } from "@/lib/domain/types";
-import { getFamilyChildId } from "@/lib/repositories/weekly-plan-repo";
+import { resolveActiveChildId } from "@/lib/services/active-child-service";
 import {
   createInterestParticipationRecord,
   getInterestParticipationRecordForFamily,
@@ -25,9 +25,12 @@ export type InterestParticipationInput = z.infer<
 
 export async function listInterestParticipationSnapshot(
   supabase: SupabaseClient,
-  input: { familyId: UUID }
+  input: { familyId: UUID; childId?: UUID }
 ) {
-  const childId = await getFamilyChildId(supabase, input.familyId);
+  const childId = await resolveActiveChildId(supabase, {
+    familyId: input.familyId,
+    childId: input.childId
+  });
 
   if (!childId) {
     return {
@@ -46,9 +49,12 @@ export async function listInterestParticipationSnapshot(
 
 export async function recordInterestParticipation(
   supabase: SupabaseClient,
-  input: { familyId: UUID; record: InterestParticipationInput }
+  input: { familyId: UUID; childId?: UUID; record: InterestParticipationInput }
 ) {
-  const childId = await getFamilyChildId(supabase, input.familyId);
+  const childId = await resolveActiveChildId(supabase, {
+    familyId: input.familyId,
+    childId: input.childId
+  });
 
   if (!childId) {
     throw new InterestParticipationError("Child profile is required");

@@ -1,6 +1,7 @@
 /* global wx */
 const apiBaseUrl = "https://growth.familylove.space";
 const sessionStorageKey = "growth_os_session";
+const activeChildStorageKey = "growth_os_active_child_id";
 const defaultRequestTimeoutMs = 10000;
 
 function getAuthHeader() {
@@ -13,6 +14,29 @@ function getAuthHeader() {
   return {
     Authorization: `Bearer ${session.accessToken}`
   };
+}
+
+function shouldAppendActiveChild(path) {
+  return (
+    path.startsWith("/api/dashboard") ||
+    path.startsWith("/api/weekly-plan") ||
+    path.startsWith("/api/growth-records") ||
+    path.startsWith("/api/interest-participation-records") ||
+    path.startsWith("/api/ai/coach")
+  );
+}
+
+function appendActiveChildId(path) {
+  if (!shouldAppendActiveChild(path) || path.includes("childId=")) {
+    return path;
+  }
+
+  const childId = getActiveChildId();
+  if (!childId) {
+    return path;
+  }
+
+  return `${path}${path.includes("?") ? "&" : "?"}childId=${encodeURIComponent(childId)}`;
 }
 
 function parseUploadResponse(response) {
@@ -86,9 +110,10 @@ function shouldRetryAuth(response) {
 
 function requestJson(method, path, data, options) {
   const retryOnAuth = !options || options.retryOnAuth !== false;
+  const requestPath = appendActiveChildId(path);
   return new Promise((resolve, reject) => {
     wx.request({
-      url: `${apiBaseUrl}${path}`,
+      url: `${apiBaseUrl}${requestPath}`,
       method,
       data,
       timeout: (options && options.timeoutMs) || defaultRequestTimeoutMs,
@@ -151,9 +176,10 @@ function getJson(path) {
 }
 
 function uploadFile(path, filePath, name, formData) {
+  const requestPath = appendActiveChildId(path);
   return new Promise((resolve, reject) => {
     wx.uploadFile({
-      url: `${apiBaseUrl}${path}`,
+      url: `${apiBaseUrl}${requestPath}`,
       filePath,
       name: name || "file",
       formData,
@@ -180,6 +206,18 @@ function getSession() {
   return wx.getStorageSync(sessionStorageKey);
 }
 
+function getActiveChildId() {
+  return wx.getStorageSync(activeChildStorageKey);
+}
+
+function setActiveChildId(childId) {
+  wx.setStorageSync(activeChildStorageKey, childId);
+}
+
+function clearActiveChildId() {
+  wx.removeStorageSync(activeChildStorageKey);
+}
+
 function setSession(session) {
   wx.setStorageSync(sessionStorageKey, session);
 }
@@ -204,13 +242,16 @@ function isTimeoutRequestError(error) {
 }
 
 module.exports = {
+  clearActiveChildId,
   clearSession,
+  getActiveChildId,
   getJson,
   getSession,
   isTimeoutRequestError,
   patchJson,
   postJson,
   postJsonWithOptions,
+  setActiveChildId,
   setSession,
   uploadFile
 };

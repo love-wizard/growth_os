@@ -39,16 +39,20 @@ export function deleteCachedResponsesByPrefix(prefix: string) {
   }
 }
 
-export function familyDashboardCacheKey(familyId: string) {
-  return `family:${familyId}:dashboard`;
+function childScopedCacheKey(familyId: string, scope: string, childId?: string | null) {
+  return `family:${familyId}:child:${childId ?? "default"}:${scope}`;
 }
 
-export function familyGrowthRecordsCacheKey(familyId: string) {
-  return `family:${familyId}:growth-records`;
+export function familyDashboardCacheKey(familyId: string, childId?: string | null) {
+  return childScopedCacheKey(familyId, "dashboard", childId);
 }
 
-export function familyWeeklyPlanCacheKey(familyId: string) {
-  return `family:${familyId}:weekly-plan`;
+export function familyGrowthRecordsCacheKey(familyId: string, childId?: string | null) {
+  return childScopedCacheKey(familyId, "growth-records", childId);
+}
+
+export function familyWeeklyPlanCacheKey(familyId: string, childId?: string | null) {
+  return childScopedCacheKey(familyId, "weekly-plan", childId);
 }
 
 export function invalidateFamilyReadCaches(familyId: string) {

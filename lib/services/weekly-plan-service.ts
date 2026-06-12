@@ -11,7 +11,6 @@ import {
   archiveStaleActiveWeeklyPlans,
   createWeeklyPlan,
   getActiveWeeklyPlanForWeekWithTasks,
-  getFamilyChildId,
   getWeeklyTaskForFamily,
   insertWeeklyTasks,
   updateWeeklyTaskProgress,
@@ -20,6 +19,7 @@ import {
   type WeeklyTaskRecord
 } from "@/lib/repositories/weekly-plan-repo";
 import { generateAICoachResponse } from "@/lib/services/ai-coach-service";
+import { resolveActiveChildId } from "@/lib/services/active-child-service";
 
 export class WeeklyPlanNotFoundError extends Error {
   constructor(message = "Weekly plan was not found") {
@@ -38,9 +38,12 @@ export class WeeklyTaskProgressError extends Error {
 export async function getCurrentWeeklyPlanForFamily(
   supabase: SupabaseClient,
   familyId: UUID,
-  options?: { allowAutoGenerate?: boolean; referenceDate?: Date }
+  options?: { childId?: UUID; allowAutoGenerate?: boolean; referenceDate?: Date }
 ) {
-  const childId = await getFamilyChildId(supabase, familyId);
+  const childId = await resolveActiveChildId(supabase, {
+    familyId,
+    childId: options?.childId
+  });
 
   if (!childId) {
     return null;
@@ -184,7 +187,12 @@ async function createCurrentWeekPlan(
     referenceDate: Date;
   }
 ) {
-  const context = await assembleAIContext(supabase, input.familyId, input.referenceDate);
+  const context = await assembleAIContext(
+    supabase,
+    input.familyId,
+    input.referenceDate,
+    input.childId
+  );
   const generatedResponse = await generateWeeklyPlanDraft(context, {
     weekStartDate: input.weekStartDate,
     weekEndDate: input.weekEndDate

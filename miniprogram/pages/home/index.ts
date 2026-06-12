@@ -1,4 +1,4 @@
-import { getJson } from "../../services/api";
+import { getActiveChildId, getJson, setActiveChildId } from "../../services/api";
 
 const growthRecordPrefillStorageKey = "growth_os_growth_record_prefill";
 const childProfileCacheStorageKey = "growth_os_child_profile_cache";
@@ -63,6 +63,13 @@ const roleClasses: Record<string, string> = {
   mother: "role-mother",
   family: "role-family",
   child: "role-family"
+};
+
+type DashboardChild = {
+  id: string;
+  nickname: string;
+  birth_date?: string;
+  gender?: string;
 };
 
 function formatTask(task: {
@@ -206,6 +213,8 @@ Page({
     setupRequired: false,
     errorMessage: "",
     childNickname: "",
+    children: [] as Array<{ id: string; nickname: string }>,
+    selectedChildIndex: 0,
     dailyQuote: getDailyQuote(),
     weeklyTheme: "",
     taskCount: "",
@@ -267,7 +276,8 @@ Page({
     return true;
   },
   applyDashboard(dashboard: {
-    child: { nickname: string } | null;
+    child: DashboardChild | null;
+    children?: DashboardChild[];
     weeklyPlan: { theme: string } | null;
     todayGuidance: { title: string; description: string } | null;
     progress: { description: string } | null;
@@ -281,7 +291,16 @@ Page({
   }) {
     const tasks = (dashboard.todayTasks || []).map(formatTask);
     const weeklyTheme = dashboard.weeklyPlan ? dashboard.weeklyPlan.theme : "轻松陪伴";
+    const children = (dashboard.children || []).map((child) => ({
+      id: child.id,
+      nickname: child.nickname
+    }));
+    const selectedChildIndex = Math.max(
+      0,
+      children.findIndex((child) => child.id === dashboard.child?.id)
+    );
     if (dashboard.child?.nickname) {
+      setActiveChildId(dashboard.child.id);
       wx.setStorageSync(childProfileCacheStorageKey, {
         nickname: dashboard.child.nickname,
         savedAt: Date.now()
@@ -293,6 +312,8 @@ Page({
       hasDashboardData: true,
       setupRequired: false,
       childNickname: dashboard.child ? dashboard.child.nickname : "孩子",
+      children,
+      selectedChildIndex,
       weeklyTheme,
       taskCount: `${tasks.length}件小事`,
       todayAction: {
@@ -322,7 +343,8 @@ Page({
     }
 
     void getJson<{
-      child: { nickname: string } | null;
+      child: DashboardChild | null;
+      children?: DashboardChild[];
       weeklyPlan: { theme: string } | null;
       todayGuidance: { title: string; description: string } | null;
       progress: { description: string } | null;
@@ -358,6 +380,25 @@ Page({
           errorMessage: error.error || "首页数据暂时无法同步"
         });
       });
+  },
+  switchChild(event: { detail: { value: string | number } }) {
+    const index = Number(event.detail.value);
+    const child = this.data.children[index];
+    if (!child || child.id === getActiveChildId()) {
+      return;
+    }
+
+    setActiveChildId(child.id);
+    wx.removeStorageSync(dashboardCacheStorageKey);
+    wx.removeStorageSync(weeklyPlanCacheStorageKey);
+    wx.removeStorageSync(growthRecordsCacheStorageKey);
+    wx.removeStorageSync(childProfileCacheStorageKey);
+    this.setData({
+      selectedChildIndex: index,
+      childNickname: child.nickname,
+      hasDashboardData: false
+    });
+    this.loadDashboard({ useLoadingState: true });
   },
   warmTabCaches() {
     const weeklyPlanCache = wx.getStorageSync(weeklyPlanCacheStorageKey) as

@@ -2,6 +2,16 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { UUID } from "@/lib/domain/types";
 import type { ChildProfileInput } from "@/lib/validation/schemas";
 
+export interface ChildProfileRecord {
+  id: UUID;
+  family_id: UUID;
+  name: string;
+  nickname: string;
+  birth_date: string;
+  gender: string;
+  created_at: string;
+}
+
 export async function createChildProfile(
   supabase: SupabaseClient,
   input: { familyId: UUID; childProfile: ChildProfileInput }
@@ -23,6 +33,38 @@ export async function createChildProfile(
   }
 
   return data.id as UUID;
+}
+
+export async function listFamilyChildren(supabase: SupabaseClient, familyId: UUID) {
+  const { data, error } = await supabase
+    .from("child_profiles")
+    .select("id,family_id,name,nickname,birth_date,gender,created_at")
+    .eq("family_id", familyId)
+    .order("created_at", { ascending: true });
+
+  if (error) {
+    throw error;
+  }
+
+  return (data ?? []) as ChildProfileRecord[];
+}
+
+export async function getFamilyChild(
+  supabase: SupabaseClient,
+  input: { familyId: UUID; childId: UUID }
+) {
+  const { data, error } = await supabase
+    .from("child_profiles")
+    .select("id,family_id,name,nickname,birth_date,gender,created_at")
+    .eq("family_id", input.familyId)
+    .eq("id", input.childId)
+    .maybeSingle();
+
+  if (error) {
+    throw error;
+  }
+
+  return data as ChildProfileRecord | null;
 }
 
 export async function createChildInterests(

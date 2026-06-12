@@ -223,14 +223,14 @@ A first parent creates the family's full growth system by completing the child's
 
 **Why this priority**: Without initial configuration, the product cannot produce meaningful guidance or daily companionship actions.
 
-**Independent Test**: A tester can complete full onboarding for one child and verify that the resulting dashboard contains annual goals, a current weekly theme, supportive progress signal, and today's tasks.
+**Independent Test**: A tester can complete full onboarding for the first child, add a second child in the same family, switch the active child, and verify that each child's dashboard contains that child's annual goals, current weekly theme, supportive progress signal, and today's tasks.
 
 **Acceptance Scenarios**:
 
-1. **Given** a new family with no child profile, **When** the first parent enters the child's name, nickname, birth date, gender, interests, and annual goals, **Then** the system creates one family workspace, one child profile, and a complete initial growth system.
+1. **Given** a new family with no child profile, **When** the first parent enters the child's name, nickname, birth date, gender, interests, and annual goals, **Then** the system creates one family workspace, the first child profile, and a complete initial growth system.
 2. **Given** a parent has not completed all required child profile fields, **When** they attempt to generate the growth system, **Then** the system identifies the missing fields and prevents generation until required information is complete.
 3. **Given** a parent selects interests including "Other", **When** they provide a custom interest, **Then** the system includes that interest when generating plans and recommendations.
-4. **Given** the first parent has created the family workspace, **When** they invite the second parent and assign a father or mother role, **Then** the second parent can join the same family workspace without creating a duplicate family or child profile.
+4. **Given** the first parent has created the family workspace, **When** they invite the second parent and assign a father or mother role, **Then** the second parent can join the same family workspace without creating a duplicate family workspace.
 
 ---
 
@@ -381,12 +381,12 @@ Parents enter Growth OS through WeChat Mini Program surfaces such as family invi
 
 ### Functional Requirements
 
-- **FR-001**: The system MUST support exactly one family workspace containing exactly one child profile for the MVP.
+- **FR-001**: The system MUST support one family workspace with one or more child profiles for the MVP, with one active child selected per parent session.
 - **FR-002**: The system MUST support two parent accounts with distinct father and mother roles, and both roles MUST be able to view and manage all child growth data, AI conversations, and insights in v0.1.
 - **FR-003**: The child MUST NOT need an independent account.
 - **FR-004**: The system MUST allow the first parent to create the family workspace and invite the second parent to join the same family with a father or mother role.
-- **FR-005**: The system MUST prevent the second parent invitation flow from creating a duplicate family workspace or duplicate child profile.
-- **FR-006**: The system MUST allow a parent to create and edit the child profile with name, nickname, birth date, and gender.
+- **FR-005**: The system MUST prevent the second parent invitation flow from creating a duplicate family workspace.
+- **FR-006**: The system MUST allow a parent to create child profiles with name, nickname, birth date, and gender, and switch the active child context before viewing or creating child-scoped data.
 - **FR-007**: The system MUST allow parents to select multiple child interests from piano, swimming, football, basketball, reading, drawing, building blocks, English, and custom interests.
 - **FR-008**: The system MUST allow parents to create and edit annual growth goals.
 - **FR-009**: The system MUST generate an initial annual plan, monthly themes, and current-week tasks from the child profile, interests, and annual goals.

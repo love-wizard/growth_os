@@ -50,12 +50,12 @@
   <view class="section card stack">
     <view>
       <view class="title">陪伴设置</view>
-      <view class="muted">邀请另一位家长，记录兴趣参与，更新陪伴目标。</view>
+      <view class="muted">邀请另一位家长，记录兴趣参与，添加孩子档案。</view>
     </view>
     <view class="profile-action-grid">
       <button class="button-secondary" bindtap="openInvite">邀请家长</button>
       <button class="button-secondary" bindtap="openInterests">兴趣参与</button>
-      <button class="button-secondary" bindtap="openSetup">更新档案</button>
+      <button class="button-secondary" bindtap="openSetup">添加孩子</button>
     </view>
   </view>
 

@@ -1,5 +1,5 @@
 /* global Page, wx */
-const { getJson } = require("../../services/api");
+const { getActiveChildId, getJson, setActiveChildId } = require("../../services/api");
 const growthRecordPrefillStorageKey = "growth_os_growth_record_prefill";
 const childProfileCacheStorageKey = "growth_os_child_profile_cache";
 const dashboardCacheStorageKey = "growth_os_dashboard_cache";
@@ -167,6 +167,8 @@ Page({
     setupRequired: false,
     errorMessage: "",
     childNickname: "",
+    children: [],
+    selectedChildIndex: 0,
     dailyQuote: getDailyQuote(),
     weeklyTheme: "",
     taskCount: "",
@@ -209,7 +211,16 @@ Page({
   applyDashboard(dashboard) {
     const tasks = (dashboard.todayTasks || []).map(formatTask);
     const weeklyTheme = dashboard.weeklyPlan ? dashboard.weeklyPlan.theme : "轻松陪伴";
+    const children = (dashboard.children || []).map((child) => ({
+      id: child.id,
+      nickname: child.nickname
+    }));
+    const foundIndex = children.findIndex(
+      (child) => child.id === (dashboard.child && dashboard.child.id)
+    );
+    const selectedChildIndex = Math.max(0, foundIndex);
     if (dashboard.child && dashboard.child.nickname) {
+      setActiveChildId(dashboard.child.id);
       wx.setStorageSync(childProfileCacheStorageKey, {
         nickname: dashboard.child.nickname,
         savedAt: Date.now()
@@ -221,6 +232,8 @@ Page({
       hasDashboardData: true,
       setupRequired: false,
       childNickname: dashboard.child ? dashboard.child.nickname : "孩子",
+      children,
+      selectedChildIndex,
       weeklyTheme,
       taskCount: `${tasks.length}件小事`,
       todayAction: {
@@ -271,6 +284,25 @@ Page({
           errorMessage: error.error || "首页数据暂时无法同步"
         });
       });
+  },
+  switchChild(event) {
+    const index = Number(event.detail.value);
+    const child = this.data.children[index];
+    if (!child || child.id === getActiveChildId()) {
+      return;
+    }
+
+    setActiveChildId(child.id);
+    wx.removeStorageSync(dashboardCacheStorageKey);
+    wx.removeStorageSync(weeklyPlanCacheStorageKey);
+    wx.removeStorageSync(growthRecordsCacheStorageKey);
+    wx.removeStorageSync(childProfileCacheStorageKey);
+    this.setData({
+      selectedChildIndex: index,
+      childNickname: child.nickname,
+      hasDashboardData: false
+    });
+    this.loadDashboard({ useLoadingState: true });
   },
   warmTabCaches() {
     const weeklyPlanCache = wx.getStorageSync(weeklyPlanCacheStorageKey);

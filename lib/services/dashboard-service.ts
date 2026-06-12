@@ -1,13 +1,23 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { UUID } from "@/lib/domain/types";
+import { resolveActiveChildId } from "@/lib/services/active-child-service";
+import { listFamilyChildren } from "@/lib/repositories/child-repo";
 import { elapsedMs, logPerf, nowMs } from "@/lib/services/perf-log";
 import { getSupportiveProgressCopy } from "@/lib/services/progress-copy-service";
 import { getCurrentWeeklyPlanForFamily } from "@/lib/services/weekly-plan-service";
 
-export async function getDashboardData(supabase: SupabaseClient, familyId: UUID) {
+export async function getDashboardData(
+  supabase: SupabaseClient,
+  familyId: UUID,
+  options?: { childId?: UUID }
+) {
   const startedAt = nowMs();
   const childStartedAt = nowMs();
-  const child = await getChild(supabase, familyId);
+  const [children, activeChildId] = await Promise.all([
+    listFamilyChildren(supabase, familyId),
+    resolveActiveChildId(supabase, { familyId, childId: options?.childId })
+  ]);
+  const child = activeChildId ? children.find((item) => item.id === activeChildId) ?? null : null;
   const childMs = elapsedMs(childStartedAt);
 
   if (!child) {
@@ -19,6 +29,7 @@ export async function getDashboardData(supabase: SupabaseClient, familyId: UUID)
     });
     return {
       child: null,
+      children,
       annualGoals: [],
       weeklyPlan: null,
       todayGuidance: null,
@@ -31,6 +42,7 @@ export async function getDashboardData(supabase: SupabaseClient, familyId: UUID)
   const [annualGoals, weeklyPlan] = await Promise.all([
     getAnnualGoals(supabase, child.id),
     getCurrentWeeklyPlanForFamily(supabase, familyId, {
+      childId: child.id,
       allowAutoGenerate: false
     })
   ]);
@@ -49,6 +61,7 @@ export async function getDashboardData(supabase: SupabaseClient, familyId: UUID)
 
   return {
     child,
+    children,
     annualGoals,
     weeklyPlan,
     todayGuidance: buildTodayGuidance(weeklyPlan),
@@ -78,20 +91,6 @@ function buildTodayGuidance(weeklyPlan: DashboardWeeklyPlan | null) {
     title: firstTask.title,
     description: "把它做小一点，重点是父母和孩子一起完成。"
   };
-}
-
-async function getChild(supabase: SupabaseClient, familyId: UUID) {
-  const { data, error } = await supabase
-    .from("child_profiles")
-    .select("id,nickname,birth_date,gender")
-    .eq("family_id", familyId)
-    .maybeSingle();
-
-  if (error) {
-    throw error;
-  }
-
-  return data as DashboardChild | null;
 }
 
 async function getAnnualGoals(supabase: SupabaseClient, childId: UUID) {

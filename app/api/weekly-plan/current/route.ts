@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireAuthenticatedUser } from "@/lib/auth/family-access";
 import { getAcceptedFamilyMembership } from "@/lib/repositories/family-repo";
+import { getChildIdFromRequestUrl } from "@/lib/services/active-child-service";
 import { getCurrentWeeklyPlanForFamily } from "@/lib/services/weekly-plan-service";
 import { elapsedMs, logPerf, nowMs } from "@/lib/services/perf-log";
 import {
@@ -12,7 +13,7 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 const weeklyPlanCacheTtlMs = 30 * 1000;
 
-export async function GET() {
+export async function GET(request: Request) {
   const startedAt = nowMs();
   const supabase = await createServerSupabaseClient();
 
@@ -24,7 +25,8 @@ export async function GET() {
       return NextResponse.json({ error: "Family workspace is required" }, { status: 409 });
     }
 
-    const cacheKey = familyWeeklyPlanCacheKey(membership.family_id);
+    const childId = getChildIdFromRequestUrl(request.url);
+    const cacheKey = familyWeeklyPlanCacheKey(membership.family_id, childId);
     const cachedWeeklyPlan = getCachedResponse(cacheKey);
     if (cachedWeeklyPlan) {
       logPerf("api.weekly-plan.current", {
@@ -36,7 +38,9 @@ export async function GET() {
     }
 
     const loadStartedAt = nowMs();
-    const weeklyPlan = await getCurrentWeeklyPlanForFamily(supabase, membership.family_id);
+    const weeklyPlan = await getCurrentWeeklyPlanForFamily(supabase, membership.family_id, {
+      childId
+    });
     setCachedResponse(cacheKey, weeklyPlan, weeklyPlanCacheTtlMs);
     logPerf("api.weekly-plan.current", {
       totalMs: elapsedMs(startedAt),

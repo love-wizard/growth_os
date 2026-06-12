@@ -12,6 +12,9 @@
         <view class="caption">饭米粒在这里</view>
         <view wx:if="{{childNickname}}" class="page-title">今天陪{{childNickname}}慢慢来</view>
         <view wx:else class="page-title">今天我们慢慢来</view>
+        <picker wx:if="{{children.length > 1}}" mode="selector" range="{{children}}" range-key="nickname" value="{{selectedChildIndex}}" bindchange="switchChild">
+          <view class="child-switcher">正在看 {{children[selectedChildIndex].nickname}} 的成长</view>
+        </picker>
       </view>
     </view>
   </view>

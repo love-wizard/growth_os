@@ -76,6 +76,13 @@ page {
   font-weight: 600;
 }
 
+.child-switcher {
+  color: #6e665d;
+  font-size: 24rpx;
+  font-weight: 700;
+  margin-top: 10rpx;
+}
+
 .fanmili-header-icon {
   background: linear-gradient(180deg, #ffffff 0%, #f1e6d4 100%);
   border: 1rpx solid rgba(218, 193, 157, 0.82);
