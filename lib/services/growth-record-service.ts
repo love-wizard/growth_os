@@ -33,7 +33,13 @@ export type GrowthRecordRequest = z.infer<typeof growthRecordInputSchema>;
 export async function listGrowthRecordsForFamily(
   supabase: SupabaseClient,
   storageSupabase: SupabaseClient,
-  input: { familyId: UUID; childId?: UUID; scope?: "child" | "family"; limit?: number }
+  input: {
+    familyId: UUID;
+    childId?: UUID;
+    scope?: "child" | "family";
+    limit?: number;
+    offset?: number;
+  }
 ) {
   const startedAt = nowMs();
   const childStartedAt = nowMs();
@@ -53,24 +59,31 @@ export async function listGrowthRecordsForFamily(
       hasChild: false,
       familyId: input.familyId
     });
-    return [];
+    return {
+      records: [],
+      hasMore: false,
+      nextOffset: input.offset ?? 0
+    };
   }
 
   const recordsStartedAt = nowMs();
-  const records = await listRecentGrowthRecords(
+  const page = await listRecentGrowthRecords(
     supabase,
     {
       familyId: input.familyId,
       childId,
       scope: input.scope ?? "child"
     },
-    input.limit ?? 20
+    {
+      limit: input.limit ?? 20,
+      offset: input.offset ?? 0
+    }
   );
   const recordsMs = elapsedMs(recordsStartedAt);
 
   const signingStartedAt = nowMs();
   const recordsWithMedia = await Promise.all(
-    records.map(async (record) => ({
+    page.records.map(async (record) => ({
       ...record,
       growth_record_media: await Promise.all(
         (record.growth_record_media ?? []).slice(0, 3).map(async (media) => {
@@ -96,14 +109,20 @@ export async function listGrowthRecordsForFamily(
     signingMs,
     hasChild: true,
     familyId: input.familyId,
-    recordCount: records.length,
+    recordCount: page.records.length,
+    hasMore: page.hasMore,
+    nextOffset: page.nextOffset,
     mediaCount: recordsWithMedia.reduce(
       (count, record) => count + (record.growth_record_media?.length ?? 0),
       0
     )
   });
 
-  return recordsWithMedia;
+  return {
+    records: recordsWithMedia,
+    hasMore: page.hasMore,
+    nextOffset: page.nextOffset
+  };
 }
 
 export async function saveGrowthRecord(

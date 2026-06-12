@@ -11,6 +11,7 @@ const growthRecordsCacheStorageKey = "growth_os_growth_records_cache_v5";
 const aiCoachPrefillStorageKey = "growth_os_ai_coach_prefill";
 const growthRecordsCacheRefreshMs = 5 * 60 * 1000;
 const growthRecordsCacheDisplayMs = 55 * 60 * 1000;
+const growthRecordsPageSize = 20;
 const recordCategories = ["成长瞬间", "运动健康", "阅读表达", "英语启蒙", "兴趣培养", "情绪关系", "户外探索"];
 const recordScopeOptions = ["默认孩子", "全家"];
 
@@ -27,6 +28,23 @@ function todayString() {
   const month = `${now.getMonth() + 1}`.padStart(2, "0");
   const day = `${now.getDate()}`.padStart(2, "0");
   return `${year}-${month}-${day}`;
+}
+
+function formatDateString(date: Date) {
+  const year = date.getFullYear();
+  const month = `${date.getMonth() + 1}`.padStart(2, "0");
+  const day = `${date.getDate()}`.padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function currentMonthStartString() {
+  const now = new Date();
+  return formatDateString(new Date(now.getFullYear(), now.getMonth(), 1));
+}
+
+function currentMonthEndString() {
+  const now = new Date();
+  return formatDateString(new Date(now.getFullYear(), now.getMonth() + 1, 0));
 }
 
 function currentTimeString() {
@@ -220,7 +238,7 @@ function mergeCachedMedia(
     title: string;
     text: string;
     tags: string[];
-    photoUrls: string[];
+    photoUrls?: string[];
     shareImageUrl?: string;
   }>,
   currentRecords: Array<{
@@ -241,7 +259,10 @@ function mergeCachedMedia(
   return sortRecords(nextRecords).map((record) => {
     const current = currentById.get(record.id);
     if (!current) {
-      return record;
+      return {
+        ...record,
+        photoUrls: record.photoUrls || []
+      };
     }
 
     const isSameRecord =
@@ -252,7 +273,10 @@ function mergeCachedMedia(
       JSON.stringify(current.tags || []) === JSON.stringify(record.tags || []);
 
     if (!isSameRecord) {
-      return record;
+      return {
+        ...record,
+        photoUrls: record.photoUrls || []
+      };
     }
 
     return {
@@ -261,6 +285,42 @@ function mergeCachedMedia(
       shareImageUrl: current.shareImageUrl || record.shareImageUrl
     };
   });
+}
+
+function mergeRecordPages(
+  nextRecords: Array<{
+    id: string;
+    date: string;
+    happenedAt?: string;
+    dateTimeLabel?: string;
+    createdAt?: string;
+    title: string;
+    text: string;
+    tags: string[];
+    photoUrls?: string[];
+    shareImageUrl?: string;
+  }>,
+  currentRecords: Array<{
+    id: string;
+    date: string;
+    happenedAt?: string;
+    dateTimeLabel?: string;
+    createdAt?: string;
+    title: string;
+    text: string;
+    tags: string[];
+    photoUrls?: string[];
+    shareImageUrl?: string;
+  }>
+) {
+  const merged = new Map<string, (typeof nextRecords)[number]>();
+  mergeCachedMedia(nextRecords, currentRecords).forEach((record) => {
+    merged.set(record.id, {
+      ...record,
+      photoUrls: record.photoUrls || []
+    });
+  });
+  return sortRecords([...merged.values()]);
 }
 
 Page({
@@ -277,9 +337,12 @@ Page({
     recordCategories,
     filterCategoryOptions: ["全部", ...recordCategories],
     selectedFilterCategoryIndex: 0,
-    filterStartDate: "",
-    filterEndDate: "",
+    filterStartDate: currentMonthStartString(),
+    filterEndDate: currentMonthEndString(),
     filterKeyword: "",
+    isLoadingMoreRecords: false,
+    hasMoreRecords: false,
+    nextRecordsOffset: 0,
     recordScopeOptions,
     selectedRecordScopeIndex: 1,
     children: [] as ArchiveChild[],
@@ -346,6 +409,10 @@ Page({
 
       wx.setStorageSync(growthRecordsCacheStorageKey, {
         savedAt: Date.now(),
+        scopeIndex: this.data.selectedRecordScopeIndex,
+        activeChildId: this.data.selectedRecordScopeIndex === 1 ? "" : getActiveChildId(),
+        hasMoreRecords: this.data.hasMoreRecords,
+        nextRecordsOffset: this.data.nextRecordsOffset,
         records: nextRecords
       });
 
@@ -419,6 +486,8 @@ Page({
           savedAt?: number;
           scopeIndex?: number;
           activeChildId?: string;
+          hasMoreRecords?: boolean;
+          nextRecordsOffset?: number;
           records?: unknown[];
         }
       | undefined;
@@ -441,6 +510,8 @@ Page({
     this.setData({
       isLoading: false,
       hasRecordData: true,
+      hasMoreRecords: Boolean(cached.hasMoreRecords),
+      nextRecordsOffset: cached.nextRecordsOffset || (cached.records || []).length,
       allRecords: cached.records,
       records: this.getFilteredRecords(cached.records)
     });
@@ -510,13 +581,16 @@ Page({
     this.setData({
       selectedRecordScopeIndex: nextScopeIndex,
       hasRecordData: false,
+      hasMoreRecords: false,
+      nextRecordsOffset: 0,
       records: [],
       allRecords: []
     });
     wx.removeStorageSync(growthRecordsCacheStorageKey);
     this.loadRecords({ useLoadingState: true });
   },
-  loadRecords(options?: { useLoadingState?: boolean; skipIfFresh?: boolean }) {
+  loadRecords(options?: { useLoadingState?: boolean; skipIfFresh?: boolean; append?: boolean }) {
+    const append = Boolean(options?.append);
     if (options?.skipIfFresh) {
       const cached = wx.getStorageSync(growthRecordsCacheStorageKey) as
         | { savedAt?: number }
@@ -527,16 +601,27 @@ Page({
       }
     }
 
-    if (options?.useLoadingState !== false) {
-      this.setData({ isLoading: true, errorMessage: "" });
+    if (append && (this.data.isLoadingMoreRecords || !this.data.hasMoreRecords)) {
+      return;
     }
 
+    if (options?.useLoadingState !== false) {
+      this.setData({ isLoading: true, errorMessage: "" });
+    } else if (append) {
+      this.setData({ isLoadingMoreRecords: true, errorMessage: "" });
+    }
+
+    const offset = append ? this.data.nextRecordsOffset || 0 : 0;
+    const query = [`limit=${growthRecordsPageSize}`, `offset=${offset}`];
+    if (this.data.selectedRecordScopeIndex === 1) {
+      query.unshift("scope=family");
+    }
     const path =
-      this.data.selectedRecordScopeIndex === 1
-        ? "/api/growth-records?scope=family"
-        : "/api/growth-records";
+      query.length > 0 ? `/api/growth-records?${query.join("&")}` : "/api/growth-records";
 
     void getJson<{
+      hasMore?: boolean;
+      nextOffset?: number;
       records: Array<{
         id: string;
         happened_on: string;
@@ -557,43 +642,113 @@ Page({
       }>;
     }>(path)
       .then((response) => {
-        const records = mergeCachedMedia(
-          (response.records || []).map(formatRecord),
-          this.data.records as Array<{
-            id: string;
-            date: string;
-            happenedAt?: string;
-            dateTimeLabel?: string;
-            createdAt?: string;
-            title: string;
-            text: string;
-            tags: string[];
-            photoUrls?: string[];
-            shareImageUrl?: string;
-          }>
-        );
+        const currentRecords = (append ? this.data.allRecords : []) as Array<{
+          id: string;
+          date: string;
+          happenedAt?: string;
+          dateTimeLabel?: string;
+          createdAt?: string;
+          title: string;
+          text: string;
+          tags: string[];
+          photoUrls?: string[];
+          shareImageUrl?: string;
+        }>;
+        const incomingRecords = (response.records || []).map(formatRecord);
+        const records = append
+          ? mergeRecordPages([...currentRecords, ...incomingRecords], currentRecords)
+          : mergeCachedMedia(
+              incomingRecords,
+              this.data.records as Array<{
+                id: string;
+                date: string;
+                happenedAt?: string;
+                dateTimeLabel?: string;
+                createdAt?: string;
+                title: string;
+                text: string;
+                tags: string[];
+                photoUrls?: string[];
+                shareImageUrl?: string;
+              }>
+            );
+        const filterStartDate = append ? "" : this.data.filterStartDate;
+        const filterEndDate = append ? "" : this.data.filterEndDate;
+        const hasMoreRecords = Boolean(response.hasMore);
+        const nextRecordsOffset = response.nextOffset ?? records.length;
         wx.setStorageSync(growthRecordsCacheStorageKey, {
           savedAt: Date.now(),
           scopeIndex: this.data.selectedRecordScopeIndex,
           activeChildId: this.data.selectedRecordScopeIndex === 1 ? "" : getActiveChildId(),
+          hasMoreRecords,
+          nextRecordsOffset,
           records
         });
         this.setData({
           isLoading: false,
+          isLoadingMoreRecords: false,
           hasRecordData: true,
+          hasMoreRecords,
+          nextRecordsOffset,
+          filterStartDate,
+          filterEndDate,
           allRecords: records,
-          records: this.getFilteredRecords(records)
+          records: filterRecords(
+            sortRecords(records as Array<{
+              id: string;
+              date: string;
+              happenedAt?: string;
+              createdAt?: string;
+              title: string;
+              text: string;
+              tags: string[];
+            }>),
+            {
+              startDate: filterStartDate,
+              endDate: filterEndDate,
+              category: this.data.filterCategoryOptions[this.data.selectedFilterCategoryIndex],
+              keyword: this.data.filterKeyword
+            }
+          )
         });
         this.preloadShareImages(records);
       })
       .catch((error) => {
         this.setData({
           isLoading: false,
+          isLoadingMoreRecords: false,
           hasRecordData: (this.data.records as unknown[]).length > 0,
           errorMessage:
             error.statusCode === 409 ? "请先完成首次配置" : error.error || "成长记录暂时无法同步"
         });
       });
+  },
+  loadMoreRecords() {
+    if (!this.data.hasMoreRecords && (this.data.allRecords as unknown[]).length > (this.data.records as unknown[]).length) {
+      const records = sortRecords(this.data.allRecords as Array<{
+        id: string;
+        date: string;
+        happenedAt?: string;
+        createdAt?: string;
+        title: string;
+        text: string;
+        tags: string[];
+      }>);
+      this.setData({
+        filterStartDate: "",
+        filterEndDate: "",
+        records: filterRecords(records, {
+          category: this.data.filterCategoryOptions[this.data.selectedFilterCategoryIndex],
+          keyword: this.data.filterKeyword
+        })
+      });
+      return;
+    }
+
+    this.loadRecords({ useLoadingState: false, append: true });
+  },
+  onReachBottom() {
+    this.loadMoreRecords();
   },
   onRecordTextInput(event: { detail: { value: string } }) {
     this.setData({ recordText: event.detail.value });
@@ -676,8 +831,8 @@ Page({
   },
   clearFilters() {
     this.setData({
-      filterStartDate: "",
-      filterEndDate: "",
+      filterStartDate: currentMonthStartString(),
+      filterEndDate: currentMonthEndString(),
       filterKeyword: "",
       selectedFilterCategoryIndex: 0
     });

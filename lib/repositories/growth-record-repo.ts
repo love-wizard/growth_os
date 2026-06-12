@@ -162,8 +162,14 @@ export async function getGrowthRecordForSharePreview(
 export async function listRecentGrowthRecords(
   supabase: SupabaseClient,
   input: { familyId: UUID; childId?: UUID; scope?: "child" | "family" },
-  limit = 20
+  options: { limit?: number; offset?: number } | number = 20
 ) {
+  const limit = typeof options === "number" ? options : options.limit ?? 20;
+  const offset = typeof options === "number" ? 0 : options.offset ?? 0;
+  const fetchLimit =
+    input.scope === "family"
+      ? offset + limit + 1
+      : Math.max((offset + limit + 1) * 3, 60);
   const { data, error } = await supabase
     .from("growth_records")
     .select(
@@ -174,7 +180,7 @@ export async function listRecentGrowthRecords(
     .order("happened_at", { ascending: false, nullsFirst: false })
     .order("happened_on", { ascending: false })
     .order("created_at", { ascending: false })
-    .limit(input.scope === "family" ? limit : Math.max(limit * 3, 60));
+    .limit(fetchLimit);
 
   if (error) {
     throw error;
@@ -182,11 +188,15 @@ export async function listRecentGrowthRecords(
 
   const records = data ?? [];
   if (input.scope === "family" || !input.childId) {
-    return records.slice(0, limit);
+    const pageRecords = records.slice(offset, offset + limit);
+    return {
+      records: pageRecords,
+      hasMore: records.length > offset + limit,
+      nextOffset: offset + pageRecords.length
+    };
   }
 
-  return records
-    .filter((record) => {
+  const childRecords = records.filter((record) => {
       const childLinks =
         "growth_record_children" in record && Array.isArray(record.growth_record_children)
           ? record.growth_record_children
@@ -195,8 +205,13 @@ export async function listRecentGrowthRecords(
         record.child_id === input.childId ||
         childLinks.some((link: { child_id?: string }) => link.child_id === input.childId)
       );
-    })
-    .slice(0, limit);
+    });
+  const pageRecords = childRecords.slice(offset, offset + limit);
+  return {
+    records: pageRecords,
+    hasMore: childRecords.length > offset + limit,
+    nextOffset: offset + pageRecords.length
+  };
 }
 
 export async function softDeleteGrowthRecord(

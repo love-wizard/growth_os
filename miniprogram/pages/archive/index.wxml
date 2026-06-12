@@ -63,7 +63,7 @@
     <view class="timeline-header">
       <view>
         <view class="title">时间轴</view>
-        <view class="muted">{{records.length}} 条成长瞬间</view>
+        <view class="muted">{{filterStartDate && filterEndDate ? '本月' : '全部已加载'}} · {{records.length}} 条成长瞬间</view>
       </view>
       <view class="row compact-row">
         <picker mode="selector" range="{{recordScopeOptions}}" value="{{selectedRecordScopeIndex}}" bindchange="onRecordScopeChange">
@@ -85,7 +85,7 @@
         </picker>
         <input class="input-box" placeholder="搜索关键字" value="{{filterKeyword}}" bindinput="onFilterKeywordInput" />
       </view>
-      <button class="button-secondary compact-button" bindtap="clearFilters">清除筛选</button>
+      <button class="button-secondary compact-button" bindtap="clearFilters">回到本月</button>
     </view>
     <view wx:if="{{isLoading && !hasRecordData && !errorMessage}}" class="stack">
       <view class="skeleton-line skeleton-title"></view>
@@ -136,6 +136,16 @@
           </button>
         </view>
       </view>
+    </view>
+    <view wx:if="{{hasRecordData && (hasMoreRecords || allRecords.length > records.length)}}" class="archive-load-more">
+      <button
+        class="button-secondary archive-load-more-button"
+        loading="{{isLoadingMoreRecords}}"
+        disabled="{{isLoadingMoreRecords}}"
+        bindtap="loadMoreRecords"
+      >
+        {{hasMoreRecords ? '加载更早记录' : '查看更早记录'}}
+      </button>
     </view>
     </block>
   </view>

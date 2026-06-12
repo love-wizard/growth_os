@@ -1136,6 +1136,14 @@ page {
   width: 18rpx;
 }
 
+.archive-load-more {
+  padding: 8rpx 0 24rpx 40rpx;
+}
+
+.archive-load-more-button {
+  width: 100%;
+}
+
 .archive-record-card {
   background: rgba(255, 255, 255, 0.78);
   border: 1rpx solid rgba(231, 224, 215, 0.82);

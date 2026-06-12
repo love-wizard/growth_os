@@ -18,6 +18,17 @@ import { createServerSupabaseClient, createServiceRoleSupabaseClient } from "@/l
 import { growthRecordInputSchema } from "@/lib/validation/schemas";
 
 const growthRecordsCacheTtlMs = 60 * 1000;
+const defaultGrowthRecordsLimit = 20;
+const maxGrowthRecordsLimit = 50;
+
+function getBoundedNumber(value: string | null, fallback: number, min: number, max: number) {
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed)) {
+    return fallback;
+  }
+
+  return Math.min(Math.max(Math.trunc(parsed), min), max);
+}
 
 export async function GET(request: NextRequest) {
   const startedAt = nowMs();
@@ -32,44 +43,61 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Family workspace is required" }, { status: 409 });
     }
 
+    const url = new URL(request.url);
     const childId = getChildIdFromRequestUrl(request.url);
-    const scope = new URL(request.url).searchParams.get("scope") === "family" ? "family" : "child";
+    const scope = url.searchParams.get("scope") === "family" ? "family" : "child";
+    const limit = getBoundedNumber(
+      url.searchParams.get("limit"),
+      defaultGrowthRecordsLimit,
+      1,
+      maxGrowthRecordsLimit
+    );
+    const offset = getBoundedNumber(url.searchParams.get("offset"), 0, 0, 1000);
     const cacheKey = familyGrowthRecordsCacheKey(
       membership.family_id,
-      `${scope}:${childId ?? "default"}`
+      `${scope}:${childId ?? "default"}:${limit}:${offset}`
     );
-    const cachedRecords = getCachedResponse(cacheKey);
-    if (cachedRecords) {
+    const cachedPage = getCachedResponse(cacheKey);
+    if (cachedPage) {
       logPerf("api.growth-records", {
         totalMs: elapsedMs(startedAt),
         cache: "hit",
         familyId: membership.family_id,
-        recordCount: Array.isArray(cachedRecords) ? cachedRecords.length : undefined
+        recordCount:
+          typeof cachedPage === "object" &&
+          cachedPage !== null &&
+          "records" in cachedPage &&
+          Array.isArray(cachedPage.records)
+            ? cachedPage.records.length
+            : undefined
       });
-      return NextResponse.json({ records: cachedRecords });
+      return NextResponse.json(cachedPage);
     }
 
     const loadStartedAt = nowMs();
-    const records = await listGrowthRecordsForFamily(supabase, serviceRoleSupabase, {
+    const page = await listGrowthRecordsForFamily(supabase, serviceRoleSupabase, {
       familyId: membership.family_id,
       childId,
       scope,
-      limit: 20
+      limit,
+      offset
     });
 
-    setCachedResponse(cacheKey, records, growthRecordsCacheTtlMs);
+    setCachedResponse(cacheKey, page, growthRecordsCacheTtlMs);
     logPerf("api.growth-records", {
       totalMs: elapsedMs(startedAt),
       dataMs: elapsedMs(loadStartedAt),
       cache: "miss",
       familyId: membership.family_id,
-      recordCount: records.length,
-      mediaCount: records.reduce(
+      recordCount: page.records.length,
+      hasMore: page.hasMore,
+      nextOffset: page.nextOffset,
+      mediaCount: page.records.reduce(
         (count, record) => count + (record.growth_record_media?.length ?? 0),
         0
       )
     });
-    return NextResponse.json({ records });
+    return NextResponse.json(page);
   } catch (error) {
     if (error instanceof Error && error.name === "AuthRequiredError") {
       return NextResponse.json({ error: "Authentication is required" }, { status: 401 });
