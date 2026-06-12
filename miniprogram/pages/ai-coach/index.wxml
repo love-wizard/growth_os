@@ -10,8 +10,28 @@
     <view>
       <view class="caption">饭米粒</view>
       <view class="page-title">把今天的陪伴变具体</view>
-      <view class="subtitle">结合孩子档案、年度目标和最近记录，生成一个适合当下执行的建议。</view>
+      <view class="subtitle">正在结合{{selectedAudienceName}}的成长档案，生成一个适合当下执行的建议。</view>
     </view>
+  </view>
+
+  <view wx:if="{{children.length > 1}}" class="section page-child-selector">
+    <button
+      class="page-child-chip {{selectedScope === 'family' ? 'page-child-chip-active' : ''}}"
+      data-scope="family"
+      bindtap="chooseAudience"
+    >
+      全家
+    </button>
+    <button
+      wx:for="{{children}}"
+      wx:key="id"
+      class="page-child-chip {{selectedScope === 'child' && item.selected ? 'page-child-chip-active' : ''}}"
+      data-scope="child"
+      data-id="{{item.id}}"
+      bindtap="chooseAudience"
+    >
+      {{item.nickname}}
+    </button>
   </view>
 
   <view class="section coach-ask-card stack">

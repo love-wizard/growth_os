@@ -272,7 +272,7 @@ Parents use the AI coach to ask parenting questions, generate activities, analyz
 
 **Why this priority**: The AI coach is part of the MVP promise and must behave like a family growth coach, not a generic chatbot.
 
-**Independent Test**: A tester can open the AI coach tab, choose a quick question or enter a free-form question, and verify that the answer references the child's profile, goals, recent plans, class records, or growth records when relevant.
+**Independent Test**: A tester can open the AI coach tab, choose "whole family" or a specific child as the question scope, choose a quick question or enter a free-form question, and verify that the answer references the relevant family or child profile, goals, recent plans, class records, or growth records when relevant.
 
 **Acceptance Scenarios**:
 

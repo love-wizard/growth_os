@@ -1,4 +1,5 @@
 import {
+  getActiveChildId,
   getJson,
   isTimeoutRequestError,
   postJson,
@@ -190,6 +191,16 @@ function getVisibleHistory(history: HistoryItem[]) {
   return history.slice(0, 3);
 }
 
+type CoachChild = {
+  id: string;
+  nickname: string;
+  selected?: boolean;
+};
+
+function formatAudienceLabel(scope: string, childName: string) {
+  return scope === "family" ? "全家" : childName || "孩子";
+}
+
 const emptyAnswer = {
   contextLabel: "",
   title: "",
@@ -209,6 +220,10 @@ Page({
     isHistoryLoading: false,
     hasAnswer: false,
     errorMessage: "",
+    children: [] as CoachChild[],
+    selectedScope: "family",
+    selectedChildId: "",
+    selectedAudienceName: "全家",
     prompts: [
       "孩子不想练琴怎么办？",
       "今晚只有30分钟",
@@ -226,7 +241,49 @@ Page({
   },
   onShow() {
     this.loadHistory();
-    this.consumePrefilledPrompt();
+    void this.loadChildren().then(() => this.consumePrefilledPrompt());
+  },
+  loadChildren() {
+    return getJson<{ children: CoachChild[] }>("/api/children")
+      .then((response) => {
+        const rawChildren = response.children || [];
+        const selectedScope = rawChildren.length > 1 ? this.data.selectedScope : "child";
+        const selectedChildId =
+          this.data.selectedChildId ||
+          getActiveChildId() ||
+          rawChildren[0]?.id ||
+          "";
+        const selectedChildName =
+          rawChildren.find((child) => child.id === selectedChildId)?.nickname ||
+          rawChildren[0]?.nickname ||
+          "";
+
+        this.setData({
+          children: rawChildren.map((child) => ({
+            ...child,
+            selected: selectedScope === "child" && child.id === selectedChildId
+          })),
+          selectedScope,
+          selectedChildId,
+          selectedAudienceName: formatAudienceLabel(selectedScope, selectedChildName)
+        });
+      })
+      .catch(() => undefined);
+  },
+  chooseAudience(event: { currentTarget: { dataset: { scope?: string; id?: string } } }) {
+    const scope = event.currentTarget.dataset.scope === "family" ? "family" : "child";
+    const childId = event.currentTarget.dataset.id || this.data.selectedChildId;
+    const child = (this.data.children as CoachChild[]).find((item) => item.id === childId);
+
+    this.setData({
+      selectedScope: scope,
+      selectedChildId: childId || "",
+      selectedAudienceName: formatAudienceLabel(scope, child?.nickname || ""),
+      children: (this.data.children as CoachChild[]).map((item) => ({
+        ...item,
+        selected: scope === "child" && item.id === childId
+      }))
+    });
   },
   selectPrompt(event: { currentTarget: { dataset: { prompt: string } } }) {
     const prompt = event.currentTarget.dataset.prompt;
@@ -245,13 +302,49 @@ Page({
     this.runCoachMessage(message);
   },
   runCoachMessage(message: string) {
+    const mode = inferMode(message);
+    let selectedScope = this.data.selectedScope;
+    let selectedChildId = this.data.selectedChildId;
+    let selectedAudienceName = this.data.selectedAudienceName;
+
+    if (mode === "weekly_plan_draft" && selectedScope === "family") {
+      const child =
+        (this.data.children as CoachChild[]).find((item) => item.id === selectedChildId) ||
+        (this.data.children as CoachChild[])[0];
+      if (!child) {
+        wx.showToast({ title: "下周计划需要先创建孩子档案", icon: "none" });
+        return;
+      }
+
+      selectedScope = "child";
+      selectedChildId = child.id;
+      selectedAudienceName = child.nickname;
+      this.setData({
+        selectedScope,
+        selectedChildId,
+        selectedAudienceName,
+        children: (this.data.children as CoachChild[]).map((item) => ({
+          ...item,
+          selected: item.id === child.id
+        }))
+      });
+      wx.showToast({ title: `已切到${child.nickname}`, icon: "none" });
+    }
+
+    const requestPath =
+      selectedScope === "family"
+        ? "/api/ai/coach?scope=family"
+        : selectedChildId
+          ? `/api/ai/coach?childId=${encodeURIComponent(selectedChildId)}`
+          : "/api/ai/coach";
+
     this.setData({ isLoading: true, errorMessage: "" });
     void postJsonWithOptions<{
       conversationId: string;
       response: any;
       weeklyPlanDraftId?: string | null;
-    }>("/api/ai/coach", {
-      mode: inferMode(message),
+    }>(requestPath, {
+      mode,
       message
     }, {
       timeoutMs: aiRequestTimeoutMs
@@ -260,7 +353,7 @@ Page({
         const answer = formatCoachResponse(result.response);
         const historyItem = buildHistoryItem({
           id: result.conversationId || `${Date.now()}`,
-          mode: inferMode(message),
+          mode,
           message,
           response: result.response,
           created_at: new Date().toISOString(),
@@ -279,6 +372,7 @@ Page({
           visibleHistory: getVisibleHistory(history),
           answer: {
             ...answer,
+            contextLabel: `${selectedAudienceName} · ${answer.contextLabel}`,
             weeklyPlanDraftId:
               answer.isWeeklyPlanDraft && result.weeklyPlanDraftId ? result.weeklyPlanDraftId : ""
           },
