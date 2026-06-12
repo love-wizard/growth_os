@@ -390,6 +390,41 @@ page {
   flex: 0 0 auto;
 }
 
+.companionship-insight-card {
+  background: rgba(255, 253, 248, 0.82);
+  border-color: rgba(226, 213, 197, 0.76);
+  border-radius: 28rpx;
+  box-shadow: 0 18rpx 48rpx rgba(88, 74, 56, 0.05);
+  padding: 30rpx 32rpx;
+}
+
+.insight-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+}
+
+.insight-chip {
+  background: rgba(238, 248, 243, 0.92);
+  border: 1rpx solid rgba(201, 227, 214, 0.76);
+  border-radius: 999rpx;
+  color: #3f8f6b;
+  font-size: 23rpx;
+  font-weight: 650;
+  line-height: 34rpx;
+  padding: 8rpx 16rpx;
+}
+
+.family-action-note {
+  background: rgba(255, 255, 255, 0.68);
+  border: 1rpx solid rgba(231, 224, 215, 0.7);
+  border-radius: 20rpx;
+  color: #5f685f;
+  font-size: 26rpx;
+  line-height: 40rpx;
+  padding: 20rpx 22rpx;
+}
+
 .home-summary-grid {
   display: grid;
   gap: 16rpx;

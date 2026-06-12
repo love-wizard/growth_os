@@ -66,12 +66,14 @@ const roleClasses = {
 };
 
 function formatChildSummary(summary) {
-  const progress = summary.plannedCount > 0
-    ? `${summary.completedCount}/${summary.plannedCount}`
-    : "轻松";
+  const rhythmLabel = summary.plannedCount === 0
+    ? "留个空白"
+    : summary.completedCount >= summary.plannedCount
+      ? "节奏很好"
+      : "有小推进";
   return {
     ...summary,
-    progress,
+    rhythmLabel,
     weeklyTheme: summary.weeklyTheme || "轻松陪伴",
     todayAction: summary.todayAction || "留一个被看见的小瞬间"
   };
@@ -208,6 +210,7 @@ Page({
     childNickname: "",
     children: [],
     childSummaries: [],
+    companionshipInsight: null,
     dailyQuote: getDailyQuote(),
     weeklyTheme: "",
     taskCount: "",
@@ -271,6 +274,7 @@ Page({
       childNickname: dashboard.child ? dashboard.child.nickname : "孩子",
       children,
       childSummaries,
+      companionshipInsight: dashboard.companionshipInsight || null,
       weeklyTheme,
       taskCount: `${tasks.length}件小事`,
       todayAction: children.length > 1 ? familyAction : {

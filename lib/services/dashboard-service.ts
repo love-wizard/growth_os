@@ -34,6 +34,7 @@ export async function getDashboardData(
       annualGoals: [],
       weeklyPlan: null,
       todayGuidance: null,
+      companionshipInsight: null,
       progress: getSupportiveProgressCopy([]),
       todayTasks: []
     };
@@ -68,6 +69,7 @@ export async function getDashboardData(
     annualGoals,
     weeklyPlan,
     todayGuidance: buildTodayGuidance(weeklyPlan),
+    companionshipInsight: buildCompanionshipInsight(children, childSummaries),
     progress: getSupportiveProgressCopy(
       todayTasks.map((task) => ({
         plannedCount: task.planned_count,
@@ -109,6 +111,54 @@ async function getChildSummaries(
   );
 
   return summaries;
+}
+
+function buildCompanionshipInsight(
+  children: DashboardChild[],
+  summaries: Awaited<ReturnType<typeof getChildSummaries>>
+) {
+  if (children.length <= 1) {
+    return null;
+  }
+
+  const openSummaries = summaries.filter((summary) => summary.completedCount < summary.plannedCount);
+  const settledSummaries = summaries.filter(
+    (summary) => summary.plannedCount > 0 && summary.completedCount >= summary.plannedCount
+  );
+  const quietSummaries = summaries.filter((summary) => summary.taskCount === 0);
+  const focusNames = (openSummaries.length ? openSummaries : summaries)
+    .slice(0, 2)
+    .map((summary) => summary.nickname)
+    .join("、");
+
+  if (openSummaries.length === 0) {
+    return {
+      title: "今天适合轻轻收尾",
+      description: "本周的小事已经很有节奏了。今天可以少安排一点，把时间留给聊天、拥抱和自由玩。",
+      primaryAction: "饭米粒建议：晚饭后问每个孩子一个具体问题，比如“今天哪一刻最开心？”",
+      chips: ["不需要补任务", "多留自由时间", "记录一个共同瞬间"]
+    };
+  }
+
+  if (quietSummaries.length > 0) {
+    return {
+      title: "先把共同陪伴稳住",
+      description: "有的孩子今天还没有明确任务。可以先做一件全家都能加入的小事，再给每个孩子一句单独回应。",
+      primaryAction: `饭米粒建议：先安排10分钟共同活动，结束前分别看见${focusNames || "每个孩子"}。`,
+      chips: ["共同活动优先", "分别回应一句", "不做进度比较"]
+    };
+  }
+
+  return {
+    title: "今天每个孩子都有一点小推进",
+    description: "不用把任务平均分给父母。先做一件共同的小事，再按每个孩子当前主题轻轻推进。",
+    primaryAction: `饭米粒建议：今天重点看见${focusNames || "每个孩子"}，每人一个具体反馈就够了。`,
+    chips: [
+      `${children.length}个孩子一起看见`,
+      settledSummaries.length > 0 ? "有人已经很有节奏" : "小步推进就好",
+      "不比较完成量"
+    ]
+  };
 }
 
 function buildTodayGuidance(weeklyPlan: DashboardWeeklyPlan | null) {

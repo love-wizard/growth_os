@@ -71,8 +71,20 @@
           <view class="caption">本周《{{item.weeklyTheme}}》</view>
           <view class="muted">{{item.todayAction}}</view>
         </view>
-        <view class="progress-pill">{{item.progress}}</view>
+        <view class="progress-pill">{{item.rhythmLabel}}</view>
       </view>
+    </view>
+
+    <view wx:if="{{companionshipInsight}}" class="section card companionship-insight-card stack">
+      <view>
+        <view class="caption">饭米粒看全家</view>
+        <view class="title">{{companionshipInsight.title}}</view>
+      </view>
+      <view class="muted">{{companionshipInsight.description}}</view>
+      <view class="insight-chip-row">
+        <view class="insight-chip" wx:for="{{companionshipInsight.chips}}" wx:key="*this">{{item}}</view>
+      </view>
+      <view class="family-action-note">{{companionshipInsight.primaryAction}}</view>
     </view>
 
     <view class="section home-summary-grid">

@@ -83,13 +83,22 @@ type ChildSummary = {
   todayAction: string;
 };
 
+type CompanionshipInsight = {
+  title: string;
+  description: string;
+  primaryAction: string;
+  chips: string[];
+};
+
 function formatChildSummary(summary: ChildSummary) {
-  const progress = summary.plannedCount > 0
-    ? `${summary.completedCount}/${summary.plannedCount}`
-    : "轻松";
+  const rhythmLabel = summary.plannedCount === 0
+    ? "留个空白"
+    : summary.completedCount >= summary.plannedCount
+      ? "节奏很好"
+      : "有小推进";
   return {
     ...summary,
-    progress,
+    rhythmLabel,
     weeklyTheme: summary.weeklyTheme || "轻松陪伴",
     todayAction: summary.todayAction || "留一个被看见的小瞬间"
   };
@@ -268,6 +277,7 @@ Page({
     childNickname: "",
     children: [] as Array<{ id: string; nickname: string }>,
     childSummaries: [] as ReturnType<typeof formatChildSummary>[],
+    companionshipInsight: null as CompanionshipInsight | null,
     dailyQuote: getDailyQuote(),
     weeklyTheme: "",
     taskCount: "",
@@ -318,6 +328,7 @@ Page({
         childSummaries?: ChildSummary[];
         weeklyPlan: { theme: string } | null;
         todayGuidance: { title: string; description: string } | null;
+        companionshipInsight?: CompanionshipInsight | null;
         progress: { description: string } | null;
         todayTasks: Array<{
           id: string;
@@ -336,6 +347,7 @@ Page({
     childSummaries?: ChildSummary[];
     weeklyPlan: { theme: string } | null;
     todayGuidance: { title: string; description: string } | null;
+    companionshipInsight?: CompanionshipInsight | null;
     progress: { description: string } | null;
     todayTasks: Array<{
       id: string;
@@ -368,6 +380,7 @@ Page({
       childNickname: dashboard.child ? dashboard.child.nickname : "孩子",
       children,
       childSummaries,
+      companionshipInsight: dashboard.companionshipInsight || null,
       weeklyTheme,
       taskCount: `${tasks.length}件小事`,
       todayAction: children.length > 1 ? familyAction : {
@@ -402,6 +415,7 @@ Page({
       childSummaries?: ChildSummary[];
       weeklyPlan: { theme: string } | null;
       todayGuidance: { title: string; description: string } | null;
+      companionshipInsight?: CompanionshipInsight | null;
       progress: { description: string } | null;
       todayTasks: Array<{
         id: string;
