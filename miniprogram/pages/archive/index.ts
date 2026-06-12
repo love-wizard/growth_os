@@ -19,6 +19,7 @@ const recordScopeOptions = ["默认孩子", "全家"];
 type ArchiveChild = {
   id: string;
   nickname: string;
+  avatarText?: string;
   selected?: boolean;
 };
 
@@ -441,6 +442,7 @@ Page({
           : allChildIds;
         const children = rawChildren.map((child) => ({
           ...child,
+          avatarText: child.nickname.slice(0, 1),
           selected: selectedChildIds.includes(child.id)
         }));
 
@@ -532,8 +534,21 @@ Page({
     this.setData({ isFilterOpen: !this.data.isFilterOpen });
   },
   onRecordScopeChange(event: { detail: { value: string | number } }) {
+    this.switchRecordScope(Number(event.detail.value));
+  },
+  setFamilyRecordScope() {
+    this.switchRecordScope(1);
+  },
+  setChildRecordScope() {
+    this.switchRecordScope(0);
+  },
+  switchRecordScope(nextScopeIndex: number) {
+    if (nextScopeIndex === this.data.selectedRecordScopeIndex) {
+      return;
+    }
+
     this.setData({
-      selectedRecordScopeIndex: Number(event.detail.value),
+      selectedRecordScopeIndex: nextScopeIndex,
       hasRecordData: false,
       records: [],
       allRecords: []

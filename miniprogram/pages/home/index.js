@@ -255,7 +255,8 @@ Page({
     const weeklyTheme = dashboard.weeklyPlan ? dashboard.weeklyPlan.theme : "轻松陪伴";
     const children = (dashboard.children || []).map((child) => ({
       id: child.id,
-      nickname: child.nickname
+      nickname: child.nickname,
+      avatarText: child.nickname.slice(0, 1)
     }));
     if (dashboard.child && dashboard.child.nickname) {
       setActiveChildId(dashboard.child.id);

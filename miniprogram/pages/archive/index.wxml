@@ -12,6 +12,28 @@
     <view class="muted">完成首次配置后，就可以记录孩子的真实成长瞬间。</view>
   </view>
 
+  <view wx:if="{{children.length > 1}}" class="section family-archive-panel">
+    <view class="family-mode-topline">
+      <view>
+        <view class="caption">全家时间轴</view>
+        <view class="family-mode-title">共同瞬间和单独瞬间都放在一起</view>
+      </view>
+      <view class="family-mode-badge">{{recordScopeOptions[selectedRecordScopeIndex]}}</view>
+    </view>
+    <view class="archive-scope-strip">
+      <view class="archive-scope-pill {{selectedRecordScopeIndex === 1 ? 'archive-scope-pill-active' : ''}}" bindtap="setFamilyRecordScope">全家时间轴</view>
+      <view class="archive-scope-pill {{selectedRecordScopeIndex !== 1 ? 'archive-scope-pill-active' : ''}}" bindtap="setChildRecordScope">当前孩子</view>
+    </view>
+    <view class="family-mode-rail archive-family-rail">
+      <view class="family-mode-child" wx:for="{{children}}" wx:key="id">
+        <view class="family-mode-avatar">{{item.avatarText}}</view>
+        <view class="family-mode-name">{{item.nickname}}</view>
+      </view>
+      <view class="family-mode-connector"></view>
+    </view>
+    <view class="family-mode-note">记录时可以关联多个孩子，分享和报告会保留这个家庭关系。</view>
+  </view>
+
   <view class="section card archive-report-card">
     <view>
       <view class="caption">本月月报</view>

@@ -18,6 +18,24 @@
     </view>
   </view>
 
+  <view wx:if="{{children.length > 1}}" class="section family-mode-panel">
+    <view class="family-mode-topline">
+      <view>
+        <view class="caption">全家视角</view>
+        <view class="family-mode-title">今天一起照看 {{children.length}} 个孩子</view>
+      </view>
+      <view class="family-mode-badge">不比较</view>
+    </view>
+    <view class="family-mode-rail">
+      <view class="family-mode-child" wx:for="{{children}}" wx:key="id">
+        <view class="family-mode-avatar">{{item.avatarText}}</view>
+        <view class="family-mode-name">{{item.nickname}}</view>
+      </view>
+      <view class="family-mode-connector"></view>
+    </view>
+    <view class="family-mode-note">先安排一个共同陪伴时刻，再给每个孩子一句单独回应。</view>
+  </view>
+
   <view class="section quote-card">
     <view class="quote-topline">
       <view class="quote-eyebrow">今日摘录</view>

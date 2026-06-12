@@ -128,6 +128,111 @@ page {
   width: 10rpx;
 }
 
+.family-mode-panel,
+.family-archive-panel {
+  background: linear-gradient(145deg, rgba(255, 253, 248, 0.94), rgba(236, 247, 241, 0.9));
+  border: 1rpx solid rgba(214, 226, 216, 0.82);
+  border-radius: 30rpx;
+  box-shadow: 0 20rpx 54rpx rgba(88, 74, 56, 0.055);
+  box-sizing: border-box;
+  overflow: hidden;
+  padding: 30rpx 30rpx 26rpx;
+}
+
+.family-mode-topline {
+  align-items: flex-start;
+  display: flex;
+  gap: 18rpx;
+  justify-content: space-between;
+}
+
+.family-mode-title {
+  color: #25211c;
+  font-size: 34rpx;
+  font-weight: 700;
+  line-height: 48rpx;
+  margin-top: 4rpx;
+}
+
+.family-mode-badge {
+  background: rgba(255, 255, 255, 0.74);
+  border: 1rpx solid rgba(226, 213, 197, 0.82);
+  border-radius: 999rpx;
+  color: #3f8f6b;
+  flex: 0 0 auto;
+  font-size: 23rpx;
+  font-weight: 700;
+  line-height: 34rpx;
+  padding: 8rpx 16rpx;
+}
+
+.family-mode-rail {
+  display: flex;
+  gap: 18rpx;
+  margin-top: 24rpx;
+  overflow-x: auto;
+  padding: 2rpx 0 8rpx;
+  position: relative;
+  white-space: nowrap;
+}
+
+.family-mode-connector {
+  background: rgba(201, 227, 214, 0.82);
+  height: 2rpx;
+  left: 34rpx;
+  position: absolute;
+  right: 34rpx;
+  top: 34rpx;
+  z-index: 0;
+}
+
+.family-mode-child {
+  align-items: center;
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  gap: 8rpx;
+  min-width: 92rpx;
+  position: relative;
+  z-index: 1;
+}
+
+.family-mode-avatar {
+  align-items: center;
+  background: linear-gradient(180deg, #ffffff 0%, #f1e6d4 100%);
+  border: 1rpx solid rgba(218, 193, 157, 0.82);
+  border-radius: 999rpx;
+  box-shadow: 0 8rpx 20rpx rgba(99, 77, 49, 0.08);
+  color: #6e665d;
+  display: flex;
+  font-size: 26rpx;
+  font-weight: 750;
+  height: 68rpx;
+  justify-content: center;
+  line-height: 68rpx;
+  width: 68rpx;
+}
+
+.family-mode-name {
+  color: #6e665d;
+  font-size: 23rpx;
+  font-weight: 650;
+  line-height: 32rpx;
+  max-width: 108rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.family-mode-note {
+  background: rgba(255, 255, 255, 0.58);
+  border-radius: 18rpx;
+  color: #5f685f;
+  font-size: 25rpx;
+  line-height: 38rpx;
+  margin-top: 18rpx;
+  padding: 18rpx 20rpx;
+}
+
 .page-heading {
   align-items: flex-start;
   display: flex;
@@ -948,6 +1053,41 @@ page {
 
 .annual-report-result {
   background: linear-gradient(145deg, rgba(255, 253, 248, 0.94), rgba(238, 248, 243, 0.88));
+}
+
+.family-archive-panel {
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.88), rgba(244, 239, 231, 0.88));
+}
+
+.archive-scope-strip {
+  background: rgba(255, 255, 255, 0.62);
+  border: 1rpx solid rgba(231, 224, 215, 0.72);
+  border-radius: 20rpx;
+  display: grid;
+  gap: 8rpx;
+  grid-template-columns: 1fr 1fr;
+  margin-top: 22rpx;
+  padding: 8rpx;
+}
+
+.archive-scope-pill {
+  border-radius: 16rpx;
+  color: #8d7d6c;
+  font-size: 25rpx;
+  font-weight: 700;
+  line-height: 38rpx;
+  padding: 14rpx 16rpx;
+  text-align: center;
+}
+
+.archive-scope-pill-active {
+  background: #3f8f6b;
+  color: #ffffff;
+  box-shadow: 0 10rpx 24rpx rgba(63, 143, 107, 0.18);
+}
+
+.archive-family-rail {
+  margin-top: 20rpx;
 }
 
 .timeline-header {
