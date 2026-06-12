@@ -326,7 +326,7 @@ async function fetchGrowthRecords(
   const { data, error } = await supabase
     .from("growth_records")
     .select(
-      "id,child_id,happened_on,text,tags,parent_notes,deleted_at,growth_record_children(child_id,child_profiles(nickname)),child_profiles!inner(family_id)"
+      "id,child_id,happened_on,text,tags,parent_notes,deleted_at,growth_record_children(child_id,child_profiles!growth_record_children_child_id_fkey(nickname)),child_profiles!growth_records_child_id_fkey!inner(family_id)"
     )
     .eq("child_profiles.family_id", input.familyId)
     .is("deleted_at", null)

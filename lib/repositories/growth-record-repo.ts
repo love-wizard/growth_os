@@ -122,7 +122,7 @@ export async function getGrowthRecordForFamily(
   const { data, error } = await supabase
     .from("growth_records")
     .select(
-      "id,child_id,happened_on,happened_at,text,tags,parent_notes,draft_status,deleted_at,restore_until,growth_record_media(id,storage_path,media_type,file_name,mime_type,size_bytes),child_profiles!inner(family_id)"
+      "id,child_id,happened_on,happened_at,text,tags,parent_notes,draft_status,deleted_at,restore_until,growth_record_media(id,storage_path,media_type,file_name,mime_type,size_bytes),child_profiles!growth_records_child_id_fkey!inner(family_id)"
     )
     .eq("id", input.recordId)
     .eq("child_profiles.family_id", input.familyId)
@@ -142,7 +142,7 @@ export async function getGrowthRecordForSharePreview(
   const { data, error } = await supabase
     .from("growth_records")
     .select(
-      "id,child_id,happened_on,happened_at,text,tags,parent_notes,draft_status,deleted_at,restore_until,growth_record_media(id,storage_path,media_type,file_name,mime_type,size_bytes),child_profiles!inner(nickname,families!inner(name))"
+      "id,child_id,happened_on,happened_at,text,tags,parent_notes,draft_status,deleted_at,restore_until,growth_record_media(id,storage_path,media_type,file_name,mime_type,size_bytes),child_profiles!growth_records_child_id_fkey!inner(nickname,families!inner(name))"
     )
     .eq("id", recordId)
     .maybeSingle();
@@ -167,7 +167,7 @@ export async function listRecentGrowthRecords(
   const { data, error } = await supabase
     .from("growth_records")
     .select(
-      "id,child_id,happened_on,happened_at,text,tags,parent_notes,draft_status,created_at,growth_record_media(id,storage_path,media_type,file_name,mime_type,size_bytes),growth_record_children(child_id,child_profiles(nickname)),child_profiles!inner(family_id)"
+      "id,child_id,happened_on,happened_at,text,tags,parent_notes,draft_status,created_at,growth_record_media(id,storage_path,media_type,file_name,mime_type,size_bytes),growth_record_children(child_id,child_profiles!growth_record_children_child_id_fkey(nickname)),child_profiles!growth_records_child_id_fkey!inner(family_id)"
     )
     .eq("child_profiles.family_id", input.familyId)
     .is("deleted_at", null)
