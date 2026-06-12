@@ -941,6 +941,15 @@ page {
   min-width: 0;
 }
 
+.annual-report-card {
+  background: rgba(255, 253, 248, 0.8);
+  border-color: rgba(226, 213, 197, 0.78);
+}
+
+.annual-report-result {
+  background: linear-gradient(145deg, rgba(255, 253, 248, 0.94), rgba(238, 248, 243, 0.88));
+}
+
 .timeline-header {
   align-items: center;
   display: flex;

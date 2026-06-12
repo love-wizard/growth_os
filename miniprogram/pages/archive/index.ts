@@ -181,6 +181,36 @@ function formatMonthlyReport(response: any) {
   };
 }
 
+function formatAnnualReport(response: any) {
+  const report = formatMonthlyReport(response);
+  if (!report) {
+    return null;
+  }
+
+  const sections = [...report.sections];
+  if (!sections.some((section) => section.area.includes("共同瞬间"))) {
+    sections.push({
+      area: "共同瞬间",
+      summary: "饭米粒会把这一年全家一起完成、一起经历的时刻单独整理出来。",
+      evidence: []
+    });
+  }
+
+  if (!sections.some((section) => section.area.includes("父母寄语"))) {
+    sections.push({
+      area: "父母寄语",
+      summary: "给孩子的话可以继续补充成爸爸、妈妈各自的温暖寄语。",
+      evidence: []
+    });
+  }
+
+  return {
+    title: report.title || `${new Date().getFullYear()}家庭成长报告`,
+    sections,
+    nextActions: report.nextActions
+  };
+}
+
 function sortRecords<T extends { date: string; happenedAt?: string; createdAt?: string }>(records: T[]) {
   return [...records].sort((left, right) => {
     const leftTime = left.happenedAt || left.createdAt || left.date;
@@ -272,8 +302,19 @@ Page({
     children: [] as ArchiveChild[],
     selectedChildIds: [] as string[],
     isGeneratingMonthlyReport: false,
+    isGeneratingAnnualReport: false,
     monthlyReportError: "",
+    annualReportError: "",
     monthlyReport: null as null | {
+      title: string;
+      sections: Array<{
+        area: string;
+        summary: string;
+        evidence: string[];
+      }>;
+      nextActions: string[];
+    },
+    annualReport: null as null | {
       title: string;
       sections: Array<{
         area: string;
@@ -779,6 +820,40 @@ Page({
         this.setData({
           isGeneratingMonthlyReport: false,
           monthlyReportError: message
+        });
+      });
+  },
+  generateAnnualReport() {
+    this.setData({
+      isGeneratingAnnualReport: true,
+      annualReportError: "",
+      annualReport: null
+    });
+
+    void postJsonWithOptions<{
+      response?: any;
+    }>("/api/ai/coach?scope=family", {
+      mode: "growth_analysis",
+      message:
+        "请基于今年全家成长记录，生成一份年度家庭成长报告。必须包含章节：关键成长瞬间、共同瞬间、能力变化、父母寄语、下一年温和陪伴建议。共同瞬间要整理家庭一起完成或多个孩子共同参与的记录；父母寄语要用温暖、具体、不说教的口吻写给孩子和全家。不要排名或比较孩子。"
+    }, {
+      timeoutMs: aiRequestTimeoutMs
+    })
+      .then((result) => {
+        const annualReport = formatAnnualReport(result.response);
+        this.setData({
+          isGeneratingAnnualReport: false,
+          annualReport,
+          annualReportError: annualReport ? "" : "年度报告生成结果格式不完整，请再试一次。"
+        });
+      })
+      .catch((error) => {
+        const message = isTimeoutRequestError(error)
+          ? "年度报告生成时间较长，已超过等待时间，请再试一次。"
+          : error.error || "年度报告生成未成功";
+        this.setData({
+          isGeneratingAnnualReport: false,
+          annualReportError: message
         });
       });
   },
