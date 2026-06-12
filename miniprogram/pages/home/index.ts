@@ -95,14 +95,25 @@ function formatChildSummary(summary: ChildSummary) {
   };
 }
 
-function buildFamilyAction(children: Array<{ nickname: string }>) {
+function buildFamilyAction(
+  children: Array<{ nickname: string }>,
+  summaries: ReturnType<typeof formatChildSummary>[] = []
+) {
   if (children.length > 1) {
     const names = children.map((child) => child.nickname).join("、");
+    const openSummaries = summaries.filter((summary) => summary.completedCount < summary.plannedCount);
+    const focusSummaries = (openSummaries.length ? openSummaries : summaries).slice(0, 2);
+    const focusText = focusSummaries.length
+      ? focusSummaries
+          .map((summary) => `${summary.nickname}可以轻轻推进「${summary.todayAction}」`)
+          .join("；")
+      : `给${names}各留一句具体回应`;
+
     return {
-      title: "一次共同陪伴，再各自被看见",
-      context: `今天先安排一个${names}都能参与的小活动，再给每个孩子一句单独回应。`,
+      title: "先一起做一件事，再各自被看见",
+      context: `先安排一个${names}都能参与的小活动。结束前留2分钟分别回应：${focusText}。`,
       minutes: "20分钟",
-      why: "多孩家庭不需要平均用力，先让共同关系稳定，再让每个孩子感到自己被看见。"
+      why: "多孩家庭不需要平均用力。饭米粒会先稳住共同关系，再帮父母看见每个孩子今天最适合的小推进。"
     };
   }
 
@@ -347,7 +358,8 @@ Page({
         savedAt: Date.now()
       });
     }
-    const familyAction = buildFamilyAction(children);
+    const childSummaries = (dashboard.childSummaries || []).map(formatChildSummary);
+    const familyAction = buildFamilyAction(children, childSummaries);
 
     this.setData({
       isLoading: false,
@@ -355,7 +367,7 @@ Page({
       setupRequired: false,
       childNickname: dashboard.child ? dashboard.child.nickname : "孩子",
       children,
-      childSummaries: (dashboard.childSummaries || []).map(formatChildSummary),
+      childSummaries,
       weeklyTheme,
       taskCount: `${tasks.length}件小事`,
       todayAction: children.length > 1 ? familyAction : {

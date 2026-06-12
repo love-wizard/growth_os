@@ -25,6 +25,14 @@ export const childProfileInputSchema = z.object({
   gender: nonEmptyText
 });
 
+export const childProfileUpdateSchema = z.object({
+  name: nonEmptyText.optional(),
+  nickname: nonEmptyText.optional(),
+  birthDate: dateString.optional(),
+  gender: nonEmptyText.optional(),
+  profileColor: z.string().trim().regex(/^#[0-9A-Fa-f]{6}$/).optional()
+});
+
 export const annualGoalInputSchema = z.object({
   title: nonEmptyText,
   category: z.string().trim().optional()

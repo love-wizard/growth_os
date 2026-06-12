@@ -9,6 +9,7 @@ export interface ChildProfileRecord {
   nickname: string;
   birth_date: string;
   gender: string;
+  profile_color?: string;
   created_at: string;
 }
 
@@ -38,7 +39,7 @@ export async function createChildProfile(
 export async function listFamilyChildren(supabase: SupabaseClient, familyId: UUID) {
   const { data, error } = await supabase
     .from("child_profiles")
-    .select("id,family_id,name,nickname,birth_date,gender,created_at")
+    .select("id,family_id,name,nickname,birth_date,gender,profile_color,created_at")
     .eq("family_id", familyId)
     .order("created_at", { ascending: true });
 
@@ -55,9 +56,55 @@ export async function getFamilyChild(
 ) {
   const { data, error } = await supabase
     .from("child_profiles")
-    .select("id,family_id,name,nickname,birth_date,gender,created_at")
+    .select("id,family_id,name,nickname,birth_date,gender,profile_color,created_at")
     .eq("family_id", input.familyId)
     .eq("id", input.childId)
+    .maybeSingle();
+
+  if (error) {
+    throw error;
+  }
+
+  return data as ChildProfileRecord | null;
+}
+
+export async function updateFamilyChildProfile(
+  supabase: SupabaseClient,
+  input: {
+    familyId: UUID;
+    childId: UUID;
+    childProfile: {
+      name?: string;
+      nickname?: string;
+      birthDate?: string;
+      gender?: string;
+      profileColor?: string;
+    };
+  }
+) {
+  const updates: Record<string, string> = {};
+  if (input.childProfile.name) {
+    updates.name = input.childProfile.name;
+  }
+  if (input.childProfile.nickname) {
+    updates.nickname = input.childProfile.nickname;
+  }
+  if (input.childProfile.birthDate) {
+    updates.birth_date = input.childProfile.birthDate;
+  }
+  if (input.childProfile.gender) {
+    updates.gender = input.childProfile.gender;
+  }
+  if (input.childProfile.profileColor) {
+    updates.profile_color = input.childProfile.profileColor;
+  }
+
+  const { data, error } = await supabase
+    .from("child_profiles")
+    .update(updates)
+    .eq("family_id", input.familyId)
+    .eq("id", input.childId)
+    .select("id,family_id,name,nickname,birth_date,gender,profile_color,created_at")
     .maybeSingle();
 
   if (error) {

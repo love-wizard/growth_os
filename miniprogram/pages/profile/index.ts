@@ -37,10 +37,14 @@ type ParentProfile = {
 
 type FamilyChild = {
   id: string;
+  name?: string;
   nickname: string;
   birth_date?: string;
   gender?: string;
+  profile_color?: string;
 };
+
+const childColorOptions = ["#E7F3EC", "#F6E7D8", "#E8EEF9", "#F5E6EA", "#F2EDD8"];
 
 function clearChildScopedCaches() {
   [
@@ -98,10 +102,27 @@ function calculateAge(birthDate?: string) {
   return `${Math.max(age, 0)}岁`;
 }
 
+function getGenderLabel(gender?: string) {
+  if (gender === "male") {
+    return "男孩";
+  }
+
+  if (gender === "female") {
+    return "女孩";
+  }
+
+  return "未填性别";
+}
+
 function buildChildCards(children?: FamilyChild[], activeChildId?: string) {
   return (children || []).map((child) => ({
     id: child.id,
+    name: child.name || child.nickname,
     nickname: child.nickname,
+    birthDate: child.birth_date || "",
+    gender: child.gender || "",
+    genderLabel: getGenderLabel(child.gender),
+    profileColor: child.profile_color || childColorOptions[0],
     age: calculateAge(child.birth_date),
     initial: child.nickname.slice(0, 1),
     selected: child.id === activeChildId
@@ -147,11 +168,25 @@ Page({
     },
     children: [] as Array<{
       id: string;
+      name: string;
       nickname: string;
+      birthDate: string;
+      gender: string;
+      genderLabel: string;
+      profileColor: string;
       age: string;
       initial: string;
       selected: boolean;
     }>,
+    isChildEditorOpen: false,
+    isSavingChild: false,
+    childColorOptions,
+    editingChildId: "",
+    editingChildName: "",
+    editingChildNickname: "",
+    editingChildBirthDate: "",
+    editingChildGender: "",
+    editingChildColor: childColorOptions[0],
     reminders: buildReminders(),
     reminderStatus: "",
     showDevTools: false
@@ -430,6 +465,79 @@ Page({
       profileStatus: "已设为默认孩子"
     });
     this.loadFamilyProfile();
+  },
+  openChildEditor(event: { currentTarget: { dataset: { id?: string } } }) {
+    const childId = event.currentTarget.dataset.id;
+    const child = this.data.children.find((item: { id: string }) => item.id === childId);
+    if (!child) {
+      return;
+    }
+
+    this.setData({
+      isChildEditorOpen: true,
+      editingChildId: child.id,
+      editingChildName: child.name,
+      editingChildNickname: child.nickname,
+      editingChildBirthDate: child.birthDate,
+      editingChildGender: child.gender,
+      editingChildColor: child.profileColor || childColorOptions[0],
+      profileStatus: ""
+    });
+  },
+  closeChildEditor() {
+    if (this.data.isSavingChild) {
+      return;
+    }
+
+    this.setData({ isChildEditorOpen: false });
+  },
+  noop() {},
+  onChildNameInput(event: { detail: { value: string } }) {
+    this.setData({ editingChildName: event.detail.value });
+  },
+  onChildNicknameInput(event: { detail: { value: string } }) {
+    this.setData({ editingChildNickname: event.detail.value });
+  },
+  onChildBirthDateChange(event: { detail: { value: string } }) {
+    this.setData({ editingChildBirthDate: event.detail.value });
+  },
+  chooseChildGender(event: { currentTarget: { dataset: { value?: string } } }) {
+    this.setData({ editingChildGender: event.currentTarget.dataset.value || "" });
+  },
+  chooseChildColor(event: { currentTarget: { dataset: { color?: string } } }) {
+    this.setData({ editingChildColor: event.currentTarget.dataset.color || childColorOptions[0] });
+  },
+  saveChildProfile() {
+    const childId = this.data.editingChildId;
+    const name = this.data.editingChildName.trim();
+    const nickname = this.data.editingChildNickname.trim();
+    if (!childId || !name || !nickname || !this.data.editingChildBirthDate || !this.data.editingChildGender) {
+      wx.showToast({ title: "请补全孩子信息", icon: "none" });
+      return;
+    }
+
+    this.setData({ isSavingChild: true });
+    void patchJson<{ child: FamilyChild }>(`/api/children/${childId}`, {
+      name,
+      nickname,
+      birthDate: this.data.editingChildBirthDate,
+      gender: this.data.editingChildGender,
+      profileColor: this.data.editingChildColor
+    })
+      .then(() => {
+        wx.showToast({ title: "已保存", icon: "success" });
+        clearChildScopedCaches();
+        this.setData({
+          isSavingChild: false,
+          isChildEditorOpen: false,
+          profileStatus: "孩子档案已更新"
+        });
+        this.loadFamilyProfile();
+      })
+      .catch((error) => {
+        this.setData({ isSavingChild: false });
+        wx.showToast({ title: error.error || "保存未成功", icon: "none" });
+      });
   },
   openSetup() {
     wx.navigateTo({ url: "/pages/setup/index" });

@@ -114,6 +114,13 @@ export function groupWeeklyTasksByAssignee(tasks: WeeklyTaskRecord[]) {
   } satisfies Record<TaskAssigneeType, WeeklyTaskRecord[]>;
 }
 
+export function splitWeeklyTasksByFamilyScope(tasks: WeeklyTaskRecord[]) {
+  return {
+    childSpecificTasks: tasks.filter((task) => task.assignee_type !== "family"),
+    sharedFamilyTasks: tasks.filter((task) => task.assignee_type === "family")
+  };
+}
+
 export function getWeekWindowForDate(referenceDate: Date) {
   const weekStart = startOfWeekUtc(referenceDate);
   const weekEnd = new Date(weekStart);
@@ -336,8 +343,11 @@ function isDuplicateCurrentWeekPlanError(error: unknown) {
 }
 
 function formatWeeklyPlan(plan: WeeklyPlanRecord) {
+  const taskSections = splitWeeklyTasksByFamilyScope(plan.weekly_tasks);
+
   return {
     ...plan,
-    groupedTasks: groupWeeklyTasksByAssignee(plan.weekly_tasks)
+    groupedTasks: groupWeeklyTasksByAssignee(plan.weekly_tasks),
+    taskSections
   };
 }

@@ -241,12 +241,12 @@
 
 ### P1 Next Product Slice
 
-- [ ] T138 [P1] Add a dedicated children management panel for editing child profiles, colors, and avatars in `miniprogram/pages/profile`
+- [X] T138 [P1] Add a dedicated children management panel for editing child profiles, colors, and avatars in `miniprogram/pages/profile`
 - [X] T139 [P1] Add whole-family growth report generation alongside single-child monthly reports in `lib/services/ai-coach-service.ts`
 - [X] T140 [P1] Add sibling/family relationship prompts to AI coach context without ranking or comparison language in `lib/ai/context.ts`
 - [X] T141 [P1] Add Mini Program AI coach audience selection for whole-family questions and child-scoped weekly plan drafts in `miniprogram/pages/ai-coach`
-- [ ] T142 [P1] Split weekly plan into child-specific tasks and shared family tasks in `lib/services/weekly-plan-service.ts`
-- [ ] T143 [P1] Add Home family-view guidance that suggests a balanced companionship action across children in `miniprogram/pages/home`
+- [X] T142 [P1] Split weekly plan into child-specific tasks and shared family tasks in `lib/services/weekly-plan-service.ts`
+- [X] T143 [P1] Add Home family-view guidance that suggests a balanced companionship action across children in `miniprogram/pages/home`
 
 ### P2 Later
 

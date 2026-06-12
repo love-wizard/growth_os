@@ -3,7 +3,8 @@ import { calculateWeeklyCompletionRate } from "@/lib/services/weekly-completion"
 import {
   buildWeeklyTaskInserts,
   getWeekWindowForDate,
-  isWeeklyPlanActiveForDate
+  isWeeklyPlanActiveForDate,
+  splitWeeklyTasksByFamilyScope
 } from "@/lib/services/weekly-plan-service";
 
 describe("calculateWeeklyCompletionRate", () => {
@@ -79,5 +80,43 @@ describe("calculateWeeklyCompletionRate", () => {
       title: "周末一起去公园观察树叶。",
       planned_count: 1
     });
+  });
+
+  it("splits child-specific tasks from shared family tasks", () => {
+    const split = splitWeeklyTasksByFamilyScope([
+      {
+        id: "father-task",
+        weekly_plan_id: "weekly-plan-id",
+        assignee_type: "father",
+        title: "户外活动",
+        planned_count: 2,
+        completed_count: 0,
+        status: "not_started"
+      },
+      {
+        id: "child-task",
+        weekly_plan_id: "weekly-plan-id",
+        assignee_type: "child",
+        title: "说一件开心的事",
+        planned_count: 3,
+        completed_count: 1,
+        status: "in_progress"
+      },
+      {
+        id: "family-task",
+        weekly_plan_id: "weekly-plan-id",
+        assignee_type: "family",
+        title: "周末一起观察树叶",
+        planned_count: 1,
+        completed_count: 0,
+        status: "not_started"
+      }
+    ]);
+
+    expect(split.childSpecificTasks.map((task) => task.id)).toEqual([
+      "father-task",
+      "child-task"
+    ]);
+    expect(split.sharedFamilyTasks.map((task) => task.id)).toEqual(["family-task"]);
   });
 });

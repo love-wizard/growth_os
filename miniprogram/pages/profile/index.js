@@ -40,6 +40,7 @@ const reminderDefinitions = [
     description: "新的一周从一件最容易的小事开始"
   }
 ];
+const childColorOptions = ["#E7F3EC", "#F6E7D8", "#E8EEF9", "#F5E6EA", "#F2EDD8"];
 
 function clearChildScopedCaches() {
   [
@@ -93,10 +94,27 @@ function calculateAge(birthDate) {
   return `${Math.max(age, 0)}岁`;
 }
 
+function getGenderLabel(gender) {
+  if (gender === "male") {
+    return "男孩";
+  }
+
+  if (gender === "female") {
+    return "女孩";
+  }
+
+  return "未填性别";
+}
+
 function buildChildCards(children, activeChildId) {
   return (children || []).map((child) => ({
     id: child.id,
+    name: child.name || child.nickname,
     nickname: child.nickname,
+    birthDate: child.birth_date || "",
+    gender: child.gender || "",
+    genderLabel: getGenderLabel(child.gender),
+    profileColor: child.profile_color || childColorOptions[0],
     age: calculateAge(child.birth_date),
     initial: child.nickname.slice(0, 1),
     selected: child.id === activeChildId
@@ -139,6 +157,15 @@ Page({
       goals: []
     },
     children: [],
+    isChildEditorOpen: false,
+    isSavingChild: false,
+    childColorOptions,
+    editingChildId: "",
+    editingChildName: "",
+    editingChildNickname: "",
+    editingChildBirthDate: "",
+    editingChildGender: "",
+    editingChildColor: childColorOptions[0],
     reminders: buildReminders(),
     reminderStatus: "",
     showDevTools: false
@@ -387,6 +414,79 @@ Page({
       profileStatus: "已设为默认孩子"
     });
     this.loadFamilyProfile();
+  },
+  openChildEditor(event) {
+    const childId = event.currentTarget.dataset.id;
+    const child = this.data.children.find((item) => item.id === childId);
+    if (!child) {
+      return;
+    }
+
+    this.setData({
+      isChildEditorOpen: true,
+      editingChildId: child.id,
+      editingChildName: child.name,
+      editingChildNickname: child.nickname,
+      editingChildBirthDate: child.birthDate,
+      editingChildGender: child.gender,
+      editingChildColor: child.profileColor || childColorOptions[0],
+      profileStatus: ""
+    });
+  },
+  closeChildEditor() {
+    if (this.data.isSavingChild) {
+      return;
+    }
+
+    this.setData({ isChildEditorOpen: false });
+  },
+  noop() {},
+  onChildNameInput(event) {
+    this.setData({ editingChildName: event.detail.value });
+  },
+  onChildNicknameInput(event) {
+    this.setData({ editingChildNickname: event.detail.value });
+  },
+  onChildBirthDateChange(event) {
+    this.setData({ editingChildBirthDate: event.detail.value });
+  },
+  chooseChildGender(event) {
+    this.setData({ editingChildGender: event.currentTarget.dataset.value || "" });
+  },
+  chooseChildColor(event) {
+    this.setData({ editingChildColor: event.currentTarget.dataset.color || childColorOptions[0] });
+  },
+  saveChildProfile() {
+    const childId = this.data.editingChildId;
+    const name = this.data.editingChildName.trim();
+    const nickname = this.data.editingChildNickname.trim();
+    if (!childId || !name || !nickname || !this.data.editingChildBirthDate || !this.data.editingChildGender) {
+      wx.showToast({ title: "请补全孩子信息", icon: "none" });
+      return;
+    }
+
+    this.setData({ isSavingChild: true });
+    patchJson(`/api/children/${childId}`, {
+      name,
+      nickname,
+      birthDate: this.data.editingChildBirthDate,
+      gender: this.data.editingChildGender,
+      profileColor: this.data.editingChildColor
+    })
+      .then(() => {
+        wx.showToast({ title: "已保存", icon: "success" });
+        clearChildScopedCaches();
+        this.setData({
+          isSavingChild: false,
+          isChildEditorOpen: false,
+          profileStatus: "孩子档案已更新"
+        });
+        this.loadFamilyProfile();
+      })
+      .catch((error) => {
+        this.setData({ isSavingChild: false });
+        wx.showToast({ title: error.error || "保存未成功", icon: "none" });
+      });
   },
   openSetup() {
     wx.navigateTo({ url: "/pages/setup/index" });

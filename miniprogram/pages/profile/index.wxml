@@ -33,20 +33,56 @@
       <button class="button-secondary compact-button" bindtap="openSetup">添加</button>
     </view>
     <view class="profile-child-grid">
-      <button
+      <view
         wx:for="{{children}}"
         wx:key="id"
         class="profile-child-card {{item.selected ? 'profile-child-card-active' : ''}}"
         data-id="{{item.id}}"
         bindtap="switchChild"
       >
-        <view class="profile-child-avatar">{{item.initial}}</view>
+        <view class="profile-child-avatar" style="background: {{item.profileColor}};">{{item.initial}}</view>
         <view class="profile-child-card-main">
           <view class="task-title">{{item.nickname}}</view>
-          <view class="caption">{{item.age || '孩子档案'}}</view>
+          <view class="caption">{{item.age || '孩子档案'}} · {{item.genderLabel}}</view>
         </view>
         <view wx:if="{{item.selected}}" class="profile-active-pill">默认</view>
-      </button>
+        <button class="button-secondary compact-button profile-child-edit-button" data-id="{{item.id}}" catchtap="openChildEditor">编辑</button>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{isChildEditorOpen}}" class="modal-backdrop" bindtap="closeChildEditor">
+    <view class="profile-child-editor stack" catchtap="noop">
+      <view class="row">
+        <view>
+          <view class="caption">孩子档案</view>
+          <view class="title">编辑{{editingChildNickname || '孩子'}}的信息</view>
+        </view>
+        <button class="button-secondary compact-button" bindtap="closeChildEditor">关闭</button>
+      </view>
+      <input class="input-box" placeholder="姓名" value="{{editingChildName}}" bindinput="onChildNameInput" />
+      <input class="input-box" placeholder="昵称" value="{{editingChildNickname}}" bindinput="onChildNicknameInput" />
+      <picker mode="date" value="{{editingChildBirthDate}}" bindchange="onChildBirthDateChange">
+        <view class="input-box picker-box">生日 {{editingChildBirthDate || '请选择'}}</view>
+      </picker>
+      <view class="chip-row">
+        <view class="chip {{editingChildGender === 'male' ? 'chip-active' : ''}}" data-value="male" bindtap="chooseChildGender">男孩</view>
+        <view class="chip {{editingChildGender === 'female' ? 'chip-active' : ''}}" data-value="female" bindtap="chooseChildGender">女孩</view>
+      </view>
+      <view>
+        <view class="caption">颜色标识</view>
+        <view class="profile-color-row">
+          <button
+            wx:for="{{childColorOptions}}"
+            wx:key="*this"
+            class="profile-color-swatch {{editingChildColor === item ? 'profile-color-swatch-active' : ''}}"
+            style="background: {{item}};"
+            data-color="{{item}}"
+            bindtap="chooseChildColor"
+          ></button>
+        </view>
+      </view>
+      <button class="button-primary" loading="{{isSavingChild}}" disabled="{{isSavingChild}}" bindtap="saveChildProfile">保存孩子档案</button>
     </view>
   </view>
 
