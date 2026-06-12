@@ -42,12 +42,9 @@
       <view wx:if="{{selectedRecordScopeIndex === 1}}" class="muted">饭米粒会整理共同陪伴和每个孩子被看见的瞬间。</view>
       <view wx:else class="muted">饭米粒会结合记录、周计划和兴趣参与，整理本月变化。</view>
     </view>
-    <button class="button-secondary compact-button" loading="{{isGeneratingMonthlyReport}}" disabled="{{records.length === 0 || isGeneratingMonthlyReport}}" bindtap="generateMonthlyReport">
-      {{monthlyReport ? '重新生成' : '生成月报'}}
+    <button class="button-secondary compact-button" disabled="{{records.length === 0}}" bindtap="generateMonthlyReport">
+      去问饭米粒
     </button>
-  </view>
-  <view wx:if="{{monthlyReportError}}" class="section card warm-card">
-    <view class="muted">{{monthlyReportError}}</view>
   </view>
 
   <view class="section card archive-report-card annual-report-card">
@@ -57,12 +54,9 @@
       <view wx:else class="title">记录积累起来后，饭米粒会生成年度报告</view>
       <view class="muted">包含关键成长瞬间、共同瞬间、能力变化和父母寄语。</view>
     </view>
-    <button class="button-secondary compact-button" loading="{{isGeneratingAnnualReport}}" disabled="{{allRecords.length === 0 || isGeneratingAnnualReport}}" bindtap="generateAnnualReport">
-      {{annualReport ? '重新生成' : '生成年报'}}
+    <button class="button-secondary compact-button" disabled="{{allRecords.length === 0}}" bindtap="generateAnnualReport">
+      去问饭米粒
     </button>
-  </view>
-  <view wx:if="{{annualReportError}}" class="section card warm-card">
-    <view class="muted">{{annualReportError}}</view>
   </view>
 
   <view class="section archive-timeline-section">
@@ -144,38 +138,6 @@
       </view>
     </view>
     </block>
-  </view>
-
-  <view wx:if="{{monthlyReport}}" class="section card primary-card stack">
-    <view>
-      <view class="title">{{monthlyReport.title}}</view>
-      <view class="muted">饭米粒已经把本月成长变化整理好了。</view>
-    </view>
-    <view class="note-box" wx:for="{{monthlyReport.sections}}" wx:key="area">
-      <view class="caption">{{item.area}}</view>
-      <view class="muted">{{item.summary}}</view>
-      <view class="caption" wx:for="{{item.evidence}}" wx:for-item="evidence" wx:key="*this">- {{evidence}}</view>
-    </view>
-    <view class="note-box">
-      <view class="caption">下月建议</view>
-      <view class="muted" wx:for="{{monthlyReport.nextActions}}" wx:key="*this">{{item}}</view>
-    </view>
-  </view>
-
-  <view wx:if="{{annualReport}}" class="section card primary-card annual-report-result stack">
-    <view>
-      <view class="title">{{annualReport.title}}</view>
-      <view class="muted">饭米粒已经把今年的家庭成长线索整理好了。</view>
-    </view>
-    <view class="note-box" wx:for="{{annualReport.sections}}" wx:key="area">
-      <view class="caption">{{item.area}}</view>
-      <view class="muted">{{item.summary}}</view>
-      <view class="caption" wx:for="{{item.evidence}}" wx:for-item="evidence" wx:key="*this">- {{evidence}}</view>
-    </view>
-    <view class="note-box">
-      <view class="caption">下一年温和建议</view>
-      <view class="muted" wx:for="{{annualReport.nextActions}}" wx:key="*this">{{item}}</view>
-    </view>
   </view>
 
   <button class="floating-add-button" bindtap="openRecordComposer">+</button>

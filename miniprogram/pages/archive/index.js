@@ -2,17 +2,15 @@
 const {
   getActiveChildId,
   getJson,
-  isTimeoutRequestError,
   postJson,
-  postJsonWithOptions,
   setActiveChildId,
   uploadFile
 } = require("../../services/api");
 const growthRecordPrefillStorageKey = "growth_os_growth_record_prefill";
 const growthRecordsCacheStorageKey = "growth_os_growth_records_cache_v4";
+const aiCoachPrefillStorageKey = "growth_os_ai_coach_prefill";
 const growthRecordsCacheRefreshMs = 5 * 60 * 1000;
 const growthRecordsCacheDisplayMs = 55 * 60 * 1000;
-const aiRequestTimeoutMs = 30000;
 const recordCategories = ["成长瞬间", "运动健康", "阅读表达", "英语启蒙", "兴趣培养", "情绪关系", "户外探索"];
 const recordScopeOptions = ["默认孩子", "全家"];
 
@@ -121,50 +119,11 @@ function filterRecords(records, filters) {
   });
 }
 
-function formatMonthlyReport(response) {
-  if (!response || response.mode !== "growth_analysis") {
-    return null;
-  }
-
-  return {
-    title: response.title || "本月成长月报",
-    sections: (response.sections || []).map((section) => ({
-      area: section.area,
-      summary: section.summary,
-      evidence: section.evidence || []
-    })),
-    nextActions: response.nextActions || []
-  };
-}
-
-function formatAnnualReport(response) {
-  const report = formatMonthlyReport(response);
-  if (!report) {
-    return null;
-  }
-
-  const sections = [...report.sections];
-  if (!sections.some((section) => section.area.includes("共同瞬间"))) {
-    sections.push({
-      area: "共同瞬间",
-      summary: "饭米粒会把这一年全家一起完成、一起经历的时刻单独整理出来。",
-      evidence: []
-    });
-  }
-
-  if (!sections.some((section) => section.area.includes("父母寄语"))) {
-    sections.push({
-      area: "父母寄语",
-      summary: "给孩子的话可以继续补充成爸爸、妈妈各自的温暖寄语。",
-      evidence: []
-    });
-  }
-
-  return {
-    title: report.title || `${new Date().getFullYear()}家庭成长报告`,
-    sections,
-    nextActions: report.nextActions
-  };
+function buildReportRecordSummary(records) {
+  return records.slice(0, 12).map((record, index) => {
+    const childText = record.childLabel ? `，关联${record.childLabel}` : "";
+    return `${index + 1}. ${record.dateTimeLabel || record.date || ""}${childText}：${record.title || "成长瞬间"} - ${(record.text || "").slice(0, 80)}`;
+  }).join("\n");
 }
 
 function sortRecords(records) {
@@ -232,12 +191,6 @@ Page({
     selectedRecordScopeIndex: 1,
     children: [],
     selectedChildIds: [],
-    isGeneratingMonthlyReport: false,
-    isGeneratingAnnualReport: false,
-    monthlyReportError: "",
-    annualReportError: "",
-    monthlyReport: null,
-    annualReport: null,
     shareRecord: null,
     selectedPhotoName: "",
     selectedPhotoPath: "",
@@ -646,70 +599,31 @@ Page({
   },
   generateMonthlyReport() {
     const isFamilyScope = this.data.selectedRecordScopeIndex === 1;
-    this.setData({
-      isGeneratingMonthlyReport: true,
-      monthlyReportError: "",
-      monthlyReport: null
-    });
-
-    const path = isFamilyScope ? "/api/ai/coach?scope=family" : "/api/ai/coach";
-    postJsonWithOptions(path, {
-      mode: "growth_analysis",
+    const selectedRecords = this.data.records;
+    const recordSummary = buildReportRecordSummary(selectedRecords);
+    wx.setStorageSync(aiCoachPrefillStorageKey, {
+      reportType: "monthly",
+      scope: isFamilyScope ? "family" : "child",
+      childId: getActiveChildId(),
+      recordCount: selectedRecords.length,
       message: isFamilyScope
-        ? "请基于本月全家成长记录，产出一份家庭成长月报，重点看共同陪伴、每个孩子被看见的瞬间和下月温和建议，不要做孩子之间的排名或比较。"
-        : "请基于本月成长记录、兴趣记录和周计划，产出一份成长月报，按身体发展、阅读表达、兴趣培养、英语启蒙、情绪关系总结。"
-    }, {
-      timeoutMs: aiRequestTimeoutMs
-    })
-      .then((result) => {
-        const monthlyReport = formatMonthlyReport(result.response);
-        this.setData({
-          isGeneratingMonthlyReport: false,
-          monthlyReport,
-          monthlyReportError: monthlyReport ? "" : "月报生成结果格式不完整，请再试一次。"
-        });
-      })
-      .catch((error) => {
-        const message = isTimeoutRequestError(error)
-          ? "月报生成时间较长，已超过等待时间，请再试一次。"
-          : error.error || "月报生成未成功";
-        this.setData({
-          isGeneratingMonthlyReport: false,
-          monthlyReportError: message
-        });
-      });
+        ? `请基于我在成长档案当前选中的这些记录，产出一份家庭成长月报。重点看共同陪伴、每个孩子被看见的瞬间和下月温和建议，不要做孩子之间的排名或比较。\n\n选中的记录：\n${recordSummary}`
+        : `请基于我在成长档案当前选中的这些记录，产出一份成长月报。按身体发展、阅读表达、兴趣培养、英语启蒙、情绪关系总结，并给出下月温和建议。\n\n选中的记录：\n${recordSummary}`
+    });
+    wx.switchTab({ url: "/pages/ai-coach/index" });
   },
   generateAnnualReport() {
-    this.setData({
-      isGeneratingAnnualReport: true,
-      annualReportError: "",
-      annualReport: null
-    });
-
-    postJsonWithOptions("/api/ai/coach?scope=family", {
-      mode: "growth_analysis",
+    const selectedRecords = this.data.allRecords;
+    const recordSummary = buildReportRecordSummary(selectedRecords);
+    wx.setStorageSync(aiCoachPrefillStorageKey, {
+      reportType: "annual",
+      scope: "family",
+      childId: getActiveChildId(),
+      recordCount: selectedRecords.length,
       message:
-        "请基于今年全家成长记录，生成一份年度家庭成长报告。必须包含章节：关键成长瞬间、共同瞬间、能力变化、父母寄语、下一年温和陪伴建议。共同瞬间要整理家庭一起完成或多个孩子共同参与的记录；父母寄语要用温暖、具体、不说教的口吻写给孩子和全家。不要排名或比较孩子。"
-    }, {
-      timeoutMs: aiRequestTimeoutMs
-    })
-      .then((result) => {
-        const annualReport = formatAnnualReport(result.response);
-        this.setData({
-          isGeneratingAnnualReport: false,
-          annualReport,
-          annualReportError: annualReport ? "" : "年度报告生成结果格式不完整，请再试一次。"
-        });
-      })
-      .catch((error) => {
-        const message = isTimeoutRequestError(error)
-          ? "年度报告生成时间较长，已超过等待时间，请再试一次。"
-          : error.error || "年度报告生成未成功";
-        this.setData({
-          isGeneratingAnnualReport: false,
-          annualReportError: message
-        });
-      });
+        `请基于我在成长档案里选中的这些全家成长记录，生成一份年度家庭成长报告。必须包含章节：关键成长瞬间、共同瞬间、能力变化、父母寄语、下一年温和陪伴建议。共同瞬间要整理家庭一起完成或多个孩子共同参与的记录；父母寄语要用温暖、具体、不说教的口吻写给孩子和全家。不要排名或比较孩子。\n\n选中的记录：\n${recordSummary}`
+    });
+    wx.switchTab({ url: "/pages/ai-coach/index" });
   },
   addRecord() {
     const text = this.data.recordText.trim();

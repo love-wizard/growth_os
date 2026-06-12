@@ -735,6 +735,13 @@ page {
   padding: 32rpx;
 }
 
+.coach-prefill-card {
+  background: rgba(238, 248, 243, 0.86);
+  border-color: rgba(201, 227, 214, 0.82);
+  border-radius: 24rpx;
+  padding: 24rpx 28rpx;
+}
+
 .coach-question-box {
   background: rgba(255, 255, 255, 0.82);
   min-height: 180rpx;

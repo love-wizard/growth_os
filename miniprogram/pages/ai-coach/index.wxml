@@ -14,6 +14,11 @@
     </view>
   </view>
 
+  <view wx:if="{{prefillNotice}}" class="section card coach-prefill-card">
+    <view class="caption">来自成长档案</view>
+    <view class="muted">{{prefillNotice}}</view>
+  </view>
+
   <view wx:if="{{children.length > 1}}" class="section page-child-selector">
     <button
       class="page-child-chip {{selectedScope === 'family' ? 'page-child-chip-active' : ''}}"

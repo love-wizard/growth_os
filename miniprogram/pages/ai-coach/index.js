@@ -204,6 +204,7 @@ Page({
     ],
     selectedPrompt: "今晚只有30分钟",
     freeQuestion: "今晚只有30分钟",
+    prefillNotice: "",
     history: [],
     visibleHistory: [],
     answer: {
@@ -367,13 +368,34 @@ Page({
       });
   },
   consumePrefilledPrompt() {
-    const message = wx.getStorageSync(aiCoachPrefillStorageKey);
+    const prefill = wx.getStorageSync(aiCoachPrefillStorageKey);
+    const message = typeof prefill === "string" ? prefill : prefill && prefill.message;
 
     if (!message || this.data.isLoading) {
       return;
     }
 
     wx.removeStorageSync(aiCoachPrefillStorageKey);
+    if (prefill && typeof prefill !== "string") {
+      const requestedScope = prefill.scope === "family" ? "family" : "child";
+      const requestedChildId = prefill.childId || this.data.selectedChildId;
+      const child = this.data.children.find((item) => item.id === requestedChildId);
+      const selectedScope = requestedScope === "family" ? "family" : "child";
+      const selectedChildId = selectedScope === "child" ? requestedChildId : this.data.selectedChildId;
+      this.setData({
+        selectedScope,
+        selectedChildId,
+        selectedAudienceName: formatAudienceLabel(selectedScope, child ? child.nickname : ""),
+        children: this.data.children.map((item) => ({
+          ...item,
+          selected: selectedScope === "child" && item.id === selectedChildId
+        })),
+        prefillNotice: prefill.recordCount
+          ? `已带入成长档案里的 ${prefill.recordCount} 条记录，正在生成${prefill.reportType === "annual" ? "年报" : "月报"}。`
+          : ""
+      });
+    }
+
     this.setData({
       selectedPrompt: message,
       freeQuestion: message

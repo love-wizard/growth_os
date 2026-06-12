@@ -9,6 +9,16 @@ import {
 const aiRequestTimeoutMs = 30000;
 const aiCoachPrefillStorageKey = "growth_os_ai_coach_prefill";
 
+type CoachPrefill =
+  | string
+  | {
+      message?: string;
+      scope?: "family" | "child";
+      childId?: string;
+      recordCount?: number;
+      reportType?: "monthly" | "annual";
+    };
+
 function inferMode(message: string) {
   if (/下周|生成.*周计划|周计划草案/.test(message)) {
     return "weekly_plan_draft";
@@ -235,6 +245,7 @@ Page({
     ],
     selectedPrompt: "今晚只有30分钟",
     freeQuestion: "今晚只有30分钟",
+    prefillNotice: "",
     history: [] as HistoryItem[],
     visibleHistory: [] as HistoryItem[],
     answer: emptyAnswer
@@ -393,13 +404,35 @@ Page({
       });
   },
   consumePrefilledPrompt() {
-    const message = wx.getStorageSync(aiCoachPrefillStorageKey) as string | undefined;
+    const prefill = wx.getStorageSync(aiCoachPrefillStorageKey) as CoachPrefill | undefined;
+    const message = typeof prefill === "string" ? prefill : prefill?.message;
 
     if (!message || this.data.isLoading) {
       return;
     }
 
     wx.removeStorageSync(aiCoachPrefillStorageKey);
+    if (prefill && typeof prefill !== "string") {
+      const structuredPrefill = prefill;
+      const requestedScope = structuredPrefill.scope === "family" ? "family" : "child";
+      const requestedChildId = structuredPrefill.childId || this.data.selectedChildId;
+      const child = (this.data.children as CoachChild[]).find((item) => item.id === requestedChildId);
+      const selectedScope = requestedScope === "family" ? "family" : "child";
+      const selectedChildId = selectedScope === "child" ? requestedChildId : this.data.selectedChildId;
+      this.setData({
+        selectedScope,
+        selectedChildId,
+        selectedAudienceName: formatAudienceLabel(selectedScope, child?.nickname || ""),
+        children: (this.data.children as CoachChild[]).map((item) => ({
+          ...item,
+          selected: selectedScope === "child" && item.id === selectedChildId
+        })),
+        prefillNotice: structuredPrefill.recordCount
+          ? `已带入成长档案里的 ${structuredPrefill.recordCount} 条记录，正在生成${structuredPrefill.reportType === "annual" ? "年报" : "月报"}。`
+          : ""
+      });
+    }
+
     this.setData({
       selectedPrompt: message,
       freeQuestion: message
