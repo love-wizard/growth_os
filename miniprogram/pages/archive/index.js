@@ -14,7 +14,7 @@ const growthRecordsCacheRefreshMs = 5 * 60 * 1000;
 const growthRecordsCacheDisplayMs = 55 * 60 * 1000;
 const aiRequestTimeoutMs = 30000;
 const recordCategories = ["成长瞬间", "运动健康", "阅读表达", "英语启蒙", "兴趣培养", "情绪关系", "户外探索"];
-const recordScopeOptions = ["当前孩子", "全家"];
+const recordScopeOptions = ["默认孩子", "全家"];
 
 function todayString() {
   const now = new Date();
@@ -199,7 +199,7 @@ Page({
     filterEndDate: "",
     filterKeyword: "",
     recordScopeOptions,
-    selectedRecordScopeIndex: 0,
+    selectedRecordScopeIndex: 1,
     children: [],
     selectedChildIds: [],
     isGeneratingMonthlyReport: false,

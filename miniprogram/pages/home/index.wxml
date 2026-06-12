@@ -10,11 +10,10 @@
       </view>
       <view>
         <view class="caption">饭米粒在这里</view>
-        <view wx:if="{{childNickname}}" class="page-title">今天陪{{childNickname}}慢慢来</view>
+        <view wx:if="{{children.length > 1}}" class="page-title">今天照看全家节奏</view>
+        <view wx:elif="{{childNickname}}" class="page-title">今天陪{{childNickname}}慢慢来</view>
         <view wx:else class="page-title">今天我们慢慢来</view>
-        <picker wx:if="{{children.length > 1}}" mode="selector" range="{{children}}" range-key="nickname" value="{{selectedChildIndex}}" bindchange="switchChild">
-          <view class="child-switcher">正在看 {{children[selectedChildIndex].nickname}} 的成长</view>
-        </picker>
+        <view wx:if="{{children.length > 1}}" class="child-switcher">饭米粒会同时看见每个孩子和共同陪伴。</view>
       </view>
     </view>
   </view>
@@ -49,7 +48,7 @@
   <block wx:if="{{hasDashboardData}}">
     <view class="section home-focus-card stack">
       <view class="focus-topline">
-        <view class="caption">今天最小行动</view>
+        <view class="caption">{{children.length > 1 ? '今天家庭行动' : '今天最小行动'}}</view>
         <view class="focus-minutes">{{todayAction.minutes}}</view>
       </view>
       <view class="focus-title">{{todayAction.title}}</view>
@@ -58,6 +57,21 @@
       <view class="row">
         <button class="button-primary" bindtap="startAction">记录这个瞬间</button>
         <button class="button-secondary" bindtap="openCoach">问饭米粒</button>
+      </view>
+    </view>
+
+    <view wx:if="{{childSummaries.length > 1}}" class="section card home-children-overview stack">
+      <view>
+        <view class="title">每个孩子今天都被看见</view>
+        <view class="muted">这里不是比较，只是帮父母快速看见各自的小重点。</view>
+      </view>
+      <view class="home-child-card" wx:for="{{childSummaries}}" wx:key="id">
+        <view class="home-child-main">
+          <view class="task-title">{{item.nickname}}</view>
+          <view class="caption">本周《{{item.weeklyTheme}}》</view>
+          <view class="muted">{{item.todayAction}}</view>
+        </view>
+        <view class="progress-pill">{{item.progress}}</view>
       </view>
     </view>
 

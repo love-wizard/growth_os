@@ -1,5 +1,5 @@
 /* global Page, wx */
-const { getActiveChildId, getJson, setActiveChildId } = require("../../services/api");
+const { getJson, setActiveChildId } = require("../../services/api");
 const growthRecordPrefillStorageKey = "growth_os_growth_record_prefill";
 const childProfileCacheStorageKey = "growth_os_child_profile_cache";
 const dashboardCacheStorageKey = "growth_os_dashboard_cache";
@@ -64,6 +64,37 @@ const roleClasses = {
   family: "role-family",
   child: "role-family"
 };
+
+function formatChildSummary(summary) {
+  const progress = summary.plannedCount > 0
+    ? `${summary.completedCount}/${summary.plannedCount}`
+    : "轻松";
+  return {
+    ...summary,
+    progress,
+    weeklyTheme: summary.weeklyTheme || "轻松陪伴",
+    todayAction: summary.todayAction || "留一个被看见的小瞬间"
+  };
+}
+
+function buildFamilyAction(children) {
+  if (children.length > 1) {
+    const names = children.map((child) => child.nickname).join("、");
+    return {
+      title: "一次共同陪伴，再各自被看见",
+      context: `今天先安排一个${names}都能参与的小活动，再给每个孩子一句单独回应。`,
+      minutes: "20分钟",
+      why: "多孩家庭不需要平均用力，先让共同关系稳定，再让每个孩子感到自己被看见。"
+    };
+  }
+
+  return {
+    title: "今天留一个轻松陪伴时刻",
+    context: "如果没有明确任务，可以一起散步、共读或聊一件今天的小发现。",
+    minutes: "10分钟",
+    why: "重点是父母和孩子一起完成。"
+  };
+}
 
 function formatTask(task) {
   return {
@@ -168,7 +199,7 @@ Page({
     errorMessage: "",
     childNickname: "",
     children: [],
-    selectedChildIndex: 0,
+    childSummaries: [],
     dailyQuote: getDailyQuote(),
     weeklyTheme: "",
     taskCount: "",
@@ -215,10 +246,6 @@ Page({
       id: child.id,
       nickname: child.nickname
     }));
-    const foundIndex = children.findIndex(
-      (child) => child.id === (dashboard.child && dashboard.child.id)
-    );
-    const selectedChildIndex = Math.max(0, foundIndex);
     if (dashboard.child && dashboard.child.nickname) {
       setActiveChildId(dashboard.child.id);
       wx.setStorageSync(childProfileCacheStorageKey, {
@@ -226,6 +253,7 @@ Page({
         savedAt: Date.now()
       });
     }
+    const familyAction = buildFamilyAction(children);
 
     this.setData({
       isLoading: false,
@@ -233,16 +261,16 @@ Page({
       setupRequired: false,
       childNickname: dashboard.child ? dashboard.child.nickname : "孩子",
       children,
-      selectedChildIndex,
+      childSummaries: (dashboard.childSummaries || []).map(formatChildSummary),
       weeklyTheme,
       taskCount: `${tasks.length}件小事`,
-      todayAction: {
-        title: dashboard.todayGuidance ? dashboard.todayGuidance.title : "今天留一个轻松陪伴时刻",
+      todayAction: children.length > 1 ? familyAction : {
+        title: dashboard.todayGuidance ? dashboard.todayGuidance.title : familyAction.title,
         context: dashboard.todayGuidance
           ? dashboard.todayGuidance.description
-          : "如果没有明确任务，可以一起散步、共读或聊一件今天的小发现。",
-        minutes: "10分钟",
-        why: dashboard.progress ? dashboard.progress.description : "重点是父母和孩子一起完成。"
+          : familyAction.context,
+        minutes: familyAction.minutes,
+        why: dashboard.progress ? dashboard.progress.description : familyAction.why
       },
       tasks
     });
@@ -285,25 +313,6 @@ Page({
         });
       });
   },
-  switchChild(event) {
-    const index = Number(event.detail.value);
-    const child = this.data.children[index];
-    if (!child || child.id === getActiveChildId()) {
-      return;
-    }
-
-    setActiveChildId(child.id);
-    wx.removeStorageSync(dashboardCacheStorageKey);
-    wx.removeStorageSync(weeklyPlanCacheStorageKey);
-    wx.removeStorageSync(growthRecordsCacheStorageKey);
-    wx.removeStorageSync(childProfileCacheStorageKey);
-    this.setData({
-      selectedChildIndex: index,
-      childNickname: child.nickname,
-      hasDashboardData: false
-    });
-    this.loadDashboard({ useLoadingState: true });
-  },
   warmTabCaches() {
     const weeklyPlanCache = wx.getStorageSync(weeklyPlanCacheStorageKey);
     if (!isFreshCache(weeklyPlanCache && weeklyPlanCache.savedAt)) {
@@ -324,7 +333,7 @@ Page({
 
     const growthRecordsCache = wx.getStorageSync(growthRecordsCacheStorageKey);
     if (!isFreshCache(growthRecordsCache && growthRecordsCache.savedAt)) {
-      getJson("/api/growth-records")
+      getJson("/api/growth-records?scope=family")
         .then((response) => {
           wx.setStorageSync(growthRecordsCacheStorageKey, {
             savedAt: Date.now(),

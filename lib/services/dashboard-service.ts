@@ -30,6 +30,7 @@ export async function getDashboardData(
     return {
       child: null,
       children,
+      childSummaries: [],
       annualGoals: [],
       weeklyPlan: null,
       todayGuidance: null,
@@ -39,12 +40,13 @@ export async function getDashboardData(
   }
 
   const relatedStartedAt = nowMs();
-  const [annualGoals, weeklyPlan] = await Promise.all([
+  const [annualGoals, weeklyPlan, childSummaries] = await Promise.all([
     getAnnualGoals(supabase, child.id),
     getCurrentWeeklyPlanForFamily(supabase, familyId, {
       childId: child.id,
       allowAutoGenerate: false
-    })
+    }),
+    getChildSummaries(supabase, familyId, children)
   ]);
   const relatedMs = elapsedMs(relatedStartedAt);
   const todayTasks = weeklyPlan?.weekly_tasks ?? [];
@@ -62,6 +64,7 @@ export async function getDashboardData(
   return {
     child,
     children,
+    childSummaries,
     annualGoals,
     weeklyPlan,
     todayGuidance: buildTodayGuidance(weeklyPlan),
@@ -73,6 +76,39 @@ export async function getDashboardData(
     ),
     todayTasks
   };
+}
+
+async function getChildSummaries(
+  supabase: SupabaseClient,
+  familyId: UUID,
+  children: DashboardChild[]
+) {
+  const summaries = await Promise.all(
+    children.map(async (child) => {
+      const weeklyPlan = await getCurrentWeeklyPlanForFamily(supabase, familyId, {
+        childId: child.id,
+        allowAutoGenerate: false
+      });
+      const tasks = weeklyPlan?.weekly_tasks ?? [];
+      const firstTask = tasks.find((task) => task.completed_count < task.planned_count);
+
+      return {
+        id: child.id,
+        nickname: child.nickname,
+        birth_date: child.birth_date,
+        gender: child.gender,
+        weeklyTheme: weeklyPlan?.theme ?? "轻松陪伴",
+        taskCount: tasks.length,
+        completedCount: tasks.reduce((sum, task) => sum + task.completed_count, 0),
+        plannedCount: tasks.reduce((sum, task) => sum + task.planned_count, 0),
+        todayAction: firstTask
+          ? firstTask.title
+          : "留一个被看见的小瞬间"
+      };
+    })
+  );
+
+  return summaries;
 }
 
 function buildTodayGuidance(weeklyPlan: DashboardWeeklyPlan | null) {

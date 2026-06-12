@@ -427,7 +427,7 @@ Page({
         ...child,
         selected: child.id === childId
       })),
-      profileStatus: "已切换当前孩子"
+      profileStatus: "已设为默认孩子"
     });
     this.loadFamilyProfile();
   },

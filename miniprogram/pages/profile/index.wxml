@@ -28,7 +28,7 @@
     <view class="row">
       <view>
         <view class="title">家庭里的孩子</view>
-        <view class="muted">选择当前孩子后，首页、周计划、成长档案会同步切换。</view>
+        <view class="muted">管理孩子档案。成长档案默认看全家，周计划仍可查看单个孩子。</view>
       </view>
       <button class="button-secondary compact-button" bindtap="openSetup">添加</button>
     </view>
@@ -45,7 +45,7 @@
           <view class="task-title">{{item.nickname}}</view>
           <view class="caption">{{item.age || '孩子档案'}}</view>
         </view>
-        <view wx:if="{{item.selected}}" class="profile-active-pill">当前</view>
+        <view wx:if="{{item.selected}}" class="profile-active-pill">默认</view>
       </button>
     </view>
   </view>
