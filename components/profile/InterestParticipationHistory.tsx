@@ -20,7 +20,7 @@ const records = [
 export function InterestParticipationHistory() {
   return (
     <section>
-      <h2 className="text-lg font-semibold">近期兴趣记录</h2>
+      <h2 className="text-lg font-semibold">近期课程记录</h2>
       <div className="mt-3 grid gap-3">
         {records.map((record) => (
           <Card className="p-4" key={record.id}>

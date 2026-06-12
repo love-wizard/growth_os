@@ -21,9 +21,11 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Family workspace is required" }, { status: 409 });
     }
 
+    const url = new URL(request.url);
     const snapshot = await listInterestParticipationSnapshot(supabase, {
       familyId: membership.family_id,
-      childId: getChildIdFromRequestUrl(request.url)
+      childId: getChildIdFromRequestUrl(request.url),
+      scope: url.searchParams.get("scope") === "family" ? "family" : "child"
     });
 
     return NextResponse.json(snapshot);

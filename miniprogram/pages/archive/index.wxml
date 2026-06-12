@@ -40,7 +40,7 @@
       <view wx:if="{{records.length > 0}}" class="title">把 {{records.length}} 条成长瞬间整理成报告</view>
       <view wx:else class="title">先记录几个瞬间，饭米粒再帮你整理月报</view>
       <view wx:if="{{selectedRecordScopeIndex === 1}}" class="muted">饭米粒会整理共同陪伴和每个孩子被看见的瞬间。</view>
-      <view wx:else class="muted">饭米粒会结合记录、周计划和兴趣参与，整理本月变化。</view>
+      <view wx:else class="muted">饭米粒会结合成长瞬间、周计划和课程记录，整理本月变化。</view>
     </view>
     <button class="button-secondary compact-button" disabled="{{records.length === 0}}" bindtap="generateMonthlyReport">
       去问饭米粒
@@ -116,12 +116,13 @@
         </view>
         <view class="caption">{{item.dateTimeLabel || item.date}}</view>
         <view wx:if="{{item.childLabel}}" class="archive-child-label">关联：{{item.childLabel}}</view>
+        <view wx:if="{{item.itemKind === 'course'}}" class="archive-course-badge">课程记录</view>
         <view class="task-title">{{item.title}}</view>
         <view class="muted">{{item.text}}</view>
         <view class="chip-row archive-tag-row">
           <view class="chip" wx:for="{{item.tags}}" wx:for-item="tag" wx:key="tag">{{tag}}</view>
         </view>
-        <view class="row action-row">
+        <view wx:if="{{item.itemKind !== 'course'}}" class="row action-row">
           <button
             class="button-secondary compact-button"
             open-type="share"

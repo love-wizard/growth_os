@@ -2,10 +2,10 @@
   <view class="page-heading">
     <view class="visual-icon">练</view>
     <view>
-      <view class="caption">兴趣参与</view>
-      <view class="page-title">记录真实发生的练习</view>
-      <view wx:if="{{selectedChildName}}" class="subtitle">正在记录 {{selectedChildName}} 的兴趣参与，帮助饭米粒理解最近的兴趣状态。</view>
-      <view wx:else class="subtitle">留下已经发生的参与情况，帮助饭米粒理解孩子最近的兴趣状态。</view>
+      <view class="caption">课程记录</view>
+      <view class="page-title">记录真实发生的课程和练习</view>
+      <view wx:if="{{selectedChildName}}" class="subtitle">正在记录 {{selectedChildName}} 的课程状态，帮助饭米粒理解最近的兴趣变化。</view>
+      <view wx:else class="subtitle">留下已经发生的课程和练习，帮助饭米粒理解孩子最近的兴趣状态。</view>
     </view>
   </view>
 
@@ -47,7 +47,7 @@
 
   <view class="section card warm-card stack">
     <view>
-      <view class="title">记下一次参与</view>
+      <view class="title">记下一次课程</view>
       <view class="muted">可以记录上课、练习、缺席或改期，不需要补记录。</view>
     </view>
 
@@ -90,12 +90,12 @@
     />
 
     <textarea class="input-box text-area" placeholder="备注，例如：今天更主动了，状态不错。" value="{{notes}}" bindinput="onNotesInput" />
-    <button class="button-primary" loading="{{isSubmitting}}" disabled="{{isSubmitting}}" bindtap="saveRecord">记录这次参与</button>
+    <button class="button-primary" loading="{{isSubmitting}}" disabled="{{isSubmitting}}" bindtap="saveRecord">记录这次课程</button>
   </view>
 
   <view wx:if="{{errorMessage}}" class="section card">
     <view class="title">{{errorMessage}}</view>
-    <view class="muted">先完成首次配置，再记录兴趣参与情况。</view>
+    <view class="muted">先完成首次配置，再记录课程情况。</view>
   </view>
 
   <view class="section card">
@@ -103,7 +103,7 @@
       <view class="title">最近记录</view>
       <view class="caption">{{isLoading ? '加载中' : ''}}</view>
     </view>
-    <view wx:if="{{records.length === 0 && !errorMessage}}" class="muted interest-empty">还没有记录，先记下一次真实参与。</view>
+    <view wx:if="{{records.length === 0 && !errorMessage}}" class="muted interest-empty">还没有记录，先记下一次真实课程。</view>
     <view wx:for="{{records}}" wx:key="id" class="task-row interest-row">
       <view class="task-main">
         <view class="task-title">{{item.interestName}}</view>

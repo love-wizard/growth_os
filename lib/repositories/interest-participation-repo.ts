@@ -77,6 +77,32 @@ export async function listRecentInterestParticipationRecords(
   return data ?? [];
 }
 
+export async function listRecentInterestParticipationRecordsForChildren(
+  supabase: SupabaseClient,
+  childIds: UUID[],
+  limit = 30
+) {
+  if (!childIds.length) {
+    return [];
+  }
+
+  const { data, error } = await supabase
+    .from("interest_participation_records")
+    .select(
+      "id,child_id,happened_on,participation_outcome,duration_minutes,count,notes,interest_id,child_interests(id,name,source),child_profiles!inner(nickname)"
+    )
+    .in("child_id", childIds)
+    .is("deleted_at", null)
+    .order("happened_on", { ascending: false })
+    .limit(limit);
+
+  if (error) {
+    throw error;
+  }
+
+  return data ?? [];
+}
+
 export async function listChildInterests(supabase: SupabaseClient, childId: UUID) {
   const { data, error } = await supabase
     .from("child_interests")

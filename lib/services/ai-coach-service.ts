@@ -39,7 +39,7 @@ import {
 } from "@/lib/repositories/ai-repo";
 
 const coachInstructions =
-  "你是成长 OS 的 AI 成长教练。必须基于孩子真实档案、年度目标、周计划、兴趣记录和成长记录回答。优先给具体、可执行、低压力建议，避免空泛育儿理论和年龄不合适的建议。";
+  "你是成长 OS 的 AI 成长教练。必须基于孩子真实档案、年度目标、周计划、课程记录和成长记录回答。优先给具体、可执行、低压力建议，避免空泛育儿理论和年龄不合适的建议。";
 
 export type AICoachResponse =
   | ReturnType<typeof createParentingQAFallback>

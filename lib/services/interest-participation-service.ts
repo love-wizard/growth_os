@@ -5,10 +5,12 @@ import {
   createInterestParticipationRecord,
   getInterestParticipationRecordForFamily,
   listChildInterests,
+  listRecentInterestParticipationRecordsForChildren,
   listRecentInterestParticipationRecords,
   restoreInterestParticipationRecord,
   softDeleteInterestParticipationRecord
 } from "@/lib/repositories/interest-participation-repo";
+import { listFamilyChildren } from "@/lib/repositories/child-repo";
 import type { z } from "zod";
 import { interestParticipationRecordInputSchema } from "@/lib/validation/schemas";
 
@@ -25,8 +27,23 @@ export type InterestParticipationInput = z.infer<
 
 export async function listInterestParticipationSnapshot(
   supabase: SupabaseClient,
-  input: { familyId: UUID; childId?: UUID }
+  input: { familyId: UUID; childId?: UUID; scope?: "child" | "family" }
 ) {
+  if (input.scope === "family") {
+    const familyChildren = await listFamilyChildren(supabase, input.familyId);
+    const childIds = familyChildren.map((child) => child.id);
+    const records = await listRecentInterestParticipationRecordsForChildren(
+      supabase,
+      childIds,
+      Math.max(30, childIds.length * 10)
+    );
+
+    return {
+      interests: [],
+      records
+    };
+  }
+
   const childId = await resolveActiveChildId(supabase, {
     familyId: input.familyId,
     childId: input.childId

@@ -154,7 +154,7 @@ Page({
         this.setData({
           isLoading: false,
           errorMessage:
-            error.statusCode === 409 ? "请先完成首次配置" : error.error || "兴趣参与记录暂时无法同步"
+            error.statusCode === 409 ? "请先完成首次配置" : error.error || "课程记录暂时无法同步"
         });
       });
   },

@@ -5,10 +5,10 @@ import { Save } from "lucide-react";
 export function InterestParticipationForm() {
   return (
     <form className="grid gap-3 rounded-lg border border-border bg-card p-5">
-      <h2 className="text-lg font-semibold">兴趣参与记录</h2>
+      <h2 className="text-lg font-semibold">课程记录</h2>
       <div className="grid gap-3 md:grid-cols-2">
         <label className="grid gap-1 text-sm">
-          <span className="text-muted-foreground">兴趣项目</span>
+          <span className="text-muted-foreground">课程项目</span>
           <select className="rounded-md border border-input bg-background px-3 py-2">
             <option>钢琴</option>
             <option>游泳</option>

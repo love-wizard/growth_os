@@ -14,6 +14,12 @@ const growthRecordsCacheDisplayMs = 55 * 60 * 1000;
 const growthRecordsPageSize = 20;
 const recordCategories = ["成长瞬间", "运动健康", "阅读表达", "英语启蒙", "兴趣培养", "情绪关系", "户外探索"];
 const recordScopeOptions = ["默认孩子", "全家"];
+const courseOutcomeLabels: Record<string, string> = {
+  completed: "已完成",
+  missed: "缺席",
+  cancelled: "取消",
+  rescheduled: "改期"
+};
 
 type ArchiveChild = {
   id: string;
@@ -158,6 +164,47 @@ function formatRecord(record: {
   };
 }
 
+function normalizeJoinedOne<T>(value?: T | T[] | null) {
+  return Array.isArray(value) ? value[0] : value;
+}
+
+function formatCourseRecord(record: {
+  id: string;
+  child_id?: string;
+  happened_on: string;
+  participation_outcome: string;
+  duration_minutes?: number | null;
+  count?: number | null;
+  notes?: string | null;
+  child_interests?: { name?: string } | Array<{ name?: string }> | null;
+  child_profiles?: { nickname?: string } | Array<{ nickname?: string }> | null;
+}) {
+  const interest = normalizeJoinedOne(record.child_interests);
+  const childProfile = normalizeJoinedOne(record.child_profiles);
+  const interestName = interest?.name || "课程";
+  const outcomeLabel = courseOutcomeLabels[record.participation_outcome] || "已记录";
+  const duration = record.duration_minutes ? `${record.duration_minutes}分钟` : "";
+  const count = record.count ? `${record.count}次` : "";
+  const detailParts = [outcomeLabel, duration || count, record.notes || ""].filter(Boolean);
+
+  return {
+    id: `course-${record.id}`,
+    sourceId: record.id,
+    itemKind: "course",
+    date: record.happened_on,
+    happenedAt: `${record.happened_on}T00:00:00`,
+    dateTimeLabel: record.happened_on,
+    createdAt: "",
+    title: `${interestName}课程`,
+    text: detailParts.join(" · "),
+    tags: ["课程记录", interestName],
+    childLabels: childProfile?.nickname ? [childProfile.nickname] : [],
+    childLabel: childProfile?.nickname || "",
+    photoUrls: [] as string[],
+    shareImageUrl: ""
+  };
+}
+
 function getRecordCategory(record: { tags?: string[] }) {
   return record.tags?.[0] || "成长瞬间";
 }
@@ -205,10 +252,12 @@ function buildReportRecordSummary(records: Array<{
   title?: string;
   text?: string;
   childLabel?: string;
+  itemKind?: string;
 }>) {
   return records.slice(0, 12).map((record, index) => {
     const childText = record.childLabel ? `，关联${record.childLabel}` : "";
-    return `${index + 1}. ${record.dateTimeLabel || record.date || ""}${childText}：${record.title || "成长瞬间"} - ${(record.text || "").slice(0, 80)}`;
+    const typeText = record.itemKind === "course" ? "课程记录" : "成长瞬间";
+    return `${index + 1}. ${record.dateTimeLabel || record.date || ""}${childText}：${typeText}｜${record.title || "成长瞬间"} - ${(record.text || "").slice(0, 80)}`;
   }).join("\n");
 }
 
@@ -361,6 +410,7 @@ Page({
     happenedDate: todayString(),
     happenedTime: currentTimeString(),
     allRecords: [] as unknown[],
+    courseRecords: [] as unknown[],
     records: []
   },
   preloadShareImages(records: Array<{ id: string; photoUrls?: string[]; shareImageUrl?: string }>) {
@@ -413,6 +463,7 @@ Page({
         activeChildId: this.data.selectedRecordScopeIndex === 1 ? "" : getActiveChildId(),
         hasMoreRecords: this.data.hasMoreRecords,
         nextRecordsOffset: this.data.nextRecordsOffset,
+        courseRecords: this.data.courseRecords,
         records: nextRecords
       });
 
@@ -488,6 +539,7 @@ Page({
           activeChildId?: string;
           hasMoreRecords?: boolean;
           nextRecordsOffset?: number;
+          courseRecords?: unknown[];
           records?: unknown[];
         }
       | undefined;
@@ -512,6 +564,7 @@ Page({
       hasRecordData: true,
       hasMoreRecords: Boolean(cached.hasMoreRecords),
       nextRecordsOffset: cached.nextRecordsOffset || (cached.records || []).length,
+      courseRecords: cached.courseRecords || [],
       allRecords: cached.records,
       records: this.getFilteredRecords(cached.records)
     });
@@ -618,8 +671,12 @@ Page({
     }
     const path =
       query.length > 0 ? `/api/growth-records?${query.join("&")}` : "/api/growth-records";
+    const coursePath =
+      this.data.selectedRecordScopeIndex === 1
+        ? "/api/interest-participation-records?scope=family"
+        : "/api/interest-participation-records";
 
-    void getJson<{
+    const growthRecordsPromise = getJson<{
       hasMore?: boolean;
       nextOffset?: number;
       records: Array<{
@@ -640,8 +697,27 @@ Page({
           url?: string;
         }>;
       }>;
-    }>(path)
-      .then((response) => {
+    }>(path);
+    const courseRecordsPromise = append
+      ? Promise.resolve({ records: this.data.courseRecords as Array<ReturnType<typeof formatCourseRecord>> })
+      : getJson<{
+          records: Array<{
+            id: string;
+            child_id?: string;
+            happened_on: string;
+            participation_outcome: string;
+            duration_minutes?: number | null;
+            count?: number | null;
+            notes?: string | null;
+            child_interests?: { name?: string } | Array<{ name?: string }> | null;
+            child_profiles?: { nickname?: string } | Array<{ nickname?: string }> | null;
+          }>;
+        }>(coursePath).then((response) => ({
+          records: (response.records || []).map(formatCourseRecord)
+        }));
+
+    void Promise.all([growthRecordsPromise, courseRecordsPromise])
+      .then(([response, courseResponse]) => {
         const currentRecords = (append ? this.data.allRecords : []) as Array<{
           id: string;
           date: string;
@@ -655,10 +731,11 @@ Page({
           shareImageUrl?: string;
         }>;
         const incomingRecords = (response.records || []).map(formatRecord);
+        const courseRecords = courseResponse.records || [];
         const records = append
           ? mergeRecordPages([...currentRecords, ...incomingRecords], currentRecords)
           : mergeCachedMedia(
-              incomingRecords,
+              [...incomingRecords, ...courseRecords],
               this.data.records as Array<{
                 id: string;
                 date: string;
@@ -682,6 +759,7 @@ Page({
           activeChildId: this.data.selectedRecordScopeIndex === 1 ? "" : getActiveChildId(),
           hasMoreRecords,
           nextRecordsOffset,
+          courseRecords,
           records
         });
         this.setData({
@@ -692,6 +770,7 @@ Page({
           nextRecordsOffset,
           filterStartDate,
           filterEndDate,
+          courseRecords,
           allRecords: records,
           records: filterRecords(
             sortRecords(records as Array<{
@@ -932,8 +1011,8 @@ Page({
       childId: getActiveChildId(),
       recordCount: selectedRecords.length,
       message: isFamilyScope
-        ? `请基于我在成长档案当前选中的这些记录，产出一份家庭成长月报。重点看共同陪伴、每个孩子被看见的瞬间和下月温和建议，不要做孩子之间的排名或比较。\n\n选中的记录：\n${recordSummary}`
-        : `请基于我在成长档案当前选中的这些记录，产出一份成长月报。按身体发展、阅读表达、兴趣培养、英语启蒙、情绪关系总结，并给出下月温和建议。\n\n选中的记录：\n${recordSummary}`
+        ? `请基于我在成长档案当前选中的这些记录，产出一份家庭成长月报。记录中可能同时包含成长瞬间和课程记录；请重点看共同陪伴、每个孩子被看见的瞬间、课程/练习状态和下月温和建议，不要做孩子之间的排名或比较。\n\n选中的记录：\n${recordSummary}`
+        : `请基于我在成长档案当前选中的这些记录，产出一份成长月报。记录中可能同时包含成长瞬间和课程记录；请按身体发展、阅读表达、兴趣培养、英语启蒙、情绪关系、课程/练习状态总结，并给出下月温和建议。\n\n选中的记录：\n${recordSummary}`
     });
     wx.switchTab({ url: "/pages/ai-coach/index" });
   },
@@ -952,7 +1031,7 @@ Page({
       childId: getActiveChildId(),
       recordCount: selectedRecords.length,
       message:
-        `请基于我在成长档案里选中的这些全家成长记录，生成一份年度家庭成长报告。必须包含章节：关键成长瞬间、共同瞬间、能力变化、父母寄语、下一年温和陪伴建议。共同瞬间要整理家庭一起完成或多个孩子共同参与的记录；父母寄语要用温暖、具体、不说教的口吻写给孩子和全家。不要排名或比较孩子。\n\n选中的记录：\n${recordSummary}`
+        `请基于我在成长档案里选中的这些全家成长记录，生成一份年度家庭成长报告。记录中可能同时包含成长瞬间和课程记录。必须包含章节：关键成长瞬间、共同瞬间、课程与兴趣变化、能力变化、父母寄语、下一年温和陪伴建议。共同瞬间要整理家庭一起完成或多个孩子共同参与的记录；课程记录要看持续性、状态变化和压力信号；父母寄语要用温暖、具体、不说教的口吻写给孩子和全家。不要排名或比较孩子。\n\n选中的记录：\n${recordSummary}`
     });
     wx.switchTab({ url: "/pages/ai-coach/index" });
   },
