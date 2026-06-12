@@ -16,6 +16,7 @@ export interface AIContextGrowthRecord {
 
 export interface AIContextInterestParticipationRecord {
   id: UUID;
+  child_id?: UUID;
   happened_on: string;
   participation_outcome: string;
   duration_minutes?: number | null;
@@ -26,6 +27,7 @@ export interface AIContextInterestParticipationRecord {
 
 export interface AIContextWeeklyPlan {
   id: UUID;
+  child_id?: UUID;
   week_start_date: string;
   week_end_date: string;
   theme: string;
@@ -86,14 +88,56 @@ export async function assembleAIContext(
     listFamilyChildren(supabase, familyId),
     resolveActiveChildId(supabase, { familyId, childId })
   ]);
+  const normalizedFamilyChildren = normalizeFamilyChildren(familyChildren);
   const childProfile = activeChildId
     ? await fetchChildProfile(supabase, familyId, activeChildId)
     : null;
+  const familyChildIds = normalizedFamilyChildren.map((child) => child.id);
+  const fourWeekStart = getDateWindowStart(referenceDate, 28);
+  const ninetyDayStart = getDateWindowStart(referenceDate, 90);
+
+  if (scope === "family") {
+    if (!familyChildIds.length) {
+      return {
+        scope,
+        familyChildren: normalizedFamilyChildren,
+        activeChildId: null,
+        childProfile: null,
+        annualGoals: [],
+        weeklyPlans: [],
+        interestParticipationRecords: [],
+        growthRecords: []
+      };
+    }
+
+    const [annualGoals, weeklyPlans, interestRecords, growthRecords] =
+      await Promise.all([
+        fetchAnnualGoalsForChildren(supabase, familyChildIds),
+        fetchWeeklyPlansForChildren(supabase, familyChildIds, fourWeekStart),
+        fetchInterestRecordsForChildren(supabase, familyChildIds, ninetyDayStart),
+        fetchGrowthRecords(supabase, {
+          familyId,
+          scope,
+          happenedOnCutoff: ninetyDayStart
+        })
+      ]);
+
+    return {
+      scope,
+      familyChildren: normalizedFamilyChildren,
+      activeChildId,
+      childProfile,
+      annualGoals,
+      weeklyPlans,
+      interestParticipationRecords: interestRecords,
+      growthRecords: stripGrowthRecordMedia(growthRecords)
+    };
+  }
 
   if (!childProfile) {
     return {
       scope,
-      familyChildren: normalizeFamilyChildren(familyChildren),
+      familyChildren: normalizedFamilyChildren,
       activeChildId: null,
       childProfile: null,
       annualGoals: [],
@@ -104,8 +148,6 @@ export async function assembleAIContext(
   }
 
   const profileChildId = String(childProfile.id);
-  const fourWeekStart = getDateWindowStart(referenceDate, 28);
-  const ninetyDayStart = getDateWindowStart(referenceDate, 90);
 
   const [annualGoals, weeklyPlans, interestRecords, growthRecords] =
     await Promise.all([
@@ -122,7 +164,7 @@ export async function assembleAIContext(
 
   return {
     scope,
-    familyChildren: normalizeFamilyChildren(familyChildren),
+    familyChildren: normalizedFamilyChildren,
     activeChildId,
     childProfile,
     annualGoals,
@@ -174,6 +216,20 @@ async function fetchAnnualGoals(supabase: SupabaseClient, childId: string) {
   return data ?? [];
 }
 
+async function fetchAnnualGoalsForChildren(supabase: SupabaseClient, childIds: string[]) {
+  const { data, error } = await supabase
+    .from("annual_goals")
+    .select("id,child_id,title,category,status")
+    .in("child_id", childIds)
+    .eq("status", "active");
+
+  if (error) {
+    throw error;
+  }
+
+  return data ?? [];
+}
+
 async function fetchWeeklyPlans(
   supabase: SupabaseClient,
   childId: string,
@@ -188,6 +244,28 @@ async function fetchWeeklyPlans(
     .gte("week_start_date", weekStartCutoff)
     .order("week_start_date", { ascending: false })
     .limit(4);
+
+  if (error) {
+    throw error;
+  }
+
+  return (data ?? []) as AIContextWeeklyPlan[];
+}
+
+async function fetchWeeklyPlansForChildren(
+  supabase: SupabaseClient,
+  childIds: string[],
+  weekStartCutoff: string
+) {
+  const { data, error } = await supabase
+    .from("weekly_plans")
+    .select(
+      "id,child_id,week_start_date,week_end_date,theme,reading_recommendation,english_recommendation,weekend_activity,weekly_tasks(id,assignee_type,title,planned_count,completed_count,status)"
+    )
+    .in("child_id", childIds)
+    .gte("week_start_date", weekStartCutoff)
+    .order("week_start_date", { ascending: false })
+    .limit(Math.max(4, childIds.length * 4));
 
   if (error) {
     throw error;
@@ -216,11 +294,31 @@ async function fetchInterestRecords(
   return (data ?? []) as AIContextInterestParticipationRecord[];
 }
 
+async function fetchInterestRecordsForChildren(
+  supabase: SupabaseClient,
+  childIds: string[],
+  happenedOnCutoff: string
+) {
+  const { data, error } = await supabase
+    .from("interest_participation_records")
+    .select("id,child_id,happened_on,participation_outcome,duration_minutes,count,notes,deleted_at")
+    .in("child_id", childIds)
+    .is("deleted_at", null)
+    .gte("happened_on", happenedOnCutoff)
+    .order("happened_on", { ascending: false });
+
+  if (error) {
+    throw error;
+  }
+
+  return (data ?? []) as AIContextInterestParticipationRecord[];
+}
+
 async function fetchGrowthRecords(
   supabase: SupabaseClient,
   input: {
     familyId: UUID;
-    childId: string;
+    childId?: string;
     scope: "child" | "family";
     happenedOnCutoff: string;
   }
@@ -267,6 +365,10 @@ async function fetchGrowthRecords(
 
   if (input.scope === "family") {
     return records;
+  }
+
+  if (!input.childId) {
+    return [];
   }
 
   return records.filter((record) => {

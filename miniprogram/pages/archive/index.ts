@@ -394,11 +394,10 @@ Page({
         if (activeChildId && !getActiveChildId()) {
           setActiveChildId(activeChildId);
         }
+        const allChildIds = rawChildren.map((child) => child.id);
         const selectedChildIds = this.data.selectedChildIds.length
           ? this.data.selectedChildIds
-          : activeChildId
-            ? [activeChildId]
-            : [];
+          : allChildIds;
         const children = rawChildren.map((child) => ({
           ...child,
           selected: selectedChildIds.includes(child.id)
@@ -427,7 +426,7 @@ Page({
 
     if (
       cached.scopeIndex !== this.data.selectedRecordScopeIndex ||
-      cached.activeChildId !== getActiveChildId()
+      (this.data.selectedRecordScopeIndex !== 1 && cached.activeChildId !== getActiveChildId())
     ) {
       return false;
     }
@@ -560,7 +559,7 @@ Page({
         wx.setStorageSync(growthRecordsCacheStorageKey, {
           savedAt: Date.now(),
           scopeIndex: this.data.selectedRecordScopeIndex,
-          activeChildId: getActiveChildId(),
+          activeChildId: this.data.selectedRecordScopeIndex === 1 ? "" : getActiveChildId(),
           records
         });
         this.setData({
@@ -584,23 +583,19 @@ Page({
     this.setData({ recordText: event.detail.value });
   },
   openRecordComposer() {
-    const activeChildId = getActiveChildId();
+    const allChildIds = (this.data.children as ArchiveChild[]).map((child) => child.id);
     this.setData({
       isRecordComposerOpen: true,
       happenedDate: this.data.happenedDate || todayString(),
       happenedTime: this.data.happenedTime || currentTimeString(),
       selectedChildIds: this.data.selectedChildIds.length
         ? this.data.selectedChildIds
-        : activeChildId
-          ? [activeChildId]
-          : [],
+        : allChildIds,
       children: (this.data.children as ArchiveChild[]).map((child) => ({
         ...child,
         selected: (this.data.selectedChildIds.length
           ? this.data.selectedChildIds
-          : activeChildId
-            ? [activeChildId]
-            : []
+          : allChildIds
         ).includes(child.id)
       }))
     });
@@ -797,9 +792,7 @@ Page({
     const tags = [this.data.recordCategory || "成长瞬间"];
     const childIds = (this.data.selectedChildIds as string[]).length
       ? (this.data.selectedChildIds as string[])
-      : getActiveChildId()
-        ? [getActiveChildId() as string]
-        : [];
+      : (this.data.children as ArchiveChild[]).map((child) => child.id);
 
     this.setData({ isSubmitting: true });
     void postJson<{
@@ -840,7 +833,7 @@ Page({
           selectedPhotoName: "",
           selectedPhotoPath: "",
           selectedPhotos: [],
-          selectedChildIds: getActiveChildId() ? [getActiveChildId() as string] : [],
+          selectedChildIds: (this.data.children as ArchiveChild[]).map((child) => child.id),
           happenedDate: todayString(),
           happenedTime: currentTimeString()
         });

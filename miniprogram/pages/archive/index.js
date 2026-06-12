@@ -305,7 +305,7 @@ Page({
 
     if (
       cached.scopeIndex !== this.data.selectedRecordScopeIndex ||
-      cached.activeChildId !== getActiveChildId()
+      (this.data.selectedRecordScopeIndex !== 1 && cached.activeChildId !== getActiveChildId())
     ) {
       return false;
     }
@@ -330,11 +330,10 @@ Page({
         if (activeChildId && !getActiveChildId()) {
           setActiveChildId(activeChildId);
         }
+        const allChildIds = rawChildren.map((child) => child.id);
         const selectedChildIds = this.data.selectedChildIds.length
           ? this.data.selectedChildIds
-          : activeChildId
-            ? [activeChildId]
-            : [];
+          : allChildIds;
         const children = rawChildren.map((child) => ({
           ...child,
           selected: selectedChildIds.includes(child.id)
@@ -415,7 +414,7 @@ Page({
         wx.setStorageSync(growthRecordsCacheStorageKey, {
           savedAt: Date.now(),
           scopeIndex: this.data.selectedRecordScopeIndex,
-          activeChildId: getActiveChildId(),
+          activeChildId: this.data.selectedRecordScopeIndex === 1 ? "" : getActiveChildId(),
           records
         });
         this.setData({
@@ -439,12 +438,10 @@ Page({
     this.setData({ recordText: event.detail.value });
   },
   openRecordComposer() {
-    const activeChildId = getActiveChildId();
+    const allChildIds = this.data.children.map((child) => child.id);
     const selectedChildIds = this.data.selectedChildIds.length
       ? this.data.selectedChildIds
-      : activeChildId
-        ? [activeChildId]
-        : [];
+      : allChildIds;
     this.setData({
       isRecordComposerOpen: true,
       happenedDate: this.data.happenedDate || todayString(),
@@ -645,9 +642,7 @@ Page({
     const tags = [this.data.recordCategory || "成长瞬间"];
     const childIds = this.data.selectedChildIds.length
       ? this.data.selectedChildIds
-      : getActiveChildId()
-        ? [getActiveChildId()]
-        : [];
+      : this.data.children.map((child) => child.id);
 
     this.setData({ isSubmitting: true });
     postJson("/api/growth-records", {
@@ -684,7 +679,7 @@ Page({
           selectedPhotoName: "",
           selectedPhotoPath: "",
           selectedPhotos: [],
-          selectedChildIds: getActiveChildId() ? [getActiveChildId()] : [],
+          selectedChildIds: this.data.children.map((child) => child.id),
           happenedDate: todayString(),
           happenedTime: currentTimeString()
         });

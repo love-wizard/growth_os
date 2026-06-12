@@ -217,6 +217,8 @@ function summarizeContext(context: AIContextSnapshot) {
   const profile = context.childProfile as { id?: string; nickname?: string } | null;
 
   return {
+    scope: context.scope,
+    familyChildCount: context.familyChildren.length,
     childId: profile?.id ?? null,
     childNickname: profile?.nickname ?? null,
     annualGoalCount: context.annualGoals.length,

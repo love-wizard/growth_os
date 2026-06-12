@@ -152,7 +152,7 @@ Fields:
 Rules:
 
 - One family can contain multiple child profiles in v0.1.
-- Parent clients keep one active child selected for child-scoped reads and writes.
+- Family-level clients default to whole-family views; child-specific modules keep page-scoped child selection for weekly plans and interest participation.
 - Age is derived from `birth_date`.
 
 ### ChildInterest

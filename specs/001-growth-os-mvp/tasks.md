@@ -75,7 +75,7 @@
 
 ## Phase 4: User Story 2 - Configure a Child Growth System (P1)
 
-**Goal**: A first parent creates one family, at least one child profile, interests, annual goals, second-parent invitation, and the initial growth system. The family can add another child profile later and switch the active child context.
+**Goal**: A first parent creates one family, at least one child profile, interests, annual goals, second-parent invitation, and the initial growth system. The family can add another child profile later; family-level pages show children together, and child-specific pages provide page-scoped child selection.
 
 **Independent Test**: Complete onboarding for one child and verify annual goals, current theme, supportive progress signal, today tasks, and second-parent invitation.
 
@@ -233,8 +233,8 @@
 
 - [X] T131 [P0] Allow multiple child profiles in one family by removing the `child_profiles.family_id` uniqueness constraint in `supabase/migrations/011_support_multiple_children.sql`
 - [X] T132 [P0] Add active-child resolution and child list APIs in `lib/services/active-child-service.ts` and `app/api/children/route.ts`
-- [X] T133 [P0] Scope dashboard, weekly plan, growth archive, interest participation, and AI coach APIs by active child context
-- [X] T134 [P0] Add Mini Program child switching on Home and active-child request propagation in `miniprogram/services/api.ts`
+- [X] T133 [P0] Scope weekly plan, child-specific growth archive reads, interest participation, and AI coach child mode by selected child context
+- [X] T134 [P0] Add Mini Program page-scoped child selection and request propagation in `miniprogram/services/api.ts`
 - [X] T135 [P0] Model shared growth moments with `growth_record_children` in `supabase/migrations/012_growth_record_child_links.sql`
 - [X] T136 [P0] Let parents associate one growth moment with multiple children from `miniprogram/pages/archive/index.wxml`
 - [X] T137 [P0] Add current-child and whole-family timeline views in the Mini Program growth archive

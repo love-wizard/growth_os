@@ -143,7 +143,7 @@
       <view wx:if="{{children.length > 1}}" class="record-child-selector">
         <view>
           <view class="caption">关联给</view>
-          <view class="muted">共同活动可以同时放进多个孩子的时间轴。</view>
+          <view class="muted">默认关联全部孩子。单独瞬间可以点掉不相关的孩子。</view>
         </view>
         <view class="chip-row">
           <button

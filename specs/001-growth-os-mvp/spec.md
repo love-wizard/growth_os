@@ -223,7 +223,7 @@ A first parent creates the family's full growth system by completing the child's
 
 **Why this priority**: Without initial configuration, the product cannot produce meaningful guidance or daily companionship actions.
 
-**Independent Test**: A tester can complete full onboarding for the first child, add a second child in the same family, switch the active child, and verify that each child's dashboard contains that child's annual goals, current weekly theme, supportive progress signal, and today's tasks.
+**Independent Test**: A tester can complete full onboarding for the first child, add a second child in the same family, verify the dashboard shows a family-level overview, and verify weekly plan and interest participation pages can inspect each child through page-scoped selection.
 
 **Acceptance Scenarios**:
 
@@ -381,12 +381,12 @@ Parents enter Growth OS through WeChat Mini Program surfaces such as family invi
 
 ### Functional Requirements
 
-- **FR-001**: The system MUST support one family workspace with one or more child profiles for the MVP, with one active child selected per parent session.
+- **FR-001**: The system MUST support one family workspace with one or more child profiles for the MVP, with family-level views defaulting to all children rather than a hidden global child switch.
 - **FR-002**: The system MUST support two parent accounts with distinct father and mother roles, and both roles MUST be able to view and manage all child growth data, AI conversations, and insights in v0.1.
 - **FR-003**: The child MUST NOT need an independent account.
 - **FR-004**: The system MUST allow the first parent to create the family workspace and invite the second parent to join the same family with a father or mother role.
 - **FR-005**: The system MUST prevent the second parent invitation flow from creating a duplicate family workspace.
-- **FR-006**: The system MUST allow a parent to create child profiles with name, nickname, birth date, and gender, and switch the active child context before viewing or creating child-scoped data.
+- **FR-006**: The system MUST allow a parent to create child profiles with name, nickname, birth date, and gender, and choose a child within child-specific pages before viewing or creating child-scoped data.
 - **FR-007**: The system MUST allow parents to select multiple child interests from piano, swimming, football, basketball, reading, drawing, building blocks, English, and custom interests.
 - **FR-008**: The system MUST allow parents to create and edit annual growth goals.
 - **FR-009**: The system MUST generate an initial annual plan, monthly themes, and current-week tasks from the child profile, interests, and annual goals.
@@ -399,7 +399,7 @@ Parents enter Growth OS through WeChat Mini Program surfaces such as family invi
 - **FR-016**: Parents MUST be able to update completed count for weekly tasks, and completed count MUST NOT exceed planned count.
 - **FR-017**: The system MUST generate weekly plans using child age, current stage, annual goals, and prior-week completion.
 - **FR-018**: A generated weekly plan MUST include weekly theme, father tasks, mother tasks, child tasks, weekend activity, reading recommendation, and English recommendation.
-- **FR-019**: The system MUST allow parents to create growth records with date, text, tags, notes, and optional photos or videos.
+- **FR-019**: The system MUST allow parents to create growth records with date, time, text, tags, notes, optional photos or videos, and one or more associated child profiles.
 - **FR-020**: The system MUST display growth records in a chronological timeline.
 - **FR-021**: The timeline MUST support month view and year view.
 - **FR-022**: The system MUST use warm, non-anxious language that emphasizes companionship, long-term growth, and family relationship quality.
@@ -407,8 +407,8 @@ Parents enter Growth OS through WeChat Mini Program surfaces such as family invi
 - **FR-024**: The system MUST provide bottom navigation with Home, Weekly Plan, Growth Archive, AI Coach, and Profile destinations.
 - **FR-025**: The system MUST provide an AI coach home screen with quick question buttons for piano resistance, reading habit, English exposure, recent growth, and weekend activity suggestions.
 - **FR-026**: The system MUST provide a free-form AI coach question input with a clear parenting-question prompt.
-- **FR-027**: Every AI coach answer MUST be grounded in the available child profile, annual goals, recent weekly plans, interest participation records, growth record text, growth record dates, growth record tags, parent notes, and historical growth data.
-- **FR-028**: AI coach context MUST include child age, gender, interests, annual goals, the most recent four weeks of weekly plan data, and the most recent 90 days of interest participation records and growth records when available.
+- **FR-027**: Every AI coach answer MUST be grounded in the available family children, child profile when child-scoped, annual goals, recent weekly plans, interest participation records, growth record text, growth record dates, growth record tags, parent notes, and historical growth data.
+- **FR-028**: AI coach context MUST include child age, gender, interests, annual goals, the most recent four weeks of weekly plan data, and the most recent 90 days of interest participation records and growth records when available; family-scope analysis MUST aggregate these records across all children without ranking or comparing children.
 - **FR-029**: The AI coach MUST support parenting question answering with analysis of likely causes and practical next actions.
 - **FR-030**: The AI coach MUST support parent-child activity generation with activity name, needed materials, activity steps, and growth purpose.
 - **FR-031**: The AI coach MUST support on-demand recent growth analysis covering physical development, reading habits, English exposure, piano interest, and emotional expression when relevant data exists.
@@ -424,7 +424,7 @@ Parents enter Growth OS through WeChat Mini Program surfaces such as family invi
 - **FR-041**: Interest participation records MUST be available as context for weekly plan generation, growth analysis, and AI coach answers.
 - **FR-042**: The AI coach MUST provide only general companionship guidance for medical, mental health, or safety-adjacent questions and MUST direct parents to professional or emergency support for medical treatment, mental health crisis, self-harm, abuse, or immediate personal safety risk.
 - **FR-043**: The AI coach MUST NOT analyze photo or video content from growth records in v0.1; attached media is stored and displayed only.
-- **FR-044**: The MVP MUST NOT include standalone monthly report pages, standalone annual report pages, report export, AI analysis of photo or video content, medical diagnosis, mental health crisis intervention, future course scheduling, recurring class rules, leave requests, make-up class management, high-pressure AI proactive risk reminders, multiple children, multiple families, commercialization, social features, real-time expert consulting marketplace, or child-owned accounts.
+- **FR-044**: The MVP MUST NOT include standalone annual report pages, report export, AI analysis of photo or video content, medical diagnosis, mental health crisis intervention, future course scheduling, recurring class rules, leave requests, make-up class management, high-pressure AI proactive risk reminders, multiple families, commercialization, social features, real-time expert consulting marketplace, or child-owned accounts.
 - **FR-045**: Parents MUST be able to delete and restore growth records, interest participation records, and AI coach conversations within a 30-day restore window.
 - **FR-046**: Deleted growth records, interest participation records, and AI coach conversations MUST be excluded from AI coach context unless restored.
 - **FR-047**: The system MUST support a lightweight first-use flow that generates today's companionship suggestion from child nickname, birth date, 2-3 focus directions, one current challenge, and 1-3 child traits before full annual goal setup.

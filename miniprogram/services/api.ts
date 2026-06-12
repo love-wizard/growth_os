@@ -35,13 +35,38 @@ function getAuthHeader() {
   } as Record<string, string>;
 }
 
+function getPathname(path: string) {
+  return path.split("?")[0];
+}
+
+function hasQueryParam(path: string, key: string, value?: string) {
+  const query = path.split("?")[1];
+  if (!query) {
+    return false;
+  }
+
+  return query.split("&").some((part) => {
+    const [rawKey, rawValue = ""] = part.split("=");
+    if (decodeURIComponent(rawKey) !== key) {
+      return false;
+    }
+
+    return value === undefined || decodeURIComponent(rawValue) === value;
+  });
+}
+
 function shouldAppendActiveChild(path: string) {
+  const pathname = getPathname(path);
+  if (hasQueryParam(path, "scope", "family")) {
+    return false;
+  }
+
   return (
-    path.startsWith("/api/dashboard") ||
-    path.startsWith("/api/weekly-plan") ||
-    path.startsWith("/api/growth-records") ||
-    path.startsWith("/api/interest-participation-records") ||
-    path.startsWith("/api/ai/coach")
+    pathname === "/api/dashboard" ||
+    pathname === "/api/weekly-plan/current" ||
+    pathname === "/api/growth-records" ||
+    pathname === "/api/interest-participation-records" ||
+    pathname === "/api/ai/coach"
   );
 }
 
