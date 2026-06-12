@@ -1,4 +1,10 @@
-import { getJson, postJson } from "../../services/api";
+import { getActiveChildId, getJson, postJson } from "../../services/api";
+
+type InterestChild = {
+  id: string;
+  nickname: string;
+  selected?: boolean;
+};
 
 function todayString() {
   return new Date().toISOString().slice(0, 10);
@@ -60,6 +66,9 @@ Page({
     isLoading: false,
     isSubmitting: false,
     errorMessage: "",
+    children: [] as InterestChild[],
+    selectedChildId: "",
+    selectedChildName: "",
     interestOptions: [] as Array<{ id: string; name: string }>,
     records: [] as Array<{
       id: string;
@@ -85,10 +94,39 @@ Page({
     notes: ""
   },
   onShow() {
-    this.loadSnapshot();
+    void this.loadChildren().then(() => this.loadSnapshot());
+  },
+  loadChildren() {
+    return getJson<{ children: InterestChild[] }>("/api/children")
+      .then((response) => {
+        const rawChildren = response.children || [];
+        const selectedChildId =
+          this.data.selectedChildId ||
+          getActiveChildId() ||
+          rawChildren[0]?.id ||
+          "";
+        const selectedChildName =
+          rawChildren.find((child) => child.id === selectedChildId)?.nickname ||
+          rawChildren[0]?.nickname ||
+          "";
+
+        this.setData({
+          children: rawChildren.map((child) => ({
+            ...child,
+            selected: child.id === selectedChildId
+          })),
+          selectedChildId,
+          selectedChildName
+        });
+      })
+      .catch(() => undefined);
   },
   loadSnapshot() {
     this.setData({ isLoading: true, errorMessage: "" });
+    const childQuery = this.data.selectedChildId
+      ? `?childId=${encodeURIComponent(this.data.selectedChildId)}`
+      : "";
+
     void getJson<{
       interests: Array<{ id: string; name: string }>;
       records: Array<{
@@ -100,7 +138,7 @@ Page({
         notes?: string | null;
         child_interests?: { name: string } | null;
       }>;
-    }>("/api/interest-participation-records")
+    }>(`/api/interest-participation-records${childQuery}`)
       .then((response) => {
         const interestOptions = response.interests || [];
         const records = (response.records || []).map(formatRecord);
@@ -119,6 +157,25 @@ Page({
             error.statusCode === 409 ? "请先完成首次配置" : error.error || "兴趣参与记录暂时无法同步"
         });
       });
+  },
+  chooseChild(event: { currentTarget: { dataset: { id?: string } } }) {
+    const childId = event.currentTarget.dataset.id;
+    if (!childId || childId === this.data.selectedChildId) {
+      return;
+    }
+
+    const selectedChild = (this.data.children as InterestChild[]).find((child) => child.id === childId);
+    this.setData({
+      selectedChildId: childId,
+      selectedChildName: selectedChild?.nickname || "",
+      selectedInterestId: "",
+      records: [],
+      children: (this.data.children as InterestChild[]).map((child) => ({
+        ...child,
+        selected: child.id === childId
+      }))
+    });
+    this.loadSnapshot();
   },
   chooseInterest(event: { currentTarget: { dataset: { id: string } } }) {
     this.setData({ selectedInterestId: event.currentTarget.dataset.id });
@@ -163,7 +220,11 @@ Page({
     }
 
     this.setData({ isSubmitting: true });
-    void postJson("/api/interest-participation-records", payload)
+    const childQuery = this.data.selectedChildId
+      ? `?childId=${encodeURIComponent(this.data.selectedChildId)}`
+      : "";
+
+    void postJson(`/api/interest-participation-records${childQuery}`, payload)
       .then(() => {
         wx.showToast({ title: "已记录", icon: "success" });
         this.setData({

@@ -1,4 +1,5 @@
 import {
+  getActiveChildId,
   getJson,
   isTimeoutRequestError,
   patchJson,
@@ -11,6 +12,12 @@ const weeklyPlanCacheStorageKey = "growth_os_weekly_plan_cache";
 const weeklyPlanCacheRefreshMs = 5 * 60 * 1000;
 const weeklyPlanCacheDisplayMs = 24 * 60 * 60 * 1000;
 const dashboardCacheStorageKey = "growth_os_dashboard_cache";
+
+type WeeklyChild = {
+  id: string;
+  nickname: string;
+  selected?: boolean;
+};
 
 const emptyPlan = {
   theme: "",
@@ -162,23 +169,63 @@ function canDisplayCache(savedAt?: number, ttlMs = weeklyPlanCacheDisplayMs) {
   return Boolean(savedAt && Date.now() - savedAt <= ttlMs);
 }
 
+function weeklyPlanCacheKey(childId?: string) {
+  return childId ? `${weeklyPlanCacheStorageKey}_${childId}` : weeklyPlanCacheStorageKey;
+}
+
 Page({
   data: {
     isLoading: false,
+    isChildrenLoading: false,
     hasWeeklyPlanData: false,
     isGeneratingDraft: false,
     isConfirmingDraft: false,
     errorMessage: "",
     draftErrorMessage: "",
+    children: [] as WeeklyChild[],
+    selectedChildId: "",
+    selectedChildName: "",
     nextWeekDraft: null as null | typeof emptyNextWeekDraft,
     ...emptyPlan
   },
   onShow() {
-    const usedCache = this.hydrateWeeklyPlanCache();
-    this.loadWeeklyPlan({ useLoadingState: !usedCache, skipIfFresh: usedCache });
+    void this.loadChildren().then(() => {
+      const usedCache = this.hydrateWeeklyPlanCache();
+      this.loadWeeklyPlan({ useLoadingState: !usedCache, skipIfFresh: usedCache });
+    });
+  },
+  loadChildren() {
+    this.setData({ isChildrenLoading: true });
+
+    return getJson<{ children: WeeklyChild[] }>("/api/children")
+      .then((response) => {
+        const rawChildren = response.children || [];
+        const selectedChildId =
+          this.data.selectedChildId ||
+          getActiveChildId() ||
+          rawChildren[0]?.id ||
+          "";
+        const selectedChildName =
+          rawChildren.find((child) => child.id === selectedChildId)?.nickname ||
+          rawChildren[0]?.nickname ||
+          "";
+
+        this.setData({
+          isChildrenLoading: false,
+          children: rawChildren.map((child) => ({
+            ...child,
+            selected: child.id === selectedChildId
+          })),
+          selectedChildId,
+          selectedChildName
+        });
+      })
+      .catch(() => {
+        this.setData({ isChildrenLoading: false });
+      });
   },
   hydrateWeeklyPlanCache() {
-    const cached = wx.getStorageSync(weeklyPlanCacheStorageKey) as
+    const cached = wx.getStorageSync(weeklyPlanCacheKey(this.data.selectedChildId)) as
       | { savedAt?: number; weeklyPlan?: typeof emptyPlan }
       | undefined;
 
@@ -196,7 +243,7 @@ Page({
   },
   loadWeeklyPlan(options?: { useLoadingState?: boolean; skipIfFresh?: boolean }) {
     if (options?.skipIfFresh) {
-      const cached = wx.getStorageSync(weeklyPlanCacheStorageKey) as
+      const cached = wx.getStorageSync(weeklyPlanCacheKey(this.data.selectedChildId)) as
         | { savedAt?: number }
         | undefined;
 
@@ -209,10 +256,14 @@ Page({
       this.setData({ isLoading: true, errorMessage: "" });
     }
 
-    void getJson<{ weeklyPlan: Parameters<typeof formatPlan>[0] }>("/api/weekly-plan/current")
+    const childQuery = this.data.selectedChildId
+      ? `?childId=${encodeURIComponent(this.data.selectedChildId)}`
+      : "";
+
+    void getJson<{ weeklyPlan: Parameters<typeof formatPlan>[0] }>(`/api/weekly-plan/current${childQuery}`)
       .then((response) => {
         const weeklyPlan = formatPlan(response.weeklyPlan);
-        wx.setStorageSync(weeklyPlanCacheStorageKey, {
+        wx.setStorageSync(weeklyPlanCacheKey(this.data.selectedChildId), {
           savedAt: Date.now(),
           weeklyPlan
         });
@@ -232,12 +283,39 @@ Page({
         });
       });
   },
+  chooseChild(event: { currentTarget: { dataset: { id?: string } } }) {
+    const childId = event.currentTarget.dataset.id;
+    if (!childId || childId === this.data.selectedChildId) {
+      return;
+    }
+
+    const selectedChild = (this.data.children as WeeklyChild[]).find((child) => child.id === childId);
+    this.setData({
+      selectedChildId: childId,
+      selectedChildName: selectedChild?.nickname || "",
+      nextWeekDraft: null,
+      draftErrorMessage: "",
+      hasWeeklyPlanData: false,
+      ...emptyPlan,
+      children: (this.data.children as WeeklyChild[]).map((child) => ({
+        ...child,
+        selected: child.id === childId
+      }))
+    });
+
+    const usedCache = this.hydrateWeeklyPlanCache();
+    this.loadWeeklyPlan({ useLoadingState: !usedCache, skipIfFresh: usedCache });
+  },
   generateNextWeekDraft() {
     this.setData({
       isGeneratingDraft: true,
       draftErrorMessage: "",
       nextWeekDraft: null
     });
+
+    const childQuery = this.data.selectedChildId
+      ? `?childId=${encodeURIComponent(this.data.selectedChildId)}`
+      : "";
 
     void postJsonWithOptions<{
       response: {
@@ -251,7 +329,7 @@ Page({
         childTasks?: Array<{ title: string; plannedCount: number }>;
       };
       weeklyPlanDraftId?: string | null;
-    }>("/api/ai/coach", {
+    }>(`/api/ai/coach${childQuery}`, {
       mode: "weekly_plan_draft",
       message: "请基于当前完成情况，重新生成一版下周周计划草案。"
     }, {
@@ -353,7 +431,7 @@ Page({
       ...summarizePlan([...nextFatherTasks, ...nextMotherTasks, ...nextFamilyTasks, ...nextChildTasks])
     };
     this.setData(weeklyPlan);
-    wx.setStorageSync(weeklyPlanCacheStorageKey, {
+    wx.setStorageSync(weeklyPlanCacheKey(this.data.selectedChildId), {
       savedAt: Date.now(),
       weeklyPlan
     });
@@ -368,7 +446,7 @@ Page({
       })
       .catch((error) => {
         this.setData(previousPlan);
-        wx.setStorageSync(weeklyPlanCacheStorageKey, {
+        wx.setStorageSync(weeklyPlanCacheKey(this.data.selectedChildId), {
           savedAt: Date.now(),
           weeklyPlan: previousPlan
         });

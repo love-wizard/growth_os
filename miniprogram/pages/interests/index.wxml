@@ -4,15 +4,28 @@
     <view>
       <view class="caption">兴趣参与</view>
       <view class="page-title">记录真实发生的练习</view>
-      <view class="subtitle">留下已经发生的参与情况，帮助饭米粒理解孩子最近的兴趣状态。</view>
+      <view wx:if="{{selectedChildName}}" class="subtitle">正在记录 {{selectedChildName}} 的兴趣参与，帮助饭米粒理解最近的兴趣状态。</view>
+      <view wx:else class="subtitle">留下已经发生的参与情况，帮助饭米粒理解孩子最近的兴趣状态。</view>
     </view>
+  </view>
+
+  <view wx:if="{{children.length > 1}}" class="section page-child-selector">
+    <button
+      wx:for="{{children}}"
+      wx:key="id"
+      class="page-child-chip {{item.selected ? 'page-child-chip-active' : ''}}"
+      data-id="{{item.id}}"
+      bindtap="chooseChild"
+    >
+      {{item.nickname}}
+    </button>
   </view>
 
   <view class="section interest-hero-card stack">
     <view class="row">
       <view>
         <view class="caption">最近一次</view>
-        <view class="title">{{summary.latestLabel}}</view>
+        <view class="title">{{selectedChildName ? selectedChildName + ' · ' : ''}}{{summary.latestLabel}}</view>
       </view>
       <view class="progress-pill">{{isLoading ? '加载中' : '已同步'}}</view>
     </view>

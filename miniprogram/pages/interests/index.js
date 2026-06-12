@@ -1,5 +1,5 @@
 /* global Page, wx */
-const { getJson, postJson } = require("../../services/api");
+const { getActiveChildId, getJson, postJson } = require("../../services/api");
 
 function todayString() {
   return new Date().toISOString().slice(0, 10);
@@ -56,6 +56,9 @@ Page({
     isLoading: false,
     isSubmitting: false,
     errorMessage: "",
+    children: [],
+    selectedChildId: "",
+    selectedChildName: "",
     interestOptions: [],
     records: [],
     summary: {
@@ -72,11 +75,39 @@ Page({
     notes: ""
   },
   onShow() {
-    this.loadSnapshot();
+    this.loadChildren().then(() => this.loadSnapshot());
+  },
+  loadChildren() {
+    return getJson("/api/children")
+      .then((response) => {
+        const rawChildren = response.children || [];
+        const selectedChildId =
+          this.data.selectedChildId ||
+          getActiveChildId() ||
+          (rawChildren[0] && rawChildren[0].id) ||
+          "";
+        const selectedChild =
+          rawChildren.find((child) => child.id === selectedChildId) ||
+          rawChildren[0];
+
+        this.setData({
+          children: rawChildren.map((child) => ({
+            ...child,
+            selected: child.id === selectedChildId
+          })),
+          selectedChildId,
+          selectedChildName: selectedChild ? selectedChild.nickname : ""
+        });
+      })
+      .catch(() => undefined);
   },
   loadSnapshot() {
     this.setData({ isLoading: true, errorMessage: "" });
-    getJson("/api/interest-participation-records")
+    const childQuery = this.data.selectedChildId
+      ? `?childId=${encodeURIComponent(this.data.selectedChildId)}`
+      : "";
+
+    getJson(`/api/interest-participation-records${childQuery}`)
       .then((response) => {
         const interestOptions = response.interests || [];
         const records = (response.records || []).map(formatRecord);
@@ -95,6 +126,25 @@ Page({
             error.statusCode === 409 ? "请先完成首次配置" : error.error || "兴趣参与记录暂时无法同步"
         });
       });
+  },
+  chooseChild(event) {
+    const childId = event.currentTarget.dataset.id;
+    if (!childId || childId === this.data.selectedChildId) {
+      return;
+    }
+
+    const selectedChild = this.data.children.find((child) => child.id === childId);
+    this.setData({
+      selectedChildId: childId,
+      selectedChildName: selectedChild ? selectedChild.nickname : "",
+      selectedInterestId: "",
+      records: [],
+      children: this.data.children.map((child) => ({
+        ...child,
+        selected: child.id === childId
+      }))
+    });
+    this.loadSnapshot();
   },
   chooseInterest(event) {
     this.setData({ selectedInterestId: event.currentTarget.dataset.id });
@@ -133,7 +183,11 @@ Page({
     }
 
     this.setData({ isSubmitting: true });
-    postJson("/api/interest-participation-records", payload)
+    const childQuery = this.data.selectedChildId
+      ? `?childId=${encodeURIComponent(this.data.selectedChildId)}`
+      : "";
+
+    postJson(`/api/interest-participation-records${childQuery}`, payload)
       .then(() => {
         wx.showToast({ title: "已记录", icon: "success" });
         this.setData({

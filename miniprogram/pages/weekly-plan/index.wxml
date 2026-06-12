@@ -5,8 +5,21 @@
       <view class="caption">本周计划</view>
       <view wx:if="{{hasWeeklyPlanData}}" class="page-title">《{{theme}}》</view>
       <view wx:else class="page-title">本周陪伴节奏</view>
-      <view class="subtitle">少一点压力，多一点真实陪伴。每次只推进一个小动作。</view>
+      <view wx:if="{{selectedChildName}}" class="subtitle">正在看 {{selectedChildName}} 的周计划。少一点压力，多一点真实陪伴。</view>
+      <view wx:else class="subtitle">少一点压力，多一点真实陪伴。每次只推进一个小动作。</view>
     </view>
+  </view>
+
+  <view wx:if="{{children.length > 1}}" class="section page-child-selector">
+    <button
+      wx:for="{{children}}"
+      wx:key="id"
+      class="page-child-chip {{item.selected ? 'page-child-chip-active' : ''}}"
+      data-id="{{item.id}}"
+      bindtap="chooseChild"
+    >
+      {{item.nickname}}
+    </button>
   </view>
 
   <view wx:if="{{isLoading && !hasWeeklyPlanData && !errorMessage}}" class="section card blue-card stack">
@@ -122,8 +135,8 @@
     <view class="section card primary-card stack">
       <view>
         <view class="caption">下周计划</view>
-        <view class="title">想换一版节奏，可以让饭米粒重新想一版</view>
-        <view class="muted">不会改动本周任务，确认后只覆盖下周计划。</view>
+        <view class="title">想换一版{{selectedChildName ? selectedChildName : '孩子'}}的节奏，可以让饭米粒重新想一版</view>
+        <view class="muted">不会改动本周任务，确认后只覆盖这个孩子的下周计划。</view>
       </view>
       <button class="button-secondary" loading="{{isGeneratingDraft}}" bindtap="generateNextWeekDraft">
         让饭米粒重新想一版下周计划
