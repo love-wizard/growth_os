@@ -24,6 +24,32 @@
     <view wx:else class="profile-empty-note">完成首次配置后，这里会展示孩子的年度目标。</view>
   </view>
 
+  <view wx:if="{{children.length}}" class="section card profile-children-card stack">
+    <view class="row">
+      <view>
+        <view class="title">家庭里的孩子</view>
+        <view class="muted">选择当前孩子后，首页、周计划、成长档案会同步切换。</view>
+      </view>
+      <button class="button-secondary compact-button" bindtap="openSetup">添加</button>
+    </view>
+    <view class="profile-child-grid">
+      <button
+        wx:for="{{children}}"
+        wx:key="id"
+        class="profile-child-card {{item.selected ? 'profile-child-card-active' : ''}}"
+        data-id="{{item.id}}"
+        bindtap="switchChild"
+      >
+        <view class="profile-child-avatar">{{item.initial}}</view>
+        <view class="profile-child-card-main">
+          <view class="task-title">{{item.nickname}}</view>
+          <view class="caption">{{item.age || '孩子档案'}}</view>
+        </view>
+        <view wx:if="{{item.selected}}" class="profile-active-pill">当前</view>
+      </button>
+    </view>
+  </view>
+
   <view class="section card profile-card">
     <view class="row profile-row">
       <button class="avatar-button" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">

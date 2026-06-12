@@ -1138,6 +1138,78 @@ page {
   padding: 20rpx 22rpx;
 }
 
+.profile-children-card {
+  padding: 30rpx 32rpx;
+}
+
+.profile-child-grid {
+  display: grid;
+  gap: 18rpx;
+  grid-template-columns: 1fr;
+}
+
+.profile-child-card {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.78);
+  border: 1rpx solid rgba(229, 219, 205, 0.92);
+  border-radius: 24rpx;
+  box-shadow: none;
+  box-sizing: border-box;
+  display: flex;
+  gap: 18rpx;
+  margin: 0;
+  padding: 20rpx;
+  text-align: left;
+  width: 100%;
+}
+
+.profile-child-card::after {
+  border: 0;
+}
+
+.profile-child-card-active {
+  background: linear-gradient(145deg, rgba(240, 253, 246, 0.96), rgba(229, 245, 236, 0.96));
+  border-color: rgba(63, 143, 107, 0.42);
+}
+
+.profile-child-avatar {
+  align-items: center;
+  background: #f5eadb;
+  border: 1rpx solid rgba(222, 199, 169, 0.84);
+  border-radius: 50%;
+  color: #8b6b45;
+  display: flex;
+  flex: 0 0 auto;
+  font-size: 28rpx;
+  font-weight: 800;
+  height: 72rpx;
+  justify-content: center;
+  width: 72rpx;
+}
+
+.profile-child-card-active .profile-child-avatar {
+  background: #dff2e7;
+  border-color: rgba(63, 143, 107, 0.34);
+  color: #2f7f5d;
+}
+
+.profile-child-card-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.profile-active-pill {
+  background: #ffffff;
+  border: 1rpx solid rgba(63, 143, 107, 0.28);
+  border-radius: 999rpx;
+  color: #3f8f6b;
+  flex: 0 0 auto;
+  font-size: 22rpx;
+  font-weight: 800;
+  line-height: 34rpx;
+  padding: 4rpx 14rpx;
+}
+
 .profile-login-button {
   margin-top: 24rpx;
 }

@@ -4,7 +4,13 @@ const {
   loginWithWeChat,
   logoutMiniProgram
 } = require("../../services/session");
-const { getJson, patchJson, uploadFile } = require("../../services/api");
+const {
+  getActiveChildId,
+  getJson,
+  patchJson,
+  setActiveChildId,
+  uploadFile
+} = require("../../services/api");
 
 const parentProfileStorageKey = "growth_os_parent_profile";
 const localTestStorageKeys = [
@@ -34,6 +40,15 @@ const reminderDefinitions = [
     description: "新的一周从一件最容易的小事开始"
   }
 ];
+
+function clearChildScopedCaches() {
+  [
+    "growth_os_child_profile_cache",
+    "growth_os_dashboard_cache",
+    "growth_os_weekly_plan_cache",
+    "growth_os_growth_records_cache_v3"
+  ].forEach((key) => wx.removeStorageSync(key));
+}
 
 function buildParentProfile(profile) {
   const nickname = profile && profile.nickname ? profile.nickname : "微信家长";
@@ -78,6 +93,16 @@ function calculateAge(birthDate) {
   return `${Math.max(age, 0)}岁`;
 }
 
+function buildChildCards(children, activeChildId) {
+  return (children || []).map((child) => ({
+    id: child.id,
+    nickname: child.nickname,
+    age: calculateAge(child.birth_date),
+    initial: child.nickname.slice(0, 1),
+    selected: child.id === activeChildId
+  }));
+}
+
 function buildReminders(preferences) {
   const byType = {};
   (preferences || []).forEach((item) => {
@@ -113,6 +138,7 @@ Page({
       age: "",
       goals: []
     },
+    children: [],
     reminders: buildReminders(),
     reminderStatus: "",
     showDevTools: false
@@ -144,12 +170,21 @@ Page({
     this.setData({ profileStatus: "", setupRequired: false });
     getJson("/api/dashboard")
       .then((dashboard) => {
+        const activeChildId =
+          (dashboard.child && dashboard.child.id) ||
+          getActiveChildId() ||
+          (dashboard.children && dashboard.children[0] && dashboard.children[0].id) ||
+          "";
+        if (activeChildId) {
+          setActiveChildId(activeChildId);
+        }
         this.setData({
           child: {
             nickname: dashboard.child ? dashboard.child.nickname : "还未创建孩子档案",
             age: dashboard.child ? calculateAge(dashboard.child.birth_date) : "",
             goals: (dashboard.annualGoals || []).map((goal) => goal.title)
           },
+          children: buildChildCards(dashboard.children, activeChildId),
           setupRequired: !dashboard.child,
           profileStatus: ""
         });
@@ -163,7 +198,8 @@ Page({
               nickname: "还未创建孩子档案",
               age: "",
               goals: []
-            }
+            },
+            children: []
           });
           return;
         }
@@ -243,6 +279,7 @@ Page({
         age: "",
         goals: []
       },
+      children: [],
       reminders: buildReminders(),
       reminderStatus: ""
     });
@@ -333,6 +370,23 @@ Page({
   },
   openInterests() {
     wx.navigateTo({ url: "/pages/interests/index" });
+  },
+  switchChild(event) {
+    const childId = event.currentTarget.dataset.id;
+    if (!childId || childId === getActiveChildId()) {
+      return;
+    }
+
+    setActiveChildId(childId);
+    clearChildScopedCaches();
+    this.setData({
+      children: this.data.children.map((child) => ({
+        ...child,
+        selected: child.id === childId
+      })),
+      profileStatus: "已切换当前孩子"
+    });
+    this.loadFamilyProfile();
   },
   openSetup() {
     wx.navigateTo({ url: "/pages/setup/index" });
