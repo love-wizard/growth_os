@@ -10,6 +10,7 @@
       <view class="mascot-button">
         <view class="mascot-face">
           <view class="mascot-eye mascot-eye-left"></view>
+          <view class="mascot-eye-ring mascot-eye-ring-right"></view>
           <view class="mascot-eye mascot-eye-right"></view>
           <view class="mascot-smile"></view>
           <view class="mascot-cheek mascot-cheek-left"></view>
