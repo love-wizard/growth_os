@@ -132,14 +132,14 @@
     <view
       wx:for="{{visibleHistory}}"
       wx:key="id"
-      class="task-row"
+      class="task-row coach-history-row"
       data-conversation-id="{{item.id}}"
       bindtap="openHistoryItem"
     >
       <view class="task-main">
-        <view class="task-title">{{item.message}}</view>
-        <view class="caption">{{item.modeLabel}} · {{item.createdAtLabel}}</view>
-        <view class="muted">{{item.title}}</view>
+        <view class="task-title coach-history-message">{{item.message}}</view>
+        <view class="caption coach-history-meta">{{item.modeLabel}} · {{item.createdAtLabel}}</view>
+        <view class="muted coach-history-summary">{{item.title}}</view>
       </view>
     </view>
     <view wx:if="{{history.length > visibleHistory.length}}" class="caption coach-history-note">已收起更早咨询，新的问题会优先显示在这里。</view>

@@ -915,6 +915,39 @@ page {
   box-shadow: 0 10rpx 30rpx rgba(88, 74, 56, 0.035);
 }
 
+.coach-history-row {
+  align-items: flex-start;
+  box-sizing: border-box;
+  height: 132rpx;
+  overflow: hidden;
+  padding: 18rpx 0;
+}
+
+.coach-history-row:first-of-type {
+  padding-top: 18rpx;
+}
+
+.coach-history-message,
+.coach-history-meta,
+.coach-history-summary {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.coach-history-message,
+.coach-history-meta {
+  white-space: nowrap;
+}
+
+.coach-history-summary {
+  display: -webkit-box;
+  line-height: 34rpx;
+  margin-top: 2rpx;
+  max-height: 68rpx;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
 .interest-page {
   padding-top: 28rpx;
 }
