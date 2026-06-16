@@ -147,6 +147,7 @@
   position: absolute;
   top: 33rpx;
   width: 8rpx;
+  z-index: 3;
 }
 
 .mascot-cheek-left {
