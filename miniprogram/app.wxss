@@ -754,6 +754,114 @@ page {
   padding-top: 28rpx;
 }
 
+.coach-hero {
+  background: linear-gradient(160deg, rgba(255, 253, 248, 0.96) 0%, rgba(232, 246, 238, 0.9) 100%);
+  border: 1rpx solid rgba(216, 228, 217, 0.86);
+  border-radius: 36rpx;
+  box-shadow: 0 24rpx 64rpx rgba(74, 96, 70, 0.09);
+  box-sizing: border-box;
+  overflow: hidden;
+  padding: 22rpx 28rpx 30rpx;
+  position: relative;
+}
+
+.coach-hero::after {
+  background: linear-gradient(90deg, rgba(143, 191, 167, 0.18), rgba(255, 255, 255, 0));
+  bottom: 0;
+  content: "";
+  height: 120rpx;
+  left: 0;
+  position: absolute;
+  right: 0;
+}
+
+.coach-hero-visual {
+  align-items: center;
+  display: flex;
+  height: 288rpx;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+}
+
+.coach-hero-glow {
+  background: radial-gradient(circle, rgba(143, 191, 167, 0.42) 0%, rgba(246, 231, 200, 0.35) 46%, rgba(255, 255, 255, 0) 72%);
+  border-radius: 999rpx;
+  height: 286rpx;
+  left: 50%;
+  position: absolute;
+  top: 12rpx;
+  transform: translateX(-50%);
+  width: 360rpx;
+}
+
+.coach-hero-mascot {
+  display: block;
+  height: 270rpx;
+  position: relative;
+  transform: translateY(8rpx);
+  width: 270rpx;
+  z-index: 1;
+}
+
+.coach-hero-bubble {
+  background: rgba(255, 255, 255, 0.82);
+  border: 1rpx solid rgba(226, 213, 197, 0.86);
+  border-radius: 999rpx;
+  box-shadow: 0 10rpx 24rpx rgba(88, 74, 56, 0.055);
+  color: #4f6b5a;
+  font-size: 23rpx;
+  font-weight: 700;
+  line-height: 34rpx;
+  padding: 8rpx 18rpx;
+  position: absolute;
+  right: 28rpx;
+  top: 24rpx;
+  white-space: nowrap;
+  z-index: 2;
+}
+
+.coach-hero-copy {
+  position: relative;
+  z-index: 1;
+}
+
+.coach-hero-kicker {
+  color: #3f8f6b;
+  font-size: 25rpx;
+  font-weight: 750;
+  line-height: 36rpx;
+}
+
+.coach-hero .page-title {
+  font-size: 44rpx;
+  line-height: 58rpx;
+  margin-top: 4rpx;
+}
+
+.coach-hero .subtitle {
+  font-size: 27rpx;
+  line-height: 42rpx;
+  margin-top: 10rpx;
+}
+
+.coach-hero-tags {
+  display: flex;
+  gap: 12rpx;
+  margin-top: 20rpx;
+}
+
+.coach-hero-tag {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1rpx solid rgba(214, 226, 216, 0.82);
+  border-radius: 999rpx;
+  color: #5f685f;
+  font-size: 24rpx;
+  font-weight: 650;
+  line-height: 34rpx;
+  padding: 7rpx 16rpx;
+}
+
 .coach-ask-card {
   background: linear-gradient(145deg, rgba(255, 252, 247, 0.96) 0%, rgba(242, 250, 246, 0.92) 100%);
   border: 1rpx solid rgba(231, 224, 215, 0.84);

@@ -1,16 +1,22 @@
 <view class="page coach-page">
-  <view class="page-heading">
-    <view class="visual-icon fanmili-header-icon">
+  <view class="coach-hero">
+    <view class="coach-hero-visual">
+      <view class="coach-hero-glow"></view>
       <image
-        class="fanmili-header-image"
+        class="coach-hero-mascot"
         mode="aspectFit"
         src="/images/mascot/fanmili-25d-default.png"
       />
+      <view class="coach-hero-bubble">我来帮你拆成一步</view>
     </view>
-    <view>
-      <view class="caption">饭米粒</view>
+    <view class="coach-hero-copy">
+      <view class="coach-hero-kicker">饭米粒</view>
       <view class="page-title">把今天的陪伴变具体</view>
       <view class="subtitle">正在结合{{selectedAudienceName}}的成长档案，生成一个适合当下执行的建议。</view>
+      <view class="coach-hero-tags">
+        <view class="coach-hero-tag">看见当下</view>
+        <view class="coach-hero-tag">给出小步骤</view>
+      </view>
     </view>
   </view>
 
