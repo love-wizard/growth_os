@@ -10,6 +10,7 @@ export interface AIConversationRecord {
   mode: AICoachMode;
   message: string;
   response: unknown;
+  context_window_summary?: unknown;
   created_at: string;
   ai_weekly_plan_drafts?: Array<{
     id: UUID;
@@ -91,7 +92,7 @@ export async function listAIConversationsForFamily(
   const { data, error } = await supabase
     .from("ai_conversations")
     .select(
-      "id,family_id,user_id,user_role,mode,message,response,created_at,ai_weekly_plan_drafts(id,status)"
+      "id,family_id,user_id,user_role,mode,message,response,context_window_summary,created_at,ai_weekly_plan_drafts(id,status)"
     )
     .eq("family_id", input.familyId)
     .order("created_at", { ascending: false })
@@ -102,6 +103,24 @@ export async function listAIConversationsForFamily(
   }
 
   return (data ?? []) as AIConversationRecord[];
+}
+
+export async function getAIConversationForFamily(
+  supabase: SupabaseClient,
+  input: { familyId: UUID; conversationId: UUID }
+) {
+  const { data, error } = await supabase
+    .from("ai_conversations")
+    .select("id,family_id,user_id,user_role,mode,message,response,context_window_summary,created_at")
+    .eq("id", input.conversationId)
+    .eq("family_id", input.familyId)
+    .maybeSingle();
+
+  if (error) {
+    throw error;
+  }
+
+  return data as AIConversationRecord | null;
 }
 
 export async function getAIWeeklyPlanDraftForFamily(

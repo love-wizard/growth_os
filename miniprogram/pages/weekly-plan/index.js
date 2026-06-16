@@ -12,6 +12,7 @@ const weeklyPlanCacheStorageKey = "growth_os_weekly_plan_cache";
 const weeklyPlanCacheRefreshMs = 5 * 60 * 1000;
 const weeklyPlanCacheDisplayMs = 24 * 60 * 60 * 1000;
 const dashboardCacheStorageKey = "growth_os_dashboard_cache";
+const growthRecordPrefillStorageKey = "growth_os_growth_record_prefill";
 
 const emptyPlan = {
   theme: "",
@@ -22,7 +23,8 @@ const emptyPlan = {
   childTasks: [],
   totalTaskCount: 0,
   completedTaskCount: 0,
-  completionLabel: "0/0"
+  completionLabel: "0/0",
+  recentlyCompletedTask: null
 };
 
 const emptyNextWeekDraft = {
@@ -335,7 +337,7 @@ Page({
       });
   },
   completeTask(event) {
-    const { taskId, completedCount, plannedCount } = event.currentTarget.dataset;
+    const { taskId, completedCount, plannedCount, title } = event.currentTarget.dataset;
     if (!taskId) {
       return;
     }
@@ -350,7 +352,8 @@ Page({
       childTasks: this.data.childTasks,
       totalTaskCount: this.data.totalTaskCount,
       completedTaskCount: this.data.completedTaskCount,
-      completionLabel: this.data.completionLabel
+      completionLabel: this.data.completionLabel,
+      recentlyCompletedTask: this.data.recentlyCompletedTask
     };
     const nextFatherTasks = updateTaskInList(this.data.fatherTasks, taskId);
     const nextMotherTasks = updateTaskInList(this.data.motherTasks, taskId);
@@ -362,6 +365,13 @@ Page({
       motherTasks: nextMotherTasks,
       familyTasks: nextFamilyTasks,
       childTasks: nextChildTasks,
+      recentlyCompletedTask:
+        nextCompletedCount > Number(completedCount)
+          ? {
+              id: taskId,
+              title: title || "完成了一项陪伴小事"
+            }
+          : previousPlan.recentlyCompletedTask,
       ...summarizePlan([...nextFatherTasks, ...nextMotherTasks, ...nextFamilyTasks, ...nextChildTasks])
     };
     this.setData(weeklyPlan);
@@ -371,7 +381,8 @@ Page({
     });
 
     patchJson(`/api/weekly-plan/tasks/${taskId}/progress`, {
-      completedCount: nextCompletedCount
+      completedCount: nextCompletedCount,
+      entrySurface: "weekly_plan"
     })
       .then(() => {
         wx.showToast({ title: "已记录", icon: "success" });
@@ -386,5 +397,20 @@ Page({
         });
         wx.showToast({ title: error.error || "更新未成功", icon: "none" });
       });
+  },
+  createGrowthRecordDraftForCompletedTask() {
+    const task = this.data.recentlyCompletedTask;
+    if (!(task == null ? void 0 : task.id)) {
+      wx.showToast({ title: "先完成一项小事", icon: "none" });
+      return;
+    }
+
+    const parentNote = `${task.title}。今天真的做到了一个小推进。`;
+
+    wx.setStorageSync(growthRecordPrefillStorageKey, {
+      text: parentNote,
+      tags: this.data.theme ? `${this.data.theme},成长瞬间` : "成长瞬间"
+    });
+    wx.switchTab({ url: "/pages/archive/index" });
   }
 });

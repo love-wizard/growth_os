@@ -147,7 +147,7 @@ export function generateLocalResponse(
   }
 
   if (mode === "growth_analysis") {
-    return createGrowthAnalysisFallback(context);
+    return createGrowthAnalysisFallback(context, message);
   }
 
   if (mode === "weekly_plan_draft") {

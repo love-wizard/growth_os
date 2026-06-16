@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { requireAuthenticatedUser } from "@/lib/auth/family-access";
+import { getFirstGuidanceSessionByWeeklyTaskId } from "@/lib/repositories/first-guidance-repo";
 import { recordCompanionshipActionCompleted } from "@/lib/metrics/weekly-plan-events";
 import { getAcceptedFamilyMembership } from "@/lib/repositories/family-repo";
 import { invalidateFamilyReadCaches } from "@/lib/services/response-cache";
@@ -34,13 +35,22 @@ export async function PATCH(
     });
 
     if (result.completedCountIncreased) {
+      const sourceSession = await getFirstGuidanceSessionByWeeklyTaskId(
+        supabase,
+        result.task.id
+      );
+
       await recordCompanionshipActionCompleted(supabase, {
         familyId: membership.family_id,
         userId: user.id,
         weeklyPlanId: result.task.weekly_plan_id,
         taskId: result.task.id,
         completedCount: result.task.completed_count,
-        plannedCount: result.task.planned_count
+        plannedCount: result.task.planned_count,
+        assigneeType: result.task.assignee_type,
+        sourceType: sourceSession ? "ai_suggestion" : "weekly_plan",
+        sessionId: sourceSession?.id ?? undefined,
+        entrySurface: body.entrySurface
       });
     }
 

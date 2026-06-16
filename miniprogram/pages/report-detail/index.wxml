@@ -1,0 +1,43 @@
+<view class="page report-detail-page">
+  <view class="page-heading">
+    <view class="visual-icon">报</view>
+    <view>
+      <view class="caption">{{reportTypeLabel}}</view>
+      <view class="page-title">{{report ? report.title : "成长报告"}}</view>
+      <view class="subtitle">{{periodLabel}}</view>
+    </view>
+  </view>
+
+  <view wx:if="{{isLoading}}" class="section card stack">
+    <view class="skeleton-line skeleton-title"></view>
+    <view class="skeleton-line"></view>
+    <view class="skeleton-line short"></view>
+  </view>
+
+  <view wx:elif="{{errorMessage}}" class="section card warm-card stack">
+    <view>
+      <view class="title">{{errorMessage}}</view>
+      <view class="muted">可以回到成长档案重新打开报告。</view>
+    </view>
+    <button class="button-primary" bindtap="goBack">回到成长档案</button>
+  </view>
+
+  <block wx:elif="{{report}}">
+    <view class="section card report-summary-card">
+      <view class="caption">{{sourceLabel}}</view>
+      <view class="title">{{report.summary}}</view>
+    </view>
+
+    <view class="section stack">
+      <view class="report-section-card" wx:for="{{report.sections}}" wx:key="area">
+        <view class="caption">{{item.area}}</view>
+        <view class="title">{{item.summary}}</view>
+        <view wx:if="{{item.evidence && item.evidence.length}}" class="report-evidence-list">
+          <view class="muted report-evidence" wx:for="{{item.evidence}}" wx:for-item="evidence" wx:key="*this">
+            {{evidence}}
+          </view>
+        </view>
+      </view>
+    </view>
+  </block>
+</view>

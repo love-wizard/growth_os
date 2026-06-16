@@ -95,7 +95,10 @@ export function TaskTable({
       headers: {
         "content-type": "application/json"
       },
-      body: JSON.stringify({ completedCount })
+      body: JSON.stringify({
+        completedCount,
+        entrySurface: "weekly_plan"
+      })
     }).catch(() => undefined);
   }
 }

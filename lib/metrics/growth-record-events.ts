@@ -1,5 +1,10 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { GrowthRecordDraftSourceType, UUID } from "@/lib/domain/types";
+import type {
+  FeatureActionType,
+  FeatureEntrySurface,
+  GrowthRecordDraftSourceType,
+  UUID
+} from "@/lib/domain/types";
 import { recordProductMetricEvent } from "@/lib/metrics/product-events";
 
 export function recordGrowthRecordCreated(
@@ -23,6 +28,8 @@ export function recordGrowthRecordDraftCreated(
     userId: UUID;
     recordId: UUID;
     sourceType: GrowthRecordDraftSourceType;
+    entrySurface?: FeatureEntrySurface;
+    actionType?: FeatureActionType;
   }
 ) {
   return recordProductMetricEvent(supabase, {
@@ -32,7 +39,9 @@ export function recordGrowthRecordDraftCreated(
     eventProperties: {
       recordId: input.recordId,
       draft: true,
-      sourceType: input.sourceType
+      sourceType: input.sourceType,
+      ...(input.entrySurface ? { entrySurface: input.entrySurface } : {}),
+      ...(input.actionType ? { actionType: input.actionType } : {})
     }
   });
 }

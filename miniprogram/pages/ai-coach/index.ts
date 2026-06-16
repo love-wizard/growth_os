@@ -67,14 +67,29 @@ function formatCoachResponse(response: any) {
   }
 
   if (response.mode === "growth_analysis") {
+    const sections = response.sections || [];
+    const nextActions = response.nextActions || [];
+    const isReport = response.reportType === "monthly" || response.reportType === "annual";
+    const text = sections
+      .map((section: { area: string; summary: string; evidence?: string[] }) => {
+        const evidence = (section.evidence || []).length
+          ? `\n证据：${(section.evidence || []).join("；")}`
+          : "";
+        return `${section.area}\n${section.summary}${evidence}`;
+      })
+      .join("\n\n");
+    const reportAdvice = nextActions.length
+      ? `\n\n${response.reportType === "annual" ? "下一阶段温和建议" : "下月温和建议"}\n${nextActions
+          .map((item: string, index: number) => `${index + 1}. ${item}`)
+          .join("\n")}`
+      : "";
+
     return {
-      contextLabel: "基于最近成长记录",
+      contextLabel: isReport ? "基于成长档案生成报告" : "基于最近成长记录",
       title: response.title,
-      text: (response.sections || [])
-        .map((section: { area: string; summary: string }) => `${section.area}：${section.summary}`)
-        .join("\n"),
-      actions: response.nextActions || [],
-      fallback: "成长分析会随着记录增加而更贴合孩子。",
+      text: isReport ? `${text}${reportAdvice}` : text,
+      actions: isReport ? [] : nextActions,
+      fallback: isReport ? "" : "成长分析会随着记录增加而更贴合孩子。",
       weeklyPlanDraftId: "",
       isWeeklyPlanDraft: false,
       isDraftConfirmed: false,

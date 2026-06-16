@@ -50,6 +50,9 @@ declare const wx: {
   navigateTo(options: { url: string }): void;
   redirectTo(options: { url: string }): void;
   showToast(options: { title: string; icon?: "success" | "error" | "loading" | "none" }): void;
+  showLoading(options: { title: string; mask?: boolean }): void;
+  hideLoading(): void;
+  navigateBack(options?: { delta?: number; fail?: () => void }): void;
   showModal(options: {
     title?: string;
     content?: string;

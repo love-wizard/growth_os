@@ -36,18 +36,18 @@
 
   <view class="section card archive-report-card">
     <view>
-      <view class="caption">本月月报</view>
+      <view class="caption">成长月报</view>
       <view wx:if="{{records.length > 0}}" class="title">把 {{records.length}} 条成长瞬间整理成报告</view>
       <view wx:else class="title">先记录几个瞬间，饭米粒再帮你整理月报</view>
       <view wx:if="{{selectedRecordScopeIndex === 1}}" class="muted">饭米粒会整理共同陪伴和每个孩子被看见的瞬间。</view>
       <view wx:else class="muted">饭米粒会结合成长瞬间、周计划和课程记录，整理本月变化。</view>
     </view>
     <button class="button-secondary compact-button" disabled="{{records.length === 0}}" bindtap="generateMonthlyReport">
-      去问饭米粒
+      生成月报
     </button>
   </view>
 
-  <view class="section card archive-report-card annual-report-card">
+  <view wx:if="{{showAnnualReport}}" class="section card archive-report-card annual-report-card">
     <view>
       <view class="caption">年度家庭报告</view>
       <view wx:if="{{allRecords.length > 0}}" class="title">整理今年的共同瞬间和父母寄语</view>
@@ -99,7 +99,21 @@
     <block wx:else>
     <view class="archive-timeline-item" wx:for="{{records}}" wx:key="id">
       <view class="archive-timeline-dot"></view>
-      <view class="archive-record-card {{item.photoUrls && item.photoUrls.length ? 'archive-record-card-with-photo' : ''}}">
+      <view
+        wx:if="{{item.itemKind === 'report'}}"
+        class="archive-record-card archive-report-timeline-card"
+        data-id="{{item.sourceId}}"
+        bindtap="openReportDetail"
+      >
+        <view class="archive-record-topline">
+          <view class="caption">{{item.dateTimeLabel || item.date}}</view>
+          <view class="archive-course-badge">{{item.primaryTag}}</view>
+        </view>
+        <view class="task-title">{{item.title}}</view>
+        <view class="archive-record-text">{{item.text}}</view>
+        <view class="muted">{{item.sourceText}}</view>
+      </view>
+      <view wx:else class="archive-record-card {{item.photoUrls && item.photoUrls.length ? 'archive-record-card-with-photo' : ''}}">
         <view wx:if="{{item.photoUrls && item.photoUrls.length}}" class="archive-record-photo-grid">
           <image
             class="archive-record-photo {{item.photoUrls.length === 1 ? 'archive-record-photo-large' : ''}}"
@@ -111,23 +125,43 @@
             lazy-load="{{true}}"
             data-current="{{photoUrl}}"
             data-urls="{{item.photoUrls}}"
+            binderror="handleRecordPhotoError"
             bindtap="previewRecordPhoto"
           />
         </view>
-        <view class="caption">{{item.dateTimeLabel || item.date}}</view>
-        <view wx:if="{{item.childLabel}}" class="archive-child-label">关联：{{item.childLabel}}</view>
-        <view wx:if="{{item.itemKind === 'course'}}" class="archive-course-badge">课程记录</view>
-        <view class="task-title">{{item.title}}</view>
-        <view class="muted">{{item.text}}</view>
-        <view class="chip-row archive-tag-row">
-          <view class="chip" wx:for="{{item.tags}}" wx:for-item="tag" wx:key="tag">{{tag}}</view>
+        <view class="archive-record-topline">
+          <view class="caption">{{item.dateTimeLabel || item.date}}</view>
+          <button
+            wx:if="{{item.itemKind !== 'course'}}"
+            class="archive-record-menu-button"
+            data-id="{{item.id}}"
+            bindtap="openRecordActions"
+          >
+            ⋯
+          </button>
+        </view>
+        <view class="archive-meta-badges">
+          <view wx:if="{{item.primaryTag && item.itemKind !== 'course'}}" class="archive-primary-tag">
+            {{item.primaryTag}}
+          </view>
+          <view wx:if="{{item.itemKind === 'course'}}" class="archive-course-badge">课程记录</view>
+          <view wx:if="{{item.childLabel}}" class="archive-child-label">{{item.childLabel}}</view>
+        </view>
+        <view wx:if="{{item.itemKind === 'course'}}" class="task-title">{{item.title}}</view>
+        <view class="archive-record-text {{item.itemKind !== 'course' ? 'archive-record-text-strong' : ''}}">
+          {{item.text}}
+        </view>
+        <view wx:if="{{item.secondaryTags && item.secondaryTags.length}}" class="chip-row archive-tag-row">
+          <view class="chip archive-secondary-chip" wx:for="{{item.secondaryTags}}" wx:for-item="tag" wx:key="tag">
+            {{tag}}
+          </view>
         </view>
         <view wx:if="{{item.itemKind !== 'course'}}" class="row action-row">
           <button
             class="button-secondary compact-button"
             open-type="share"
             data-id="{{item.id}}"
-            data-title="{{item.title}}"
+            data-title="{{item.primaryTag || item.title}}"
             data-text="{{item.text}}"
             data-date="{{item.dateTimeLabel || item.date}}"
             data-image-url="{{item.shareImageUrl || item.photoUrls[0]}}"
@@ -154,56 +188,72 @@
   <button class="floating-add-button" bindtap="openRecordComposer">+</button>
 
   <view wx:if="{{isRecordComposerOpen}}" class="modal-backdrop" bindtap="closeRecordComposer">
-    <view class="record-composer-sheet stack" catchtap="noop">
-      <view class="row">
-        <view>
-          <view class="caption">成长瞬间</view>
-          <view class="title">今天有什么值得记下？</view>
-        </view>
-        <button class="button-secondary compact-button" bindtap="closeRecordComposer">关闭</button>
-      </view>
-      <textarea class="input-box text-area" placeholder="例如：今天第一次主动练琴20分钟。" value="{{recordText}}" bindinput="onRecordTextInput" />
-      <picker mode="selector" range="{{recordCategories}}" value="{{selectedCategoryIndex}}" bindchange="onRecordCategoryChange">
-        <view class="input-box picker-box">类别 {{recordCategory}}</view>
-      </picker>
-      <view wx:if="{{children.length > 1}}" class="record-child-selector">
-        <view>
-          <view class="caption">关联给</view>
-          <view class="muted">默认关联全部孩子。单独瞬间可以点掉不相关的孩子。</view>
-        </view>
-        <view class="chip-row">
-          <button
-            wx:for="{{children}}"
-            wx:key="id"
-            class="child-select-chip {{item.selected ? 'child-select-chip-active' : ''}}"
-            data-id="{{item.id}}"
-            bindtap="toggleRecordChild"
-          >
-            {{item.nickname}}
-          </button>
-        </view>
-      </view>
-      <view class="record-time-row">
-        <picker mode="date" value="{{happenedDate}}" bindchange="onHappenedDateChange">
-          <view class="input-box picker-box">日期 {{happenedDate}}</view>
-        </picker>
-        <picker mode="time" value="{{happenedTime}}" bindchange="onHappenedTimeChange">
-          <view class="input-box picker-box">时间 {{happenedTime}}</view>
-        </picker>
-      </view>
-      <view class="stack">
-        <button class="button-secondary" bindtap="choosePhoto">选择照片（最多3张）</button>
-        <view wx:if="{{selectedPhotos.length}}" class="selected-photo-grid">
-          <view class="photo-preview-card" wx:for="{{selectedPhotos}}" wx:key="path">
-            <image class="photo-preview small-photo-preview" src="{{item.path}}" mode="aspectFill" />
-            <view class="row">
-              <view class="muted">{{item.name}}</view>
-              <button class="button-secondary compact-button" data-index="{{index}}" bindtap="removeSelectedPhoto">移除</button>
+    <view class="record-composer-sheet" catchtap="noop">
+      <scroll-view scroll-y class="record-composer-scroll">
+        <view class="record-composer-body stack">
+          <view class="row">
+            <view>
+              <view class="caption">成长瞬间</view>
+              <view class="title">{{composerMode === 'edit' ? '修正这条成长记录' : '今天有什么值得记下？'}}</view>
+            </view>
+            <button class="button-secondary compact-button" bindtap="closeRecordComposer">关闭</button>
+          </view>
+          <view wx:if="{{composerMode === 'edit'}}" class="muted">
+            当前仅支持修正文案、日期和类别；照片、时间和关联孩子保持原记录不变。
+          </view>
+          <textarea class="input-box text-area" placeholder="例如：今天第一次主动练琴20分钟。" value="{{recordText}}" bindinput="onRecordTextInput" />
+          <picker mode="selector" range="{{recordCategories}}" value="{{selectedCategoryIndex}}" bindchange="onRecordCategoryChange">
+            <view class="input-box picker-box">类别 {{recordCategory}}</view>
+          </picker>
+          <view wx:if="{{composerMode !== 'edit' && children.length > 1}}" class="record-child-selector">
+            <view>
+              <view class="caption">关联给</view>
+              <view class="muted">默认关联全部孩子。单独瞬间可以点掉不相关的孩子。</view>
+            </view>
+            <view class="chip-row">
+              <button
+                wx:for="{{children}}"
+                wx:key="id"
+                class="child-select-chip {{item.selected ? 'child-select-chip-active' : ''}}"
+                data-id="{{item.id}}"
+                bindtap="toggleRecordChild"
+              >
+                {{item.nickname}}
+              </button>
+            </view>
+          </view>
+          <view wx:if="{{composerMode !== 'edit'}}" class="record-time-row">
+            <picker mode="date" value="{{happenedDate}}" bindchange="onHappenedDateChange">
+              <view class="input-box picker-box">日期 {{happenedDate}}</view>
+            </picker>
+            <picker mode="time" value="{{happenedTime}}" bindchange="onHappenedTimeChange">
+              <view class="input-box picker-box">时间 {{happenedTime}}</view>
+            </picker>
+          </view>
+          <view wx:if="{{composerMode === 'edit'}}">
+            <picker mode="date" value="{{happenedDate}}" bindchange="onHappenedDateChange">
+              <view class="input-box picker-box">日期 {{happenedDate}}</view>
+            </picker>
+          </view>
+          <view wx:if="{{composerMode !== 'edit'}}" class="stack">
+            <button class="button-secondary" bindtap="choosePhoto">选择照片（最多3张）</button>
+            <view wx:if="{{selectedPhotos.length}}" class="selected-photo-grid">
+              <view class="photo-preview-card" wx:for="{{selectedPhotos}}" wx:key="path">
+                <image class="photo-preview small-photo-preview" src="{{item.path}}" mode="aspectFill" />
+                <view class="row">
+                  <view class="muted">{{item.name}}</view>
+                  <button class="button-secondary compact-button" data-index="{{index}}" bindtap="removeSelectedPhoto">移除</button>
+                </view>
+              </view>
             </view>
           </view>
         </view>
+      </scroll-view>
+      <view class="record-composer-footer">
+        <button class="button-primary" loading="{{isSubmitting}}" disabled="{{isSubmitting}}" bindtap="addRecord">
+          {{composerMode === 'edit' ? '保存修改' : '记录成长瞬间'}}
+        </button>
       </view>
-      <button class="button-primary" loading="{{isSubmitting}}" disabled="{{isSubmitting}}" bindtap="addRecord">记录成长瞬间</button>
     </view>
   </view>
 </view>

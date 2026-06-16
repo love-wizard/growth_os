@@ -85,7 +85,7 @@
             <view class="task-title">{{item.title}}</view>
             <view class="caption">{{item.note}}</view>
           </view>
-          <button class="progress-pill" data-task-id="{{item.id}}" data-completed-count="{{item.completedCount}}" data-planned-count="{{item.plannedCount}}" bindtap="completeTask">{{item.progress}}</button>
+          <button class="progress-pill" data-task-id="{{item.id}}" data-title="{{item.title}}" data-completed-count="{{item.completedCount}}" data-planned-count="{{item.plannedCount}}" bindtap="completeTask">{{item.progress}}</button>
         </view>
       </view>
 
@@ -99,7 +99,7 @@
             <view class="task-title">{{item.title}}</view>
             <view class="caption">{{item.note}}</view>
           </view>
-          <button class="progress-pill" data-task-id="{{item.id}}" data-completed-count="{{item.completedCount}}" data-planned-count="{{item.plannedCount}}" bindtap="completeTask">{{item.progress}}</button>
+          <button class="progress-pill" data-task-id="{{item.id}}" data-title="{{item.title}}" data-completed-count="{{item.completedCount}}" data-planned-count="{{item.plannedCount}}" bindtap="completeTask">{{item.progress}}</button>
         </view>
       </view>
 
@@ -113,7 +113,7 @@
             <view class="task-title">{{item.title}}</view>
             <view class="caption">{{item.note}}</view>
           </view>
-          <button class="progress-pill" data-task-id="{{item.id}}" data-completed-count="{{item.completedCount}}" data-planned-count="{{item.plannedCount}}" bindtap="completeTask">{{item.progress}}</button>
+          <button class="progress-pill" data-task-id="{{item.id}}" data-title="{{item.title}}" data-completed-count="{{item.completedCount}}" data-planned-count="{{item.plannedCount}}" bindtap="completeTask">{{item.progress}}</button>
         </view>
       </view>
 
@@ -127,9 +127,20 @@
             <view class="task-title">{{item.title}}</view>
             <view class="caption">{{item.note}}</view>
           </view>
-          <button class="progress-pill" data-task-id="{{item.id}}" data-completed-count="{{item.completedCount}}" data-planned-count="{{item.plannedCount}}" bindtap="completeTask">{{item.progress}}</button>
+          <button class="progress-pill" data-task-id="{{item.id}}" data-title="{{item.title}}" data-completed-count="{{item.completedCount}}" data-planned-count="{{item.plannedCount}}" bindtap="completeTask">{{item.progress}}</button>
         </view>
       </view>
+    </view>
+
+    <view wx:if="{{recentlyCompletedTask}}" class="section card warm-card stack">
+      <view>
+        <view class="caption">刚完成的小事</view>
+        <view class="title">{{recentlyCompletedTask.title}}</view>
+        <view class="muted">趁还记得，先生成一条成长记录草稿。</view>
+      </view>
+      <button class="button-primary" bindtap="createGrowthRecordDraftForCompletedTask">
+        记录这个陪伴瞬间
+      </button>
     </view>
 
     <view class="section card primary-card stack">

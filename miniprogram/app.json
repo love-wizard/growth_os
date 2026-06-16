@@ -10,6 +10,7 @@
     "pages/first-guidance/index",
     "pages/invite/index",
     "pages/interests/index",
+    "pages/report-detail/index",
     "pages/record-preview/index"
   ],
   "window": {

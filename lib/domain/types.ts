@@ -136,6 +136,21 @@ export const productMetricEventNames = [
 ] as const;
 export type ProductMetricEventName = (typeof productMetricEventNames)[number];
 
+export const featureEntrySurfaces = [
+  "web_first_guidance",
+  "mp_setup",
+  "home",
+  "weekly_plan"
+] as const;
+export type FeatureEntrySurface = (typeof featureEntrySurfaces)[number];
+
+export const featureActionTypes = [
+  "accept_only",
+  "add_to_weekly_plan",
+  "create_record_draft"
+] as const;
+export type FeatureActionType = (typeof featureActionTypes)[number];
+
 export const wechatChannelEntryTypes = [
   "mini_program_entry",
   "scenario_card",

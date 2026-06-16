@@ -1,6 +1,8 @@
 import { z } from "zod";
 import {
   aiCoachModes,
+  featureActionTypes,
+  featureEntrySurfaces,
   expertReviewStatuses,
   firstUseChildTraits,
   firstUseCurrentChallenges,
@@ -67,10 +69,21 @@ export const firstGuidanceResponseSchema = z.object({
   todaySuggestion: firstGuidanceTodaySuggestionSchema
 });
 
-export const acceptSuggestionRequestSchema = z.object({
-  addToWeeklyPlan: z.boolean().optional(),
-  taskAssigneeType: z.enum(taskAssigneeTypes).optional()
-});
+export const acceptSuggestionRequestSchema = z
+  .object({
+    addToWeeklyPlan: z.boolean().optional(),
+    taskAssigneeType: z.enum(taskAssigneeTypes).optional(),
+    entrySurface: z.enum(featureEntrySurfaces).optional()
+  })
+  .superRefine((value, ctx) => {
+    if (value.addToWeeklyPlan && !value.taskAssigneeType) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Task assignee type is required when adding to weekly plan",
+        path: ["taskAssigneeType"]
+      });
+    }
+  });
 
 export const inviteParentRequestSchema = z.object({
   email: z.string().email(),
@@ -78,7 +91,8 @@ export const inviteParentRequestSchema = z.object({
 });
 
 export const updateTaskProgressRequestSchema = z.object({
-  completedCount: z.number().int().min(0)
+  completedCount: z.number().int().min(0),
+  entrySurface: z.enum(featureEntrySurfaces).optional()
 });
 
 export const interestParticipationRecordInputSchema = z.object({
@@ -100,15 +114,32 @@ export const growthRecordInputSchema = z.object({
   childIds: z.array(uuid).min(1).max(6).optional()
 });
 
+export const growthRecordUpdateSchema = z.object({
+  happenedOn: dateString,
+  text: nonEmptyText,
+  tags: z.array(nonEmptyText).optional(),
+  parentNotes: z.string().trim().optional(),
+  draftStatus: z.enum(["draft", "saved"]).optional()
+});
+
 export const growthRecordDraftRequestSchema = z.object({
   sourceType: z.enum(["weekly_task", "ai_suggestion", "parent_note"]),
   sourceId: nonEmptyText,
-  parentNote: z.string().trim().optional()
+  parentNote: z.string().trim().optional(),
+  entrySurface: z.enum(featureEntrySurfaces).optional(),
+  actionType: z.enum(featureActionTypes).optional()
 });
 
 export const aiCoachRequestSchema = z.object({
   mode: z.enum(aiCoachModes),
   message: nonEmptyText
+});
+
+export const growthReportMonthlyRequestSchema = z.object({
+  scope: z.enum(["child", "family"]).default("child"),
+  childId: uuid.optional(),
+  periodStart: dateString.optional(),
+  periodEnd: dateString.optional()
 });
 
 export const notificationPreferenceRequestSchema = z.object({
@@ -166,6 +197,7 @@ export type AcceptSuggestionRequest = z.infer<
   typeof acceptSuggestionRequestSchema
 >;
 export type AICoachRequest = z.infer<typeof aiCoachRequestSchema>;
+export type GrowthReportMonthlyRequest = z.infer<typeof growthReportMonthlyRequestSchema>;
 export type ProductMetricEventRequest = z.infer<
   typeof productMetricEventRequestSchema
 >;

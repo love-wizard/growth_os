@@ -42,7 +42,9 @@ export async function createGrowthRecordDraft(
     familyId: input.familyId,
     userId: input.userId,
     recordId: String(record.id),
-    sourceType: input.draft.sourceType
+    sourceType: input.draft.sourceType,
+    entrySurface: input.draft.entrySurface,
+    actionType: input.draft.actionType
   });
 
   return record;

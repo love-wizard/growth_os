@@ -245,6 +245,37 @@ export async function restoreGrowthRecord(supabase: SupabaseClient, recordId: UU
   }
 }
 
+export async function updateGrowthRecordContent(
+  supabase: SupabaseClient,
+  input: {
+    recordId: UUID;
+    happenedOn: string;
+    text: string;
+    tags?: string[];
+    parentNotes?: string;
+    draftStatus?: GrowthRecordDraftStatus;
+  }
+) {
+  const { data, error } = await supabase
+    .from("growth_records")
+    .update({
+      happened_on: input.happenedOn,
+      text: input.text,
+      tags: input.tags ?? [],
+      parent_notes: input.parentNotes ?? null,
+      draft_status: input.draftStatus ?? "saved"
+    })
+    .eq("id", input.recordId)
+    .select("id,happened_on,happened_at,text,tags,parent_notes,draft_status")
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+}
+
 export interface GrowthRecord {
   id: UUID;
   child_id: UUID;

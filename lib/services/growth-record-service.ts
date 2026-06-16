@@ -9,6 +9,7 @@ import {
   listRecentGrowthRecords,
   restoreGrowthRecord,
   softDeleteGrowthRecord,
+  updateGrowthRecordContent,
   upsertGrowthRecordChildren
 } from "@/lib/repositories/growth-record-repo";
 import { listFamilyChildren } from "@/lib/repositories/child-repo";
@@ -19,7 +20,10 @@ import {
 } from "@/lib/services/storage-service";
 import { elapsedMs, logPerf, nowMs } from "@/lib/services/perf-log";
 import type { z } from "zod";
-import { growthRecordInputSchema } from "@/lib/validation/schemas";
+import {
+  growthRecordInputSchema,
+  growthRecordUpdateSchema
+} from "@/lib/validation/schemas";
 
 export class GrowthRecordError extends Error {
   constructor(message: string) {
@@ -29,6 +33,7 @@ export class GrowthRecordError extends Error {
 }
 
 export type GrowthRecordRequest = z.infer<typeof growthRecordInputSchema>;
+export type GrowthRecordUpdateRequest = z.infer<typeof growthRecordUpdateSchema>;
 
 export async function listGrowthRecordsForFamily(
   supabase: SupabaseClient,
@@ -208,6 +213,30 @@ export async function deleteGrowthRecordForFamily(
     recordId: input.recordId,
     deletedAt: window.deletedAt,
     restoreUntil: window.restoreUntil
+  });
+}
+
+export async function updateGrowthRecordForFamily(
+  supabase: SupabaseClient,
+  input: {
+    familyId: UUID;
+    recordId: UUID;
+    record: GrowthRecordUpdateRequest;
+  }
+) {
+  const existing = await getGrowthRecordForFamily(supabase, input);
+
+  if (!existing || existing.deleted_at) {
+    throw new GrowthRecordError("Growth record was not found");
+  }
+
+  return updateGrowthRecordContent(supabase, {
+    recordId: input.recordId,
+    happenedOn: input.record.happenedOn,
+    text: input.record.text,
+    tags: input.record.tags,
+    parentNotes: input.record.parentNotes,
+    draftStatus: input.record.draftStatus ?? "saved"
   });
 }
 

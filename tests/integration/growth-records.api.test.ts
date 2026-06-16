@@ -6,7 +6,10 @@ import {
   buildGrowthMediaStoragePath,
   inferGrowthMediaType
 } from "@/lib/services/storage-service";
-import { growthRecordInputSchema } from "@/lib/validation/schemas";
+import {
+  growthRecordInputSchema,
+  growthRecordUpdateSchema
+} from "@/lib/validation/schemas";
 
 describe("growth records API support logic", () => {
   it("builds a 30 day restore window for soft delete", () => {
@@ -27,6 +30,18 @@ describe("growth records API support logic", () => {
       happenedAt: "2026-06-08T19:32:18.000+08:00",
       text: "第一次游过25米。",
       tags: ["游泳"]
+    });
+
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts draft save-back updates", () => {
+    const result = growthRecordUpdateSchema.safeParse({
+      happenedOn: "2026-06-08",
+      text: "第一次游过25米，而且自己要求再来一次。",
+      tags: ["游泳", "成长瞬间"],
+      parentNotes: "她当时很兴奋。",
+      draftStatus: "saved"
     });
 
     expect(result.success).toBe(true);

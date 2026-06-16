@@ -5,6 +5,7 @@ import {
   GrowthRecordError,
   restoreGrowthRecordForFamily
 } from "@/lib/services/growth-record-service";
+import { invalidateFamilyReadCaches } from "@/lib/services/response-cache";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export async function POST(
@@ -26,6 +27,7 @@ export async function POST(
       familyId: membership.family_id,
       recordId
     });
+    invalidateFamilyReadCaches(membership.family_id);
 
     return NextResponse.json({ restored: true });
   } catch (error) {

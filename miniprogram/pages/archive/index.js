@@ -1,7 +1,7 @@
 "use strict";
 var import_api = require("../../services/api");
 const growthRecordPrefillStorageKey = "growth_os_growth_record_prefill";
-const growthRecordsCacheStorageKey = "growth_os_growth_records_cache_v5";
+const growthRecordsCacheStorageKey = "growth_os_growth_records_cache_v6";
 const aiCoachPrefillStorageKey = "growth_os_ai_coach_prefill";
 const growthRecordsCacheRefreshMs = 5 * 60 * 1e3;
 const growthRecordsCacheDisplayMs = 55 * 60 * 1e3;
@@ -41,6 +41,19 @@ function currentTimeString() {
 }
 function currentSecondString() {
   return `${(/* @__PURE__ */ new Date()).getSeconds()}`.padStart(2, "0");
+}
+function timeStringFromDateTime(value) {
+  if (!value) {
+    return currentTimeString();
+  }
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return currentTimeString();
+  }
+  return `${date.getHours()}`.padStart(2, "0") + ":" + `${date.getMinutes()}`.padStart(2, "0");
+}
+function shouldShowAnnualReport(referenceDate = /* @__PURE__ */ new Date()) {
+  return referenceDate.getMonth() === 11 && referenceDate.getDate() >= 15;
 }
 function buildLocalDateTime(date, time, seconds = currentSecondString()) {
   const [hours = "00", minutes = "00"] = time.split(":");
@@ -94,11 +107,14 @@ function formatRecord(record) {
   const happenedAt = getDisplayDateTime(record.happened_at, record.happened_on, record.created_at);
   return {
     id: record.id,
+    itemKind: "growth",
     date: record.happened_on,
     happenedAt,
     dateTimeLabel: formatDateTimeLabel(record.happened_at, record.happened_on, record.created_at),
     createdAt: record.created_at || "",
     title: tags[0],
+    primaryTag: tags[0],
+    secondaryTags: tags.slice(1),
     text: record.text,
     tags,
     childLabels,
@@ -127,12 +143,37 @@ function formatCourseRecord(record) {
     dateTimeLabel: formatDateTimeLabel(record.happened_at, record.happened_on),
     createdAt: "",
     title: `${interestName}课程`,
+    primaryTag: "课程记录",
+    secondaryTags: [],
     text: detailParts.join(" · "),
     tags: ["课程记录", interestName],
     childLabels: (childProfile == null ? void 0 : childProfile.nickname) ? [childProfile.nickname] : [],
     childLabel: (childProfile == null ? void 0 : childProfile.nickname) || "",
     photoUrls: [],
     shareImageUrl: ""
+  };
+}
+function formatGrowthReport(report) {
+  const label = report.report_type === "annual" ? "成长年报" : "成长月报";
+  const sourceText = `基于 ${report.source_record_count || 0} 条成长瞬间和 ${report.source_course_record_count || 0} 条课程记录生成`;
+  return {
+    id: `report-${report.id}`,
+    sourceId: report.id,
+    itemKind: "report",
+    date: report.period_end,
+    happenedAt: combineDateWithTime(report.period_end, report.created_at),
+    dateTimeLabel: report.period_end,
+    createdAt: report.created_at || "",
+    title: report.title || label,
+    primaryTag: label,
+    secondaryTags: [report.scope === "family" ? "全家" : "当前孩子"],
+    text: report.summary || sourceText,
+    tags: [label],
+    childLabels: [],
+    childLabel: "",
+    photoUrls: [],
+    shareImageUrl: "",
+    sourceText
   };
 }
 function getRecordCategory(record) {
@@ -198,7 +239,7 @@ function mergeCachedMedia(nextRecords, currentRecords) {
     }
     return {
       ...record,
-      photoUrls: ((_a = current.photoUrls) == null ? void 0 : _a.length) ? current.photoUrls : record.photoUrls,
+      photoUrls: ((_a = record.photoUrls) == null ? void 0 : _a.length) ? record.photoUrls : current.photoUrls || [],
       shareImageUrl: current.shareImageUrl || record.shareImageUrl
     };
   });
@@ -219,8 +260,11 @@ Page({
     hasRecordData: false,
     isSubmitting: false,
     isRecordComposerOpen: false,
+    composerMode: "create",
     isFilterOpen: false,
     errorMessage: "",
+    editingRecordId: "",
+    editingRecordTags: [],
     recordText: "",
     recordCategory: "成长瞬间",
     selectedCategoryIndex: 0,
@@ -232,11 +276,13 @@ Page({
     filterKeyword: "",
     isLoadingMoreRecords: false,
     hasMoreRecords: false,
+    showAnnualReport: shouldShowAnnualReport(),
     nextRecordsOffset: 0,
     recordScopeOptions,
     selectedRecordScopeIndex: 1,
     children: [],
     selectedChildIds: [],
+    failedPhotoUrls: [],
     shareRecord: null,
     selectedPhotoName: "",
     selectedPhotoPath: "",
@@ -318,6 +364,7 @@ Page({
     };
   },
   onShow() {
+    this.setData({ showAnnualReport: shouldShowAnnualReport() });
     this.loadChildren();
     this.consumePrefilledRecord();
     const usedCache = this.hydrateRecordCache();
@@ -374,6 +421,9 @@ Page({
     }
     wx.removeStorageSync(growthRecordPrefillStorageKey);
     this.setData({
+      composerMode: "create",
+      editingRecordId: "",
+      editingRecordTags: [],
       isRecordComposerOpen: true,
       recordText: draft.text,
       recordCategory: (draft.tags || "成长瞬间").split(/[，,]/)[0] || "成长瞬间",
@@ -449,17 +499,24 @@ Page({
     }
     const path = query.length > 0 ? `/api/growth-records?${query.join("&")}` : "/api/growth-records";
     const coursePath = this.data.selectedRecordScopeIndex === 1 ? "/api/interest-participation-records?scope=family" : "/api/interest-participation-records";
+    const reportPath = this.data.selectedRecordScopeIndex === 1 ? "/api/growth-reports?scope=family&reportType=monthly" : "/api/growth-reports?reportType=monthly";
     const growthRecordsPromise = (0, import_api.getJson)(path);
     const courseRecordsPromise = append ? Promise.resolve({ records: this.data.courseRecords }) : (0, import_api.getJson)(coursePath).then((response) => ({
       records: (response.records || []).map(formatCourseRecord)
     }));
-    void Promise.all([growthRecordsPromise, courseRecordsPromise]).then(([response, courseResponse]) => {
+    const reportRecordsPromise = append ? Promise.resolve({ records: this.data.reportRecords || [] }) : (0, import_api.getJson)(reportPath).then((response) => ({
+      records: (response.reports || []).map(formatGrowthReport)
+    }));
+    void Promise.all([growthRecordsPromise, courseRecordsPromise, reportRecordsPromise]).then(([response, courseResponse, reportResponse]) => {
       var _a;
       const currentRecords = append ? this.data.allRecords : [];
-      const incomingRecords = (response.records || []).map(formatRecord);
+        const incomingRecords = (response.records || []).filter(
+          (record) => record.draft_status !== "draft"
+        ).map(formatRecord);
       const courseRecords = courseResponse.records || [];
+      const reportRecords = reportResponse.records || [];
       const records = append ? mergeRecordPages([...currentRecords, ...incomingRecords], currentRecords) : mergeCachedMedia(
-        [...incomingRecords, ...courseRecords],
+        [...incomingRecords, ...courseRecords, ...reportRecords],
         this.data.records
       );
       const filterStartDate = append ? "" : this.data.filterStartDate;
@@ -473,6 +530,7 @@ Page({
         hasMoreRecords,
         nextRecordsOffset,
         courseRecords,
+        reportRecords,
         records
       });
       this.setData({
@@ -484,6 +542,7 @@ Page({
         filterStartDate,
         filterEndDate,
         courseRecords,
+        reportRecords,
         allRecords: records,
         records: filterRecords(
           sortRecords(records),
@@ -526,24 +585,78 @@ Page({
   onRecordTextInput(event) {
     this.setData({ recordText: event.detail.value });
   },
+  resetRecordComposer() {
+    this.setData({
+      composerMode: "create",
+      editingRecordId: "",
+      editingRecordTags: [],
+      isRecordComposerOpen: false,
+      recordText: "",
+      recordCategory: "成长瞬间",
+      selectedCategoryIndex: 0,
+      selectedPhotoName: "",
+      selectedPhotoPath: "",
+      selectedPhotos: [],
+      selectedChildIds: this.data.children.map((child) => child.id),
+      happenedDate: todayString(),
+      happenedTime: currentTimeString(),
+      children: this.data.children.map((child) => ({
+        ...child,
+        selected: true
+      }))
+    });
+  },
   openRecordComposer() {
     const allChildIds = this.data.children.map((child) => child.id);
     this.setData({
+      composerMode: "create",
+      editingRecordId: "",
+      editingRecordTags: [],
       isRecordComposerOpen: true,
+      recordText: "",
+      recordCategory: "成长瞬间",
+      selectedCategoryIndex: 0,
+      selectedPhotoName: "",
+      selectedPhotoPath: "",
+      selectedPhotos: [],
       happenedDate: this.data.happenedDate || todayString(),
       happenedTime: this.data.happenedTime || currentTimeString(),
-      selectedChildIds: this.data.selectedChildIds.length ? this.data.selectedChildIds : allChildIds,
+      selectedChildIds: allChildIds,
       children: this.data.children.map((child) => ({
         ...child,
-        selected: (this.data.selectedChildIds.length ? this.data.selectedChildIds : allChildIds).includes(child.id)
+        selected: allChildIds.includes(child.id)
       }))
+    });
+  },
+  openEditRecord(recordId) {
+    const record = this.data.allRecords.find((item) => item.id === recordId && item.itemKind !== "course");
+    if (!record) {
+      wx.showToast({ title: "这条记录暂时不能编辑", icon: "none" });
+      return;
+    }
+    const primaryTag = (record.tags == null ? void 0 : record.tags[0]) || "成长瞬间";
+    const selectedCategoryIndex = Math.max(0, recordCategories.indexOf(primaryTag));
+    this.setData({
+      composerMode: "edit",
+      editingRecordId: record.id,
+      editingRecordTags: record.tags || [],
+      isRecordComposerOpen: true,
+      recordText: record.text || "",
+      recordCategory: primaryTag,
+      selectedCategoryIndex,
+      selectedPhotoName: "",
+      selectedPhotoPath: "",
+      selectedPhotos: [],
+      happenedDate: record.date || todayString(),
+      happenedTime: timeStringFromDateTime(record.happenedAt),
+      selectedChildIds: this.data.selectedChildIds.length ? this.data.selectedChildIds : this.data.children.map((child) => child.id)
     });
   },
   closeRecordComposer() {
     if (this.data.isSubmitting) {
       return;
     }
-    this.setData({ isRecordComposerOpen: false });
+    this.resetRecordComposer();
   },
   noop() {
   },
@@ -661,6 +774,18 @@ Page({
       urls
     });
   },
+  handleRecordPhotoError(event) {
+    const failedUrl = event.currentTarget.dataset.current || "";
+    const failedPhotoUrls = this.data.failedPhotoUrls;
+    if (!failedUrl || failedPhotoUrls.includes(failedUrl)) {
+      return;
+    }
+    this.setData({
+      failedPhotoUrls: [...failedPhotoUrls, failedUrl]
+    });
+    wx.removeStorageSync(growthRecordsCacheStorageKey);
+    this.loadRecords({ useLoadingState: false });
+  },
   prepareShareRecord(event) {
     this.setData({
       shareRecord: {
@@ -673,24 +798,74 @@ Page({
       }
     });
   },
+  openRecordActions(event) {
+    const recordId = event.currentTarget.dataset.id;
+    if (!recordId) {
+      return;
+    }
+    if (!wx.showActionSheet) {
+      this.openEditRecord(recordId);
+      return;
+    }
+    wx.showActionSheet({
+      itemList: ["编辑记录", "删除记录"],
+      success: (result) => {
+        if (result.tapIndex === 0) {
+          this.openEditRecord(recordId);
+          return;
+        }
+        if (result.tapIndex === 1) {
+          this.confirmDeleteRecord(recordId);
+        }
+      }
+    });
+  },
+  confirmDeleteRecord(recordId) {
+    if (!recordId) {
+      return;
+    }
+    wx.showModal({
+      title: "删除记录",
+      content: "删除后可在恢复窗口内撤回，确认删除这条记录吗？",
+      success: (result) => {
+        if (!result.confirm) {
+          return;
+        }
+        (0, import_api.deleteJson)(`/api/growth-records/${recordId}`)
+          .then(() => {
+            wx.showToast({ title: "已删除", icon: "success" });
+            wx.removeStorageSync(growthRecordsCacheStorageKey);
+            this.loadRecords({ useLoadingState: false });
+          })
+          .catch((error) => {
+            wx.showToast({ title: error.error || "删除未成功", icon: "none" });
+          });
+      }
+    });
+  },
+  deleteRecord(event) {
+    this.confirmDeleteRecord(event.currentTarget.dataset.id || "");
+  },
   generateMonthlyReport() {
     const isFamilyScope = this.data.selectedRecordScopeIndex === 1;
-    const selectedRecords = this.data.records;
-    const recordSummary = buildReportRecordSummary(selectedRecords);
-    wx.setStorageSync(aiCoachPrefillStorageKey, {
-      reportType: "monthly",
+    wx.showLoading({ title: "生成月报中" });
+    void (0, import_api.postJson)("/api/growth-reports/monthly", {
       scope: isFamilyScope ? "family" : "child",
       childId: (0, import_api.getActiveChildId)(),
-      recordCount: selectedRecords.length,
-      message: isFamilyScope ? `请基于我在成长档案当前选中的这些记录，产出一份家庭成长月报。记录中可能同时包含成长瞬间和课程记录；请重点看共同陪伴、每个孩子被看见的瞬间、课程/练习状态和下月温和建议，不要做孩子之间的排名或比较。
-
-选中的记录：
-${recordSummary}` : `请基于我在成长档案当前选中的这些记录，产出一份成长月报。记录中可能同时包含成长瞬间和课程记录；请按身体发展、阅读表达、兴趣培养、英语启蒙、情绪关系、课程/练习状态总结，并给出下月温和建议。
-
-选中的记录：
-${recordSummary}`
+      periodStart: currentMonthStartString(),
+      periodEnd: currentMonthEndString()
+    }).then((response) => {
+      var _a;
+      wx.hideLoading();
+      wx.removeStorageSync(growthRecordsCacheStorageKey);
+      this.loadRecords({ useLoadingState: false });
+      if ((_a = response.report) == null ? void 0 : _a.id) {
+        wx.navigateTo({ url: `/pages/report-detail/index?reportId=${response.report.id}` });
+      }
+    }).catch((error) => {
+      wx.hideLoading();
+      wx.showToast({ title: error.error || "月报生成失败", icon: "none" });
     });
-    wx.switchTab({ url: "/pages/ai-coach/index" });
   },
   generateAnnualReport() {
     const selectedRecords = this.data.allRecords;
@@ -707,16 +882,36 @@ ${recordSummary}`
     });
     wx.switchTab({ url: "/pages/ai-coach/index" });
   },
+  openReportDetail(event) {
+    const reportId = event.currentTarget.dataset.id;
+    if (!reportId) {
+      return;
+    }
+    wx.navigateTo({ url: `/pages/report-detail/index?reportId=${reportId}` });
+  },
   addRecord() {
+    if (this.data.isSubmitting) {
+      return;
+    }
     const text = this.data.recordText.trim();
     if (!text) {
       wx.showToast({ title: "先写一句记录", icon: "none" });
       return;
     }
-    const tags = [this.data.recordCategory || "成长瞬间"];
+    const primaryTag = this.data.recordCategory || "成长瞬间";
+    const tags = this.data.composerMode === "edit" ? [
+      primaryTag,
+      ...this.data.editingRecordTags.filter((tag, index) => index > 0 && tag !== primaryTag)
+    ] : [primaryTag];
     const childIds = this.data.selectedChildIds.length ? this.data.selectedChildIds : this.data.children.map((child) => child.id);
+    const isEditing = this.data.composerMode === "edit" && Boolean(this.data.editingRecordId);
     this.setData({ isSubmitting: true });
-    void (0, import_api.postJson)("/api/growth-records", {
+    const request = isEditing ? (0, import_api.patchJson)(`/api/growth-records/${this.data.editingRecordId}`, {
+      happenedOn: this.data.happenedDate || todayString(),
+      text,
+      tags: tags.length ? tags : ["成长瞬间"],
+      draftStatus: "saved"
+    }) : (0, import_api.postJson)("/api/growth-records", {
       happenedOn: this.data.happenedDate || todayString(),
       happenedAt: buildLocalDateTime(
         this.data.happenedDate || todayString(),
@@ -725,8 +920,12 @@ ${recordSummary}`
       text,
       tags: tags.length ? tags : ["成长瞬间"],
       childIds
-    }).then((response) => {
+    });
+    void request.then((response) => {
       var _a;
+      if (isEditing) {
+        return response;
+      }
       const selectedPhotos = this.data.selectedPhotos;
       if (!selectedPhotos.length || !((_a = response.record) == null ? void 0 : _a.id)) {
         return response;
@@ -741,22 +940,12 @@ ${recordSummary}`
         Promise.resolve(response)
       );
     }).then(() => {
-      wx.showToast({ title: "已记录", icon: "success" });
-      this.setData({
-        isRecordComposerOpen: false,
-        recordText: "",
-        recordCategory: "成长瞬间",
-        selectedCategoryIndex: 0,
-        selectedPhotoName: "",
-        selectedPhotoPath: "",
-        selectedPhotos: [],
-        selectedChildIds: this.data.children.map((child) => child.id),
-        happenedDate: todayString(),
-        happenedTime: currentTimeString()
-      });
+      wx.showToast({ title: isEditing ? "已保存" : "已记录", icon: "success" });
+      this.resetRecordComposer();
+      wx.removeStorageSync(growthRecordsCacheStorageKey);
       this.loadRecords();
     }).catch((error) => {
-      wx.showToast({ title: error.error || "记录未成功", icon: "none" });
+      wx.showToast({ title: error.error || (isEditing ? "保存未成功" : "记录未成功"), icon: "none" });
     }).finally(() => {
       this.setData({ isSubmitting: false });
     });

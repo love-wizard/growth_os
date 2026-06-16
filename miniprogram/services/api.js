@@ -46,6 +46,8 @@ function shouldAppendActiveChild(path) {
     pathname === "/api/dashboard" ||
     pathname === "/api/weekly-plan/current" ||
     pathname === "/api/growth-records" ||
+    pathname === "/api/growth-reports" ||
+    pathname === "/api/growth-reports/monthly" ||
     pathname === "/api/interest-participation-records" ||
     pathname === "/api/ai/coach"
   );
@@ -157,6 +159,7 @@ function requestJson(method, path, data, options) {
             )
             .then(resolve)
             .catch(() => {
+              clearSession();
               reject({
                 statusCode: response.statusCode,
                 data: response.data,

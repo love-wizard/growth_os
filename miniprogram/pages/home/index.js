@@ -1,12 +1,15 @@
 /* global Page, wx */
-const { getJson, setActiveChildId } = require("../../services/api");
+const { getJson, postJson, setActiveChildId } = require("../../services/api");
+const { hasMiniProgramSession, loginWithWeChat } = require("../../services/session");
 const growthRecordPrefillStorageKey = "growth_os_growth_record_prefill";
+const acceptedSuggestionStorageKey = "growth_os_accepted_suggestion_v1";
 const childProfileCacheStorageKey = "growth_os_child_profile_cache";
 const dashboardCacheStorageKey = "growth_os_dashboard_cache";
 const weeklyPlanCacheStorageKey = "growth_os_weekly_plan_cache";
 const growthRecordsCacheStorageKey = "growth_os_growth_records_cache_v5";
 const dashboardCacheRefreshMs = 5 * 60 * 1000;
 const dashboardCacheDisplayMs = 24 * 60 * 60 * 1000;
+const acceptedSuggestionDisplayMs = 3 * 24 * 60 * 60 * 1000;
 
 const dailyQuotes = [
   {
@@ -65,6 +68,12 @@ const roleClasses = {
   child: "role-family"
 };
 
+const suggestionAssigneeOptions = [
+  { label: "爸爸", value: "father" },
+  { label: "妈妈", value: "mother" },
+  { label: "全家", value: "family" }
+];
+
 function formatChildSummary(summary) {
   const rhythmLabel = summary.plannedCount === 0
     ? "留个空白"
@@ -112,7 +121,9 @@ function formatTask(task) {
     role: roleLabels[task.assignee_type] || "家庭",
     roleClass: roleClasses[task.assignee_type] || "role-family",
     title: task.title,
-    progress: `${task.completed_count}/${task.planned_count}`
+    progress: `${task.completed_count}/${task.planned_count}`,
+    completedCount: task.completed_count,
+    plannedCount: task.planned_count
   };
 }
 
@@ -225,10 +236,14 @@ Page({
     hasDashboardData: false,
     setupRequired: false,
     errorMessage: "",
+    isHandlingAcceptedSuggestion: false,
     childNickname: "",
     children: [],
     childSummaries: [],
     companionshipInsight: null,
+    pendingAcceptedSuggestion: null,
+    suggestionAssigneeOptions,
+    selectedSuggestionAssignee: "family",
     dailyQuote: getDailyQuote(),
     weeklyTheme: "",
     taskCount: "",
@@ -242,8 +257,50 @@ Page({
   },
   onShow() {
     this.hydrateChildProfileCache();
+    this.hydrateAcceptedSuggestion();
     const usedCache = this.hydrateDashboardCache();
-    this.loadDashboard({ useLoadingState: !usedCache, skipIfFresh: usedCache });
+    this.ensureSessionAndLoadDashboard({ usedCache });
+  },
+  hydrateAcceptedSuggestion() {
+    const cached = wx.getStorageSync(acceptedSuggestionStorageKey);
+    if (!(cached == null ? void 0 : cached.sessionId) || !(cached == null ? void 0 : cached.action)) {
+      this.setData({ pendingAcceptedSuggestion: null });
+      return;
+    }
+    if (cached.savedAt && Date.now() - cached.savedAt > acceptedSuggestionDisplayMs) {
+      wx.removeStorageSync(acceptedSuggestionStorageKey);
+      this.setData({ pendingAcceptedSuggestion: null });
+      return;
+    }
+    this.setData({ pendingAcceptedSuggestion: cached });
+  },
+  ensureSessionAndLoadDashboard(options) {
+    if (hasMiniProgramSession()) {
+      this.loadDashboard({
+        useLoadingState: !options.usedCache,
+        skipIfFresh: options.usedCache
+      });
+      return Promise.resolve();
+    }
+
+    if (!options.usedCache) {
+      this.setData({ isLoading: true, errorMessage: "" });
+    }
+
+    return loginWithWeChat().then((session) => {
+      if (!session.accessToken) {
+        this.setData({
+          isLoading: false,
+          errorMessage: session.errorMessage || "微信身份同步失败，请稍后再试"
+        });
+        return;
+      }
+
+      this.loadDashboard({
+        useLoadingState: !options.usedCache,
+        skipIfFresh: options.usedCache
+      });
+    });
   },
   hydrateChildProfileCache() {
     const cached = wx.getStorageSync(childProfileCacheStorageKey);
@@ -380,12 +437,75 @@ Page({
       wx.navigateTo({ url: "/pages/setup/index" });
       return;
     }
+    const firstTask = this.data.tasks.find(
+      (task) => (task.completedCount || 0) < (task.plannedCount || 0)
+    );
     const draftText = `${this.data.todayAction.title}。${this.data.todayAction.context}`;
+    if (!(firstTask == null ? void 0 : firstTask.id)) {
+      wx.setStorageSync(growthRecordPrefillStorageKey, {
+        text: draftText,
+        tags: this.data.weeklyTheme ? `${this.data.weeklyTheme},成长瞬间` : "成长瞬间"
+      });
+      wx.switchTab({ url: "/pages/archive/index" });
+      return;
+    }
+
+    const parentNote = `${firstTask.title}。${this.data.todayAction.context}`;
+
     wx.setStorageSync(growthRecordPrefillStorageKey, {
-      text: draftText,
+      text: parentNote,
       tags: this.data.weeklyTheme ? `${this.data.weeklyTheme},成长瞬间` : "成长瞬间"
     });
     wx.switchTab({ url: "/pages/archive/index" });
+  },
+  chooseSuggestionAssignee(event) {
+    this.setData({ selectedSuggestionAssignee: event.currentTarget.dataset.value });
+  },
+  clearPendingAcceptedSuggestion() {
+    wx.removeStorageSync(acceptedSuggestionStorageKey);
+    this.setData({ pendingAcceptedSuggestion: null });
+  },
+  createGrowthRecordDraftFromAcceptedSuggestion() {
+    const suggestion = this.data.pendingAcceptedSuggestion;
+    if (!(suggestion == null ? void 0 : suggestion.sessionId)) {
+      wx.showToast({ title: "先采纳一条建议", icon: "none" });
+      return;
+    }
+    const parentNote = `${suggestion.action}。${suggestion.childSpecificContext || suggestion.whyItHelps || "今晚真的开始试了试。"}`
+      .trim();
+    wx.setStorageSync(growthRecordPrefillStorageKey, {
+      text: parentNote,
+      tags: this.data.weeklyTheme ? `${this.data.weeklyTheme},成长瞬间` : "成长瞬间"
+    });
+    this.clearPendingAcceptedSuggestion();
+    wx.switchTab({ url: "/pages/archive/index" });
+  },
+  addAcceptedSuggestionToWeeklyPlan() {
+    const suggestion = this.data.pendingAcceptedSuggestion;
+    if (!(suggestion == null ? void 0 : suggestion.sessionId)) {
+      wx.showToast({ title: "先采纳一条建议", icon: "none" });
+      return;
+    }
+    this.setData({ isHandlingAcceptedSuggestion: true });
+    postJson(`/api/first-guidance/${suggestion.sessionId}/accept`, {
+      addToWeeklyPlan: true,
+      taskAssigneeType: this.data.selectedSuggestionAssignee,
+      entrySurface: "home"
+    })
+      .then(() => {
+        this.clearPendingAcceptedSuggestion();
+        wx.removeStorageSync(dashboardCacheStorageKey);
+        wx.removeStorageSync(weeklyPlanCacheStorageKey);
+        wx.showToast({ title: "已加入本周计划", icon: "success" });
+        this.loadDashboard({ useLoadingState: false });
+        this.warmTabCaches();
+      })
+      .catch((error) => {
+        wx.showToast({ title: error.error || "加入周计划未成功", icon: "none" });
+      })
+      .finally(() => {
+        this.setData({ isHandlingAcceptedSuggestion: false });
+      });
   },
   openCoach() {
     wx.switchTab({ url: "/pages/ai-coach/index" });

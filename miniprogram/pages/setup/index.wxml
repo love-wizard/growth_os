@@ -37,10 +37,10 @@
     <view class="chip-row">
       <view
         class="chip {{item.selected ? 'chip-active' : ''}}"
-        data-value="{{item.label}}"
+        data-value="{{item.value}}"
         bindtap="toggleFocus"
         wx:for="{{focusOptions}}"
-        wx:key="label"
+        wx:key="value"
       >
         {{item.label}}
       </view>
@@ -58,34 +58,72 @@
     </view>
     <view class="chip-row">
       <view
-        class="chip {{selectedChallenge === item ? 'chip-active' : ''}}"
-        data-value="{{item}}"
+        class="chip {{selectedChallenge === item.value ? 'chip-active' : ''}}"
+        data-value="{{item.value}}"
         bindtap="chooseChallenge"
         wx:for="{{challengeOptions}}"
-        wx:key="*this"
+        wx:key="value"
       >
-        {{item}}
+        {{item.label}}
       </view>
     </view>
+    <view>
+      <view class="title">孩子现在更像哪种状态？</view>
+      <view class="muted">选1-3个特质，让建议更贴近孩子。</view>
+    </view>
+    <view class="chip-row">
+      <view
+        class="chip {{item.selected ? 'chip-active' : ''}}"
+        data-value="{{item.value}}"
+        bindtap="toggleTrait"
+        wx:for="{{traitOptions}}"
+        wx:key="value"
+      >
+        {{item.label}}
+      </view>
+    </view>
+    <view wx:if="{{suggestionErrorMessage}}" class="muted">{{suggestionErrorMessage}}</view>
     <view class="row">
       <button class="button-secondary" bindtap="prevStep">上一步</button>
-      <button class="button-primary" bindtap="nextStep">生成建议</button>
+      <button class="button-primary" loading="{{isGeneratingSuggestion}}" disabled="{{isGeneratingSuggestion}}" bindtap="nextStep">生成建议</button>
     </view>
   </view>
 
   <view wx:if="{{step === 4}}" class="section card primary-card stack">
     <view>
-      <view class="caption">基于 {{nickname || '孩子'}} / {{selectedChallenge}}</view>
-      <view class="title">{{suggestion.title}}</view>
+      <view class="caption">基于 {{nickname || '孩子'}} / {{suggestion ? suggestion.estimatedMinutes : 15}} 分钟</view>
+      <view class="title">{{suggestion ? suggestion.title : '正在准备建议'}}</view>
     </view>
     <view class="chip-row">
-      <view class="chip chip-active">{{suggestion.minutes}}</view>
-      <view class="chip" wx:for="{{selectedTraits}}" wx:key="*this">{{item}}</view>
+      <view class="chip chip-active">{{suggestion ? suggestion.estimatedMinutes : 15}}分钟</view>
+      <block wx:for="{{traitOptions}}" wx:key="value">
+        <view wx:if="{{item.selected}}" class="chip">{{item.label}}</view>
+      </block>
     </view>
-    <view class="muted">{{suggestion.action}}</view>
+    <view class="muted">{{suggestion ? suggestion.childSpecificContext : ''}}</view>
+    <view class="title">{{suggestion ? suggestion.action : ''}}</view>
+    <view class="muted">{{suggestion ? suggestion.whyItHelps : ''}}</view>
+    <view class="muted">{{suggestion ? suggestion.gentleFallback : ''}}</view>
+    <view>
+      <view class="title">如果加入本周计划，交给谁更合适？</view>
+      <view class="muted">建档完成后会用这个归属写进本周计划。</view>
+    </view>
+    <view class="chip-row">
+      <view
+        class="chip {{selectedAssignee === item.value ? 'chip-active' : ''}}"
+        data-value="{{item.value}}"
+        bindtap="chooseAssignee"
+        wx:for="{{assigneeOptions}}"
+        wx:key="value"
+      >
+        {{item.label}}
+      </view>
+    </view>
+    <view wx:if="{{suggestionErrorMessage}}" class="muted">{{suggestionErrorMessage}}</view>
     <view class="row">
       <button class="button-secondary" bindtap="prevStep">调整一下</button>
-      <button class="button-primary" loading="{{isSubmitting}}" disabled="{{isSubmitting}}" bindtap="finishSetup">保存并回首页</button>
+      <button class="button-primary" loading="{{isSubmitting}}" disabled="{{isSubmitting}}" bindtap="saveAndTry">保存后先试试看</button>
     </view>
+    <button class="button-secondary" loading="{{isSubmitting}}" disabled="{{isSubmitting}}" bindtap="saveAndAddToWeeklyPlan">保存并加入本周计划</button>
   </view>
 </view>

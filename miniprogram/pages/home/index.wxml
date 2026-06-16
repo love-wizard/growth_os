@@ -73,8 +73,37 @@
       <view class="focus-context">{{todayAction.context}}</view>
       <view class="focus-why">{{todayAction.why}}</view>
       <view class="row">
-        <button class="button-primary" bindtap="startAction">记录这个瞬间</button>
+        <button class="button-primary" bindtap="startAction">生成记录草稿</button>
         <button class="button-secondary" bindtap="openCoach">问饭米粒</button>
+      </view>
+    </view>
+
+    <view wx:if="{{pendingAcceptedSuggestion}}" class="section card warm-card stack">
+      <view>
+        <view class="caption">刚采纳的一条建议</view>
+        <view class="title">{{pendingAcceptedSuggestion.title}}</view>
+      </view>
+      <view class="muted">{{pendingAcceptedSuggestion.action}}</view>
+      <view wx:if="{{pendingAcceptedSuggestion.childSpecificContext}}" class="muted">
+        {{pendingAcceptedSuggestion.childSpecificContext}}
+      </view>
+      <view>
+        <view class="caption">如果想放进本周节奏，交给谁更合适？</view>
+      </view>
+      <view class="chip-row">
+        <view
+          class="chip {{selectedSuggestionAssignee === item.value ? 'chip-active' : ''}}"
+          data-value="{{item.value}}"
+          bindtap="chooseSuggestionAssignee"
+          wx:for="{{suggestionAssigneeOptions}}"
+          wx:key="value"
+        >
+          {{item.label}}
+        </view>
+      </view>
+      <view class="row">
+        <button class="button-primary" loading="{{isHandlingAcceptedSuggestion}}" disabled="{{isHandlingAcceptedSuggestion}}" bindtap="createGrowthRecordDraftFromAcceptedSuggestion">做完了，记录一下</button>
+        <button class="button-secondary" loading="{{isHandlingAcceptedSuggestion}}" disabled="{{isHandlingAcceptedSuggestion}}" bindtap="addAcceptedSuggestionToWeeklyPlan">加入本周计划</button>
       </view>
     </view>
 
@@ -119,7 +148,7 @@
     <view class="section card home-task-card">
       <view class="row home-task-header">
         <view class="title">今天可推进</view>
-        <button class="button-secondary compact-button" bindtap="startAction">完成后记录</button>
+        <button class="button-secondary compact-button" bindtap="startAction">生成记录草稿</button>
       </view>
       <view class="task-row" wx:for="{{tasks}}" wx:key="title">
         <view class="role-badge {{item.roleClass}}">{{item.role}}</view>
