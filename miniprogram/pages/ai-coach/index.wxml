@@ -1,11 +1,11 @@
 <view class="page coach-page">
   <view class="page-heading">
     <view class="visual-icon fanmili-header-icon">
-      <view class="fanmili-head">
-        <view class="fanmili-eye fanmili-eye-left"></view>
-        <view class="fanmili-eye fanmili-eye-right"></view>
-        <view class="fanmili-smile"></view>
-      </view>
+      <image
+        class="fanmili-header-image"
+        mode="aspectFit"
+        src="/images/mascot/fanmili-25d-default.png"
+      />
     </view>
     <view>
       <view class="caption">饭米粒</view>

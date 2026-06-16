@@ -1,20 +1,20 @@
 <view class="page home-page">
   <view class="home-header">
-    <view class="page-heading">
-      <view class="visual-icon fanmili-header-icon">
-        <view class="fanmili-head">
-          <view class="fanmili-eye fanmili-eye-left"></view>
-          <view class="fanmili-eye fanmili-eye-right"></view>
-          <view class="fanmili-smile"></view>
-        </view>
-      </view>
-      <view>
-        <view class="caption">饭米粒在这里</view>
-        <view wx:if="{{children.length > 1}}" class="page-title">今天照看全家节奏</view>
-        <view wx:elif="{{childNickname}}" class="page-title">今天陪{{childNickname}}慢慢来</view>
-        <view wx:else class="page-title">今天我们慢慢来</view>
-        <view wx:if="{{children.length > 1}}" class="child-switcher">饭米粒会同时看见每个孩子和共同陪伴。</view>
-      </view>
+    <view class="home-header-copy">
+      <view class="caption">饭米粒在这里</view>
+      <view wx:if="{{children.length > 1}}" class="page-title">今天照看全家节奏</view>
+      <view wx:elif="{{childNickname}}" class="page-title">今天陪{{childNickname}}慢慢来</view>
+      <view wx:else class="page-title">今天我们慢慢来</view>
+      <view wx:if="{{children.length > 1}}" class="child-switcher">饭米粒会同时看见每个孩子和共同陪伴。</view>
+    </view>
+    <view class="home-mascot-stage">
+      <view class="home-mascot-bubble">先做一件小事</view>
+      <view class="home-mascot-glow"></view>
+      <image
+        class="home-mascot-image"
+        mode="aspectFit"
+        src="/images/mascot/fanmili-25d-default.png"
+      />
     </view>
   </view>
 
