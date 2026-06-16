@@ -78,14 +78,23 @@
       }
 
       .brand-mark {
-        display: grid;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         width: 34px;
         height: 34px;
-        place-items: center;
         border: 1px solid rgba(255, 255, 255, 0.45);
         border-radius: 50%;
-        background: rgba(255, 255, 255, 0.14);
-        font-size: 15px;
+        background: rgba(255, 255, 255, 0.82);
+        box-shadow: 0 10px 28px rgba(8, 17, 14, 0.14);
+        overflow: hidden;
+      }
+
+      .brand-mark img {
+        display: block;
+        width: 36px;
+        height: 36px;
+        object-fit: contain;
       }
 
       .nav-links {
@@ -299,12 +308,29 @@
       }
 
       .mini-avatar {
-        width: 52px;
-        height: 52px;
-        margin-top: 34px;
-        border-radius: 50%;
-        background: linear-gradient(145deg, #e9f7ef, #fff4dc);
-        box-shadow: 0 10px 30px rgba(22, 113, 95, 0.14);
+        position: relative;
+        width: 150px;
+        height: 142px;
+        margin: 24px auto 0;
+      }
+
+      .mini-avatar::before {
+        position: absolute;
+        inset: 26px 0 4px;
+        border-radius: 999px;
+        background: radial-gradient(circle, rgba(22, 113, 95, 0.18) 0%, rgba(246, 231, 200, 0.28) 50%, rgba(255, 255, 255, 0) 72%);
+        content: "";
+      }
+
+      .mini-avatar img {
+        position: relative;
+        z-index: 1;
+        display: block;
+        width: 142px;
+        height: 142px;
+        margin: 0 auto;
+        object-fit: contain;
+        filter: drop-shadow(0 16px 24px rgba(35, 65, 55, 0.12));
       }
 
       .app-kicker {
@@ -713,7 +739,9 @@
     <main class="page">
       <nav class="nav" aria-label="主导航">
         <a class="brand" href="#">
-          <span class="brand-mark">饭</span>
+          <span class="brand-mark">
+            <img src="./fanmili-25d-default.png" alt="" />
+          </span>
           <span>饭米粒</span>
         </a>
         <div class="nav-links">
@@ -772,7 +800,9 @@
                 <span>16:09</span>
                 <span>5G</span>
               </div>
-              <div class="mini-avatar"></div>
+              <div class="mini-avatar">
+                <img src="./fanmili-25d-default.png" alt="饭米粒 2.5D 形象" />
+              </div>
               <div class="app-kicker">饭米粒在这里</div>
               <div class="app-title">今天陪阿沐慢慢来</div>
               <div class="quote-panel">
