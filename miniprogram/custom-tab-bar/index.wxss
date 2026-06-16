@@ -90,11 +90,26 @@
 .mascot-face {
   background: linear-gradient(180deg, #fffaf0 0%, #efd2a5 100%);
   border: 1rpx solid rgba(188, 148, 95, 0.84);
-  border-radius: 48% 52% 50% 50%;
+  border-radius: 48% 52% 46% 50%;
   box-shadow: inset 0 -4rpx 8rpx rgba(188, 148, 95, 0.12);
-  height: 60rpx;
+  height: 58rpx;
   position: relative;
-  width: 52rpx;
+  width: 54rpx;
+}
+
+.mascot-eye-field {
+  background: rgba(255, 253, 244, 0.9);
+  border-radius: 50%;
+  box-shadow: inset 0 -3rpx 7rpx rgba(188, 148, 95, 0.12);
+  height: 30rpx;
+  position: absolute;
+  top: 10rpx;
+  width: 18rpx;
+  z-index: 1;
+}
+
+.mascot-eye-field-left {
+  left: 8rpx;
 }
 
 .mascot-eye {
@@ -102,21 +117,9 @@
   border-radius: 50%;
   height: 6rpx;
   position: absolute;
-  top: 24rpx;
+  top: 23rpx;
   width: 6rpx;
   z-index: 2;
-}
-
-.mascot-eye-ring {
-  background: rgba(255, 248, 232, 0.96);
-  border: 1rpx solid rgba(181, 140, 88, 0.88);
-  border-radius: 50%;
-  box-shadow: inset 0 -2rpx 5rpx rgba(181, 140, 88, 0.24);
-  height: 17rpx;
-  position: absolute;
-  top: 18rpx;
-  width: 17rpx;
-  z-index: 1;
 }
 
 .mascot-eye-left {
@@ -124,21 +127,17 @@
 }
 
 .mascot-eye-right {
-  right: 15rpx;
-}
-
-.mascot-eye-ring-right {
-  right: 9rpx;
+  right: 14rpx;
 }
 
 .mascot-smile {
   border-bottom: 2rpx solid rgba(77, 64, 51, 0.88);
   border-radius: 0 0 16rpx 16rpx;
-  bottom: 19rpx;
-  height: 8rpx;
-  left: 20rpx;
+  bottom: 18rpx;
+  height: 7rpx;
+  left: 21rpx;
   position: absolute;
-  width: 12rpx;
+  width: 13rpx;
 }
 
 .mascot-cheek {
@@ -146,16 +145,53 @@
   border-radius: 50%;
   height: 7rpx;
   position: absolute;
-  top: 34rpx;
+  top: 33rpx;
   width: 8rpx;
 }
 
 .mascot-cheek-left {
-  left: 8rpx;
+  left: 7rpx;
 }
 
 .mascot-cheek-right {
-  right: 8rpx;
+  right: 7rpx;
+}
+
+.mascot-leaf-mark {
+  bottom: 8rpx;
+  height: 15rpx;
+  position: absolute;
+  right: 7rpx;
+  width: 15rpx;
+  z-index: 3;
+}
+
+.mascot-leaf {
+  background: #529166;
+  border-radius: 50%;
+  height: 8rpx;
+  position: absolute;
+  top: 0;
+  width: 8rpx;
+}
+
+.mascot-leaf-left {
+  left: 0;
+}
+
+.mascot-leaf-right {
+  right: 0;
+  top: 2rpx;
+}
+
+.mascot-leaf-stem {
+  background: #30694b;
+  border-radius: 999rpx;
+  bottom: 0;
+  height: 8rpx;
+  left: 6rpx;
+  position: absolute;
+  width: 3rpx;
 }
 
 .center-label {
