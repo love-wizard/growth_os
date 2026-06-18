@@ -215,6 +215,8 @@
       <view
         class="playback-stage {{playbackCurrentPhotoUrl ? 'playback-stage-with-photo' : 'playback-stage-text-only'}}"
         catchtap="noop"
+        catchtouchstart="onPlaybackTouchStart"
+        catchtouchend="onPlaybackTouchEnd"
       >
         <view wx:if="{{playbackCurrentPhotoUrl}}" class="playback-photo-stage">
           <image class="playback-photo" src="{{playbackCurrentPhotoUrl}}" mode="aspectFit" />

@@ -65,10 +65,13 @@ type PlaybackMoment = {
 };
 
 const playbackChromeAutoHideMs = 1600;
+const playbackSwipeMinDistance = 70;
 let playbackTypeTimer: number | null = null;
 let playbackAdvanceTimer: number | null = null;
 let playbackChromeTimer: number | null = null;
 let playbackSessionToken = 0;
+let playbackTouchStartX = 0;
+let playbackTouchStartY = 0;
 
 function todayString() {
   const now = new Date();
@@ -883,6 +886,33 @@ Page({
   onPlaybackStageTap() {
     return;
   },
+  onPlaybackTouchStart(event: { touches?: Array<{ clientX?: number; clientY?: number }> }) {
+    const touch = event.touches?.[0];
+    playbackTouchStartX = touch?.clientX || 0;
+    playbackTouchStartY = touch?.clientY || 0;
+  },
+  onPlaybackTouchEnd(event: { changedTouches?: Array<{ clientX?: number; clientY?: number }> }) {
+    const touch = event.changedTouches?.[0];
+    if (!touch) {
+      return;
+    }
+
+    const deltaX = (touch.clientX || 0) - playbackTouchStartX;
+    const deltaY = (touch.clientY || 0) - playbackTouchStartY;
+    playbackTouchStartX = 0;
+    playbackTouchStartY = 0;
+
+    if (Math.abs(deltaX) < playbackSwipeMinDistance || Math.abs(deltaX) <= Math.abs(deltaY)) {
+      return;
+    }
+
+    if (deltaX < 0) {
+      this.goToPlaybackIndex((this.data.playbackIndex as number) + 1);
+      return;
+    }
+
+    this.goToPlaybackIndex((this.data.playbackIndex as number) - 1);
+  },
   schedulePlaybackAdvance(sessionToken: number, moment: PlaybackMoment) {
     playbackAdvanceTimer = setTimeout(() => {
       this.advancePlayback(sessionToken);
@@ -1035,6 +1065,23 @@ Page({
       typeNextCharacter(1);
     }, typingInterval) as unknown as number;
   },
+  goToPlaybackIndex(nextIndex: number, sessionToken = playbackSessionToken) {
+    if (sessionToken !== playbackSessionToken) {
+      return;
+    }
+
+    const playbackMoments = this.data.playbackMoments as PlaybackMoment[];
+    if (!playbackMoments.length) {
+      this.closePlayback();
+      return;
+    }
+
+    if (nextIndex < 0 || nextIndex >= playbackMoments.length) {
+      return;
+    }
+
+    this.renderPlaybackMoment(nextIndex, sessionToken);
+  },
   advancePlayback(sessionToken = playbackSessionToken) {
     if (sessionToken !== playbackSessionToken) {
       return;
@@ -1047,7 +1094,7 @@ Page({
       return;
     }
 
-    this.renderPlaybackMoment(nextIndex, sessionToken);
+    this.goToPlaybackIndex(nextIndex, sessionToken);
   },
   toggleFilters() {
     this.setData({ isFilterOpen: !this.data.isFilterOpen });
