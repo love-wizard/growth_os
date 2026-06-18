@@ -36,6 +36,10 @@ page {
   padding-bottom: calc(176rpx + env(safe-area-inset-bottom));
 }
 
+.archive-page {
+  padding-top: calc(32rpx + env(safe-area-inset-top));
+}
+
 .splash-page,
 .setup-page,
 .guidance-page,
@@ -1582,7 +1586,7 @@ page {
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding: calc(30rpx + env(safe-area-inset-top)) 26rpx calc(26rpx + env(safe-area-inset-bottom));
+  padding: calc(18rpx + env(safe-area-inset-top)) 0 calc(18rpx + env(safe-area-inset-bottom));
   position: relative;
 }
 
@@ -1590,6 +1594,7 @@ page {
   align-items: flex-start;
   display: flex;
   justify-content: flex-end;
+  padding: 0 18rpx;
   position: relative;
   z-index: 2;
 }
@@ -1654,7 +1659,7 @@ page {
   flex: 1;
   flex-direction: column;
   justify-content: stretch;
-  margin: 18rpx 0 24rpx;
+  margin: 12rpx 0 18rpx;
   min-height: 0;
   position: relative;
 }
@@ -1668,11 +1673,7 @@ page {
 }
 
 .playback-photo-stage {
-  background:
-    radial-gradient(circle at top, rgba(67, 84, 76, 0.32), rgba(18, 23, 21, 0) 46%),
-    rgba(16, 18, 18, 0.98);
-  border-radius: 36rpx;
-  box-shadow: 0 32rpx 84rpx rgba(0, 0, 0, 0.28);
+  background: rgba(16, 18, 18, 0.98);
   display: flex;
   flex: 1;
   min-height: 0;
@@ -1700,6 +1701,7 @@ page {
   flex-direction: column;
   justify-content: flex-end;
   min-height: 0;
+  padding: 0 18rpx;
 }
 
 .playback-copy-overlay {
@@ -1709,7 +1711,7 @@ page {
   flex-direction: column;
   gap: 16rpx;
   left: 0;
-  padding: 34rpx 30rpx 32rpx;
+  padding: 34rpx 28rpx 30rpx;
   position: absolute;
   right: 0;
 }
@@ -1736,7 +1738,7 @@ page {
   border-radius: 32rpx;
   box-shadow: 0 22rpx 52rpx rgba(0, 0, 0, 0.18);
   margin-top: auto;
-  padding: 34rpx 30rpx;
+  padding: 34rpx 28rpx;
   position: relative;
 }
 
@@ -1791,7 +1793,7 @@ page {
 .playback-actions {
   display: flex;
   justify-content: flex-end;
-  padding-bottom: 4rpx;
+  padding: 0 18rpx 4rpx;
 }
 
 .playback-action-button {
