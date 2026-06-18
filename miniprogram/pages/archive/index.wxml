@@ -203,12 +203,12 @@
     />
     <view class="playback-background-mask"></view>
     <view class="playback-shell">
-      <view wx:if="{{playbackCurrentDate}}" class="playback-date-pin" bindlongpress="closePlayback">
-        {{playbackCurrentDate}}
-      </view>
-      <view class="playback-chrome playback-chrome-top {{playbackChromeVisible ? '' : 'playback-chrome-hidden'}}">
-        <view class="playback-topbar">
-          <view class="playback-counter">{{playbackCounterText}}</view>
+      <view class="playback-header">
+        <view wx:if="{{playbackCurrentDate}}" class="playback-date-pin" bindlongpress="closePlayback">
+          {{playbackCurrentDate}}
+        </view>
+        <view wx:if="{{playbackCounterText}}" class="playback-counter-pin">
+          {{playbackCounterText}}
         </view>
       </view>
 
