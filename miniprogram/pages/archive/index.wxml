@@ -204,9 +204,6 @@
     <view class="playback-background-mask"></view>
     <view class="playback-shell">
       <view class="playback-header">
-        <view wx:if="{{playbackCurrentDate}}" class="playback-date-pin" bindlongpress="closePlayback">
-          {{playbackCurrentDate}}
-        </view>
         <view wx:if="{{playbackCounterText}}" class="playback-counter-pin">
           {{playbackCounterText}}
         </view>
@@ -221,6 +218,9 @@
           <view class="playback-photo-scrim"></view>
           <view class="playback-copy-overlay">
             <view class="playback-copy-meta">
+              <view wx:if="{{playbackCurrentDate}}" class="playback-date-inline" bindlongpress="closePlayback">
+                {{playbackCurrentDate}}
+              </view>
               <view
                 wx:if="{{playbackCurrentTag || playbackCurrentChildLabel || playbackCurrentFrameLabel}}"
                 class="chip-row"
@@ -249,6 +249,9 @@
         <view wx:else class="playback-text-stage">
           <view class="playback-copy-overlay playback-copy-overlay-text-only">
             <view class="playback-copy-meta">
+              <view wx:if="{{playbackCurrentDate}}" class="playback-date-inline" bindlongpress="closePlayback">
+                {{playbackCurrentDate}}
+              </view>
               <view
                 wx:if="{{playbackCurrentTag || playbackCurrentChildLabel || playbackCurrentFrameLabel}}"
                 class="chip-row"
