@@ -407,7 +407,9 @@ function clearPlaybackTimers() {
     clearTimeout(playbackAdvanceTimer);
     playbackAdvanceTimer = null;
   }
+}
 
+function clearPlaybackChromeTimer() {
   if (playbackChromeTimer) {
     clearTimeout(playbackChromeTimer);
     playbackChromeTimer = null;
@@ -931,6 +933,7 @@ Page({
 
     playbackSessionToken += 1;
     clearPlaybackTimers();
+    clearPlaybackChromeTimer();
     this.setData({
       isPlaybackOpen: true,
       playbackMoments,
@@ -953,6 +956,7 @@ Page({
   closePlayback() {
     playbackSessionToken += 1;
     clearPlaybackTimers();
+    clearPlaybackChromeTimer();
     this.setData({
       isPlaybackOpen: false,
       playbackMoments: [],
