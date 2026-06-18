@@ -1593,7 +1593,7 @@ page {
 .playback-header {
   align-items: flex-start;
   display: flex;
-  justify-content: flex-end;
+  justify-content: flex-start;
   padding: 0 18rpx;
   position: relative;
   z-index: 2;
