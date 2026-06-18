@@ -66,6 +66,13 @@
         <view class="muted">{{filterStartDate && filterEndDate ? '本月' : '全部已加载'}} · {{records.length}} 条成长瞬间</view>
       </view>
       <view class="row compact-row">
+        <button
+          class="button-secondary compact-button"
+          disabled="{{records.length === 0}}"
+          bindtap="startPlayback"
+        >
+          全屏播放
+        </button>
         <picker mode="selector" range="{{recordScopeOptions}}" value="{{selectedRecordScopeIndex}}" bindchange="onRecordScopeChange">
           <view class="button-secondary compact-button">{{recordScopeOptions[selectedRecordScopeIndex]}}</view>
         </picker>
@@ -186,6 +193,58 @@
   </view>
 
   <button class="floating-add-button" bindtap="openRecordComposer">+</button>
+
+  <view wx:if="{{isPlaybackOpen}}" class="playback-overlay" catchtouchmove="noop">
+    <image
+      wx:if="{{playbackCurrentPhotoUrl}}"
+      class="playback-background-image"
+      src="{{playbackCurrentPhotoUrl}}"
+      mode="aspectFill"
+    />
+    <view class="playback-background-mask"></view>
+    <view class="playback-shell">
+      <view class="playback-topbar">
+        <view>
+          <view class="playback-counter">{{playbackCounterText}}</view>
+          <view class="playback-date">{{playbackCurrentDate}}</view>
+        </view>
+        <button class="playback-close-button" bindtap="closePlayback">关闭</button>
+      </view>
+      <view class="playback-progress-track">
+        <view class="playback-progress-fill" style="{{playbackProgressStyle}}"></view>
+      </view>
+
+      <view class="playback-stage {{playbackCurrentPhotoUrl ? 'playback-stage-with-photo' : 'playback-stage-text-only'}}">
+        <view wx:if="{{playbackCurrentPhotoUrl}}" class="playback-photo-stage">
+          <image class="playback-photo" src="{{playbackCurrentPhotoUrl}}" mode="aspectFit" />
+        </view>
+
+        <view class="playback-copy-card">
+          <view wx:if="{{playbackCurrentTag || playbackCurrentChildLabel}}" class="chip-row">
+            <view wx:if="{{playbackCurrentTag}}" class="playback-chip playback-chip-primary">
+              {{playbackCurrentTag}}
+            </view>
+            <view wx:if="{{playbackCurrentChildLabel}}" class="playback-chip">
+              {{playbackCurrentChildLabel}}
+            </view>
+          </view>
+          <view wx:if="{{playbackCurrentTitle}}" class="playback-title">{{playbackCurrentTitle}}</view>
+          <view wx:if="{{playbackTypedText}}" class="playback-text">
+            {{playbackTypedText}}<text wx:if="{{playbackIsTyping}}" class="playback-cursor">|</text>
+          </view>
+          <view wx:elif="{{!playbackIsTyping}}" class="playback-text playback-text-muted">
+            这个瞬间没有补充文字。
+          </view>
+        </view>
+      </view>
+
+      <view class="playback-actions">
+        <button class="button-secondary compact-button playback-action-button" bindtap="skipPlaybackStep">
+          {{playbackIsTyping ? '显示全文' : '下一个'}}
+        </button>
+      </view>
+    </view>
+  </view>
 
   <view wx:if="{{isRecordComposerOpen}}" class="modal-backdrop" bindtap="closeRecordComposer">
     <view class="record-composer-sheet" catchtap="noop">

@@ -30,6 +30,41 @@ type ArchiveChild = {
   selected?: boolean;
 };
 
+type ArchiveTimelineRecord = {
+  id: string;
+  sourceId?: string;
+  itemKind?: "growth" | "course" | "report";
+  date: string;
+  happenedAt?: string;
+  dateTimeLabel?: string;
+  createdAt?: string;
+  title: string;
+  primaryTag?: string;
+  secondaryTags?: string[];
+  text: string;
+  tags: string[];
+  childLabels?: string[];
+  childLabel?: string;
+  photoUrls: string[];
+  shareImageUrl?: string;
+  sourceText?: string;
+};
+
+type PlaybackMoment = {
+  id: string;
+  dateLabel: string;
+  tagLabel: string;
+  title: string;
+  text: string;
+  childLabel: string;
+  photoUrl: string;
+};
+
+const playbackPauseMs = 2000;
+let playbackTypeTimer: number | null = null;
+let playbackAdvanceTimer: number | null = null;
+let playbackSessionToken = 0;
+
 function todayString() {
   const now = new Date();
   const year = now.getFullYear();
@@ -339,6 +374,66 @@ function sortRecords<T extends { date: string; happenedAt?: string; createdAt?: 
   });
 }
 
+function sortRecordsAscending<T extends { date: string; happenedAt?: string; createdAt?: string }>(
+  records: T[]
+) {
+  return [...records].sort((left, right) => {
+    const leftTime = left.happenedAt || left.createdAt || left.date;
+    const rightTime = right.happenedAt || right.createdAt || right.date;
+    if (leftTime !== rightTime) {
+      return leftTime.localeCompare(rightTime);
+    }
+
+    if (left.date !== right.date) {
+      return left.date.localeCompare(right.date);
+    }
+
+    return (left.createdAt || "").localeCompare(right.createdAt || "");
+  });
+}
+
+function clearPlaybackTimers() {
+  if (playbackTypeTimer) {
+    clearTimeout(playbackTypeTimer);
+    playbackTypeTimer = null;
+  }
+
+  if (playbackAdvanceTimer) {
+    clearTimeout(playbackAdvanceTimer);
+    playbackAdvanceTimer = null;
+  }
+}
+
+function getPlaybackTypingInterval(text: string) {
+  const length = Array.from(text).length;
+  if (length >= 80) {
+    return 28;
+  }
+
+  if (length >= 40) {
+    return 36;
+  }
+
+  return 48;
+}
+
+function buildPlaybackMoments(records: ArchiveTimelineRecord[]) {
+  return sortRecordsAscending(
+    records.filter((record) => record.itemKind !== "report")
+  ).map((record) => ({
+    id: record.id,
+    dateLabel: record.dateTimeLabel || record.date,
+    tagLabel:
+      record.itemKind === "course"
+        ? "课程记录"
+        : record.primaryTag || record.title || "成长瞬间",
+    title: record.itemKind === "course" ? record.title || "课程记录" : "",
+    text: (record.text || "").trim(),
+    childLabel: record.childLabel || "",
+    photoUrl: record.photoUrls?.[0] || ""
+  }));
+}
+
 function mergeCachedMedia(
   nextRecords: Array<{
     id: string;
@@ -476,6 +571,18 @@ Page({
     selectedPhotos: [] as Array<{ name: string; path: string }>,
     happenedDate: todayString(),
     happenedTime: currentTimeString(),
+    isPlaybackOpen: false,
+    playbackMoments: [] as PlaybackMoment[],
+    playbackIndex: 0,
+    playbackCounterText: "",
+    playbackProgressStyle: "width: 0%;",
+    playbackCurrentDate: "",
+    playbackCurrentTag: "",
+    playbackCurrentTitle: "",
+    playbackCurrentChildLabel: "",
+    playbackCurrentPhotoUrl: "",
+    playbackTypedText: "",
+    playbackIsTyping: false,
     allRecords: [] as unknown[],
     courseRecords: [] as unknown[],
     records: []
@@ -573,6 +680,12 @@ Page({
     this.consumePrefilledRecord();
     const usedCache = this.hydrateRecordCache();
     this.loadRecords({ useLoadingState: !usedCache, skipIfFresh: usedCache });
+  },
+  onHide() {
+    this.closePlayback();
+  },
+  onUnload() {
+    this.closePlayback();
   },
   loadChildren() {
     void getJson<{ children: ArchiveChild[] }>("/api/children")
@@ -684,6 +797,158 @@ Page({
     this.setData({
       records: this.getFilteredRecords()
     });
+  },
+  startPlayback() {
+    const playbackMoments = buildPlaybackMoments(
+      this.data.records as ArchiveTimelineRecord[]
+    );
+
+    if (!playbackMoments.length) {
+      wx.showToast({ title: "先筛出想回看的成长瞬间", icon: "none" });
+      return;
+    }
+
+    playbackSessionToken += 1;
+    clearPlaybackTimers();
+    this.setData({
+      isPlaybackOpen: true,
+      playbackMoments,
+      playbackIndex: 0,
+      playbackCounterText: "",
+      playbackProgressStyle: "width: 0%;",
+      playbackCurrentDate: "",
+      playbackCurrentTag: "",
+      playbackCurrentTitle: "",
+      playbackCurrentChildLabel: "",
+      playbackCurrentPhotoUrl: "",
+      playbackTypedText: "",
+      playbackIsTyping: false
+    });
+
+    this.renderPlaybackMoment(0, playbackSessionToken);
+  },
+  closePlayback() {
+    playbackSessionToken += 1;
+    clearPlaybackTimers();
+    this.setData({
+      isPlaybackOpen: false,
+      playbackMoments: [],
+      playbackIndex: 0,
+      playbackCounterText: "",
+      playbackProgressStyle: "width: 0%;",
+      playbackCurrentDate: "",
+      playbackCurrentTag: "",
+      playbackCurrentTitle: "",
+      playbackCurrentChildLabel: "",
+      playbackCurrentPhotoUrl: "",
+      playbackTypedText: "",
+      playbackIsTyping: false
+    });
+  },
+  skipPlaybackStep() {
+    if (!this.data.isPlaybackOpen) {
+      return;
+    }
+
+    const playbackMoments = this.data.playbackMoments as PlaybackMoment[];
+    const currentMoment = playbackMoments[this.data.playbackIndex];
+    if (!currentMoment) {
+      this.closePlayback();
+      return;
+    }
+
+    if ((this.data.playbackTypedText as string) !== currentMoment.text) {
+      clearPlaybackTimers();
+      this.setData({
+        playbackTypedText: currentMoment.text,
+        playbackIsTyping: false
+      });
+      const sessionToken = playbackSessionToken;
+      playbackAdvanceTimer = setTimeout(() => {
+        this.advancePlayback(sessionToken);
+      }, playbackPauseMs) as unknown as number;
+      return;
+    }
+
+    this.advancePlayback(playbackSessionToken);
+  },
+  renderPlaybackMoment(index: number, sessionToken: number) {
+    if (sessionToken !== playbackSessionToken) {
+      return;
+    }
+
+    const playbackMoments = this.data.playbackMoments as PlaybackMoment[];
+    const currentMoment = playbackMoments[index];
+    if (!currentMoment) {
+      this.closePlayback();
+      return;
+    }
+
+    clearPlaybackTimers();
+    this.setData({
+      playbackIndex: index,
+      playbackCounterText: `${index + 1} / ${playbackMoments.length}`,
+      playbackProgressStyle: `width: ${((index + 1) / playbackMoments.length) * 100}%;`,
+      playbackCurrentDate: currentMoment.dateLabel,
+      playbackCurrentTag: currentMoment.tagLabel,
+      playbackCurrentTitle: currentMoment.title,
+      playbackCurrentChildLabel: currentMoment.childLabel,
+      playbackCurrentPhotoUrl: currentMoment.photoUrl,
+      playbackTypedText: "",
+      playbackIsTyping: Boolean(currentMoment.text)
+    });
+
+    if (!currentMoment.text) {
+      playbackAdvanceTimer = setTimeout(() => {
+        this.advancePlayback(sessionToken);
+      }, playbackPauseMs) as unknown as number;
+      return;
+    }
+
+    const characters = Array.from(currentMoment.text);
+    const typingInterval = getPlaybackTypingInterval(currentMoment.text);
+
+    const typeNextCharacter = (nextIndex: number) => {
+      if (sessionToken !== playbackSessionToken) {
+        return;
+      }
+
+      const typedText = characters.slice(0, nextIndex).join("");
+      const finished = nextIndex >= characters.length;
+      this.setData({
+        playbackTypedText: typedText,
+        playbackIsTyping: !finished
+      });
+
+      if (!finished) {
+        playbackTypeTimer = setTimeout(() => {
+          typeNextCharacter(nextIndex + 1);
+        }, typingInterval) as unknown as number;
+        return;
+      }
+
+      playbackAdvanceTimer = setTimeout(() => {
+        this.advancePlayback(sessionToken);
+      }, playbackPauseMs) as unknown as number;
+    };
+
+    playbackTypeTimer = setTimeout(() => {
+      typeNextCharacter(1);
+    }, typingInterval) as unknown as number;
+  },
+  advancePlayback(sessionToken = playbackSessionToken) {
+    if (sessionToken !== playbackSessionToken) {
+      return;
+    }
+
+    const playbackMoments = this.data.playbackMoments as PlaybackMoment[];
+    const nextIndex = (this.data.playbackIndex as number) + 1;
+    if (nextIndex >= playbackMoments.length) {
+      this.closePlayback();
+      return;
+    }
+
+    this.renderPlaybackMoment(nextIndex, sessionToken);
   },
   toggleFilters() {
     this.setData({ isFilterOpen: !this.data.isFilterOpen });

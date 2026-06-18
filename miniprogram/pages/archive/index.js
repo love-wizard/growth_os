@@ -14,6 +14,10 @@ const courseOutcomeLabels = {
   cancelled: "取消",
   rescheduled: "改期"
 };
+const playbackPauseMs = 2e3;
+let playbackTypeTimer = null;
+let playbackAdvanceTimer = null;
+let playbackSessionToken = 0;
 function todayString() {
   const now = /* @__PURE__ */ new Date();
   const year = now.getFullYear();
@@ -219,6 +223,52 @@ function sortRecords(records) {
     return (right.createdAt || "").localeCompare(left.createdAt || "");
   });
 }
+function sortRecordsAscending(records) {
+  return [...records].sort((left, right) => {
+    const leftTime = left.happenedAt || left.createdAt || left.date;
+    const rightTime = right.happenedAt || right.createdAt || right.date;
+    if (leftTime !== rightTime) {
+      return leftTime.localeCompare(rightTime);
+    }
+    if (left.date !== right.date) {
+      return left.date.localeCompare(right.date);
+    }
+    return (left.createdAt || "").localeCompare(right.createdAt || "");
+  });
+}
+function clearPlaybackTimers() {
+  if (playbackTypeTimer) {
+    clearTimeout(playbackTypeTimer);
+    playbackTypeTimer = null;
+  }
+  if (playbackAdvanceTimer) {
+    clearTimeout(playbackAdvanceTimer);
+    playbackAdvanceTimer = null;
+  }
+}
+function getPlaybackTypingInterval(text) {
+  const length = Array.from(text).length;
+  if (length >= 80) {
+    return 28;
+  }
+  if (length >= 40) {
+    return 36;
+  }
+  return 48;
+}
+function buildPlaybackMoments(records) {
+  return sortRecordsAscending(
+    records.filter((record) => record.itemKind !== "report")
+  ).map((record) => ({
+    id: record.id,
+    dateLabel: record.dateTimeLabel || record.date,
+    tagLabel: record.itemKind === "course" ? "课程记录" : record.primaryTag || record.title || "成长瞬间",
+    title: record.itemKind === "course" ? record.title || "课程记录" : "",
+    text: (record.text || "").trim(),
+    childLabel: record.childLabel || "",
+    photoUrl: (record.photoUrls == null ? void 0 : record.photoUrls[0]) || ""
+  }));
+}
 function mergeCachedMedia(nextRecords, currentRecords) {
   const currentById = new Map(currentRecords.map((record) => [record.id, record]));
   return sortRecords(nextRecords).map((record) => {
@@ -289,6 +339,18 @@ Page({
     selectedPhotos: [],
     happenedDate: todayString(),
     happenedTime: currentTimeString(),
+    isPlaybackOpen: false,
+    playbackMoments: [],
+    playbackIndex: 0,
+    playbackCounterText: "",
+    playbackProgressStyle: "width: 0%;",
+    playbackCurrentDate: "",
+    playbackCurrentTag: "",
+    playbackCurrentTitle: "",
+    playbackCurrentChildLabel: "",
+    playbackCurrentPhotoUrl: "",
+    playbackTypedText: "",
+    playbackIsTyping: false,
     allRecords: [],
     courseRecords: [],
     records: []
@@ -370,6 +432,12 @@ Page({
     const usedCache = this.hydrateRecordCache();
     this.loadRecords({ useLoadingState: !usedCache, skipIfFresh: usedCache });
   },
+  onHide() {
+    this.closePlayback();
+  },
+  onUnload() {
+    this.closePlayback();
+  },
   loadChildren() {
     void (0, import_api.getJson)("/api/children").then((response) => {
       var _a;
@@ -448,6 +516,139 @@ Page({
     this.setData({
       records: this.getFilteredRecords()
     });
+  },
+  startPlayback() {
+    const playbackMoments = buildPlaybackMoments(this.data.records);
+    if (!playbackMoments.length) {
+      wx.showToast({ title: "先筛出想回看的成长瞬间", icon: "none" });
+      return;
+    }
+    playbackSessionToken += 1;
+    clearPlaybackTimers();
+    this.setData({
+      isPlaybackOpen: true,
+      playbackMoments,
+      playbackIndex: 0,
+      playbackCounterText: "",
+      playbackProgressStyle: "width: 0%;",
+      playbackCurrentDate: "",
+      playbackCurrentTag: "",
+      playbackCurrentTitle: "",
+      playbackCurrentChildLabel: "",
+      playbackCurrentPhotoUrl: "",
+      playbackTypedText: "",
+      playbackIsTyping: false
+    });
+    this.renderPlaybackMoment(0, playbackSessionToken);
+  },
+  closePlayback() {
+    playbackSessionToken += 1;
+    clearPlaybackTimers();
+    this.setData({
+      isPlaybackOpen: false,
+      playbackMoments: [],
+      playbackIndex: 0,
+      playbackCounterText: "",
+      playbackProgressStyle: "width: 0%;",
+      playbackCurrentDate: "",
+      playbackCurrentTag: "",
+      playbackCurrentTitle: "",
+      playbackCurrentChildLabel: "",
+      playbackCurrentPhotoUrl: "",
+      playbackTypedText: "",
+      playbackIsTyping: false
+    });
+  },
+  skipPlaybackStep() {
+    if (!this.data.isPlaybackOpen) {
+      return;
+    }
+    const playbackMoments = this.data.playbackMoments;
+    const currentMoment = playbackMoments[this.data.playbackIndex];
+    if (!currentMoment) {
+      this.closePlayback();
+      return;
+    }
+    if (this.data.playbackTypedText !== currentMoment.text) {
+      clearPlaybackTimers();
+      this.setData({
+        playbackTypedText: currentMoment.text,
+        playbackIsTyping: false
+      });
+      const sessionToken = playbackSessionToken;
+      playbackAdvanceTimer = setTimeout(() => {
+        this.advancePlayback(sessionToken);
+      }, playbackPauseMs);
+      return;
+    }
+    this.advancePlayback(playbackSessionToken);
+  },
+  renderPlaybackMoment(index, sessionToken) {
+    if (sessionToken !== playbackSessionToken) {
+      return;
+    }
+    const playbackMoments = this.data.playbackMoments;
+    const currentMoment = playbackMoments[index];
+    if (!currentMoment) {
+      this.closePlayback();
+      return;
+    }
+    clearPlaybackTimers();
+    this.setData({
+      playbackIndex: index,
+      playbackCounterText: `${index + 1} / ${playbackMoments.length}`,
+      playbackProgressStyle: `width: ${(index + 1) / playbackMoments.length * 100}%;`,
+      playbackCurrentDate: currentMoment.dateLabel,
+      playbackCurrentTag: currentMoment.tagLabel,
+      playbackCurrentTitle: currentMoment.title,
+      playbackCurrentChildLabel: currentMoment.childLabel,
+      playbackCurrentPhotoUrl: currentMoment.photoUrl,
+      playbackTypedText: "",
+      playbackIsTyping: Boolean(currentMoment.text)
+    });
+    if (!currentMoment.text) {
+      playbackAdvanceTimer = setTimeout(() => {
+        this.advancePlayback(sessionToken);
+      }, playbackPauseMs);
+      return;
+    }
+    const characters = Array.from(currentMoment.text);
+    const typingInterval = getPlaybackTypingInterval(currentMoment.text);
+    const typeNextCharacter = (nextIndex) => {
+      if (sessionToken !== playbackSessionToken) {
+        return;
+      }
+      const typedText = characters.slice(0, nextIndex).join("");
+      const finished = nextIndex >= characters.length;
+      this.setData({
+        playbackTypedText: typedText,
+        playbackIsTyping: !finished
+      });
+      if (!finished) {
+        playbackTypeTimer = setTimeout(() => {
+          typeNextCharacter(nextIndex + 1);
+        }, typingInterval);
+        return;
+      }
+      playbackAdvanceTimer = setTimeout(() => {
+        this.advancePlayback(sessionToken);
+      }, playbackPauseMs);
+    };
+    playbackTypeTimer = setTimeout(() => {
+      typeNextCharacter(1);
+    }, typingInterval);
+  },
+  advancePlayback(sessionToken = playbackSessionToken) {
+    if (sessionToken !== playbackSessionToken) {
+      return;
+    }
+    const playbackMoments = this.data.playbackMoments;
+    const nextIndex = this.data.playbackIndex + 1;
+    if (nextIndex >= playbackMoments.length) {
+      this.closePlayback();
+      return;
+    }
+    this.renderPlaybackMoment(nextIndex, sessionToken);
   },
   toggleFilters() {
     this.setData({ isFilterOpen: !this.data.isFilterOpen });
