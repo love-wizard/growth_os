@@ -203,12 +203,12 @@
     />
     <view class="playback-background-mask"></view>
     <view class="playback-shell">
+      <view wx:if="{{playbackCurrentDate}}" class="playback-date-pin">
+        {{playbackCurrentDate}}
+      </view>
       <view class="playback-chrome playback-chrome-top {{playbackChromeVisible ? '' : 'playback-chrome-hidden'}}">
         <view class="playback-topbar">
-          <view>
-            <view class="playback-counter">{{playbackCounterText}}</view>
-            <view class="playback-date">{{playbackCurrentDate}}</view>
-          </view>
+          <view class="playback-counter">{{playbackCounterText}}</view>
           <button class="playback-close-button" catchtap="closePlayback">关闭</button>
         </view>
         <view class="playback-progress-track">
@@ -224,21 +224,23 @@
           <image class="playback-photo" src="{{playbackCurrentPhotoUrl}}" mode="aspectFit" />
           <view class="playback-photo-scrim"></view>
           <view class="playback-copy-overlay">
-            <view
-              wx:if="{{playbackCurrentTag || playbackCurrentChildLabel || playbackCurrentFrameLabel}}"
-              class="chip-row"
-            >
-              <view wx:if="{{playbackCurrentTag}}" class="playback-chip playback-chip-primary">
-                {{playbackCurrentTag}}
+            <view class="playback-copy-meta playback-chrome {{playbackChromeVisible ? '' : 'playback-chrome-hidden'}}">
+              <view
+                wx:if="{{playbackCurrentTag || playbackCurrentChildLabel || playbackCurrentFrameLabel}}"
+                class="chip-row"
+              >
+                <view wx:if="{{playbackCurrentTag}}" class="playback-chip playback-chip-primary">
+                  {{playbackCurrentTag}}
+                </view>
+                <view wx:if="{{playbackCurrentChildLabel}}" class="playback-chip">
+                  {{playbackCurrentChildLabel}}
+                </view>
+                <view wx:if="{{playbackCurrentFrameLabel}}" class="playback-chip">
+                  {{playbackCurrentFrameLabel}}
+                </view>
               </view>
-              <view wx:if="{{playbackCurrentChildLabel}}" class="playback-chip">
-                {{playbackCurrentChildLabel}}
-              </view>
-              <view wx:if="{{playbackCurrentFrameLabel}}" class="playback-chip">
-                {{playbackCurrentFrameLabel}}
-              </view>
+              <view wx:if="{{playbackCurrentTitle}}" class="playback-title">{{playbackCurrentTitle}}</view>
             </view>
-            <view wx:if="{{playbackCurrentTitle}}" class="playback-title">{{playbackCurrentTitle}}</view>
             <view wx:if="{{playbackTypedText}}" class="playback-text">
               {{playbackTypedText}}<text wx:if="{{playbackIsTyping}}" class="playback-cursor">|</text>
             </view>
@@ -250,21 +252,23 @@
 
         <view wx:else class="playback-text-stage">
           <view class="playback-copy-overlay playback-copy-overlay-text-only">
-            <view
-              wx:if="{{playbackCurrentTag || playbackCurrentChildLabel || playbackCurrentFrameLabel}}"
-              class="chip-row"
-            >
-              <view wx:if="{{playbackCurrentTag}}" class="playback-chip playback-chip-primary">
-                {{playbackCurrentTag}}
+            <view class="playback-copy-meta playback-chrome {{playbackChromeVisible ? '' : 'playback-chrome-hidden'}}">
+              <view
+                wx:if="{{playbackCurrentTag || playbackCurrentChildLabel || playbackCurrentFrameLabel}}"
+                class="chip-row"
+              >
+                <view wx:if="{{playbackCurrentTag}}" class="playback-chip playback-chip-primary">
+                  {{playbackCurrentTag}}
+                </view>
+                <view wx:if="{{playbackCurrentChildLabel}}" class="playback-chip">
+                  {{playbackCurrentChildLabel}}
+                </view>
+                <view wx:if="{{playbackCurrentFrameLabel}}" class="playback-chip">
+                  {{playbackCurrentFrameLabel}}
+                </view>
               </view>
-              <view wx:if="{{playbackCurrentChildLabel}}" class="playback-chip">
-                {{playbackCurrentChildLabel}}
-              </view>
-              <view wx:if="{{playbackCurrentFrameLabel}}" class="playback-chip">
-                {{playbackCurrentFrameLabel}}
-              </view>
+              <view wx:if="{{playbackCurrentTitle}}" class="playback-title">{{playbackCurrentTitle}}</view>
             </view>
-            <view wx:if="{{playbackCurrentTitle}}" class="playback-title">{{playbackCurrentTitle}}</view>
             <view wx:if="{{playbackTypedText}}" class="playback-text">
               {{playbackTypedText}}<text wx:if="{{playbackIsTyping}}" class="playback-cursor">|</text>
             </view>
