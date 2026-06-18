@@ -277,6 +277,12 @@ function getPlaybackDwellMs(text, hasPhoto) {
   }
   return 4600;
 }
+function getPlaybackPhotoFrameDwellMs(photoCount) {
+  if (photoCount >= 4) {
+    return 1100;
+  }
+  return 1400;
+}
 function buildPlaybackMoments(records) {
   return sortRecordsAscending(
     records.filter((record) => record.itemKind !== "report")
@@ -293,19 +299,26 @@ function buildPlaybackMoments(records) {
       moments.push({
         ...baseMoment,
         id: record.id,
+        recordId: record.id,
         text,
         photoUrl: "",
-        frameLabel: ""
+        frameLabel: "",
+        shouldTypeText: Boolean(text),
+        advanceDelayMs: getPlaybackDwellMs(text, false)
       });
       return moments;
     }
     photoUrls.forEach((photoUrl, photoIndex) => {
+      const isFirstPhoto = photoIndex === 0;
       moments.push({
         ...baseMoment,
         id: `${record.id}-${photoIndex + 1}`,
-        text: photoIndex === 0 ? text : "",
+        recordId: record.id,
+        text,
         photoUrl,
-        frameLabel: photoUrls.length > 1 ? `${photoIndex + 1} / ${photoUrls.length}` : ""
+        frameLabel: photoUrls.length > 1 ? `${photoIndex + 1} / ${photoUrls.length}` : "",
+        shouldTypeText: isFirstPhoto && Boolean(text),
+        advanceDelayMs: isFirstPhoto ? getPlaybackDwellMs(text, true) : getPlaybackPhotoFrameDwellMs(photoUrls.length)
       });
     });
     return moments;
@@ -600,7 +613,7 @@ Page({
   schedulePlaybackAdvance(sessionToken, moment) {
     playbackAdvanceTimer = setTimeout(() => {
       this.advancePlayback(sessionToken);
-    }, getPlaybackDwellMs(moment.text, Boolean(moment.photoUrl)));
+    }, moment.advanceDelayMs);
   },
   startPlayback() {
     const playbackMoments = buildPlaybackMoments(this.data.records);
@@ -677,10 +690,12 @@ Page({
     }
     const playbackMoments = this.data.playbackMoments;
     const currentMoment = playbackMoments[index];
+    const previousMoment = index > 0 ? playbackMoments[index - 1] : null;
     if (!currentMoment) {
       this.closePlayback();
       return;
     }
+    const isSameRecordAsPrevious = (previousMoment == null ? void 0 : previousMoment.recordId) === currentMoment.recordId;
     clearPlaybackTimers();
     this.setData({
       playbackIndex: index,
@@ -692,11 +707,13 @@ Page({
       playbackCurrentChildLabel: currentMoment.childLabel,
       playbackCurrentFrameLabel: currentMoment.frameLabel,
       playbackCurrentPhotoUrl: currentMoment.photoUrl,
-      playbackTypedText: "",
-      playbackIsTyping: Boolean(currentMoment.text)
+      playbackTypedText: currentMoment.shouldTypeText ? "" : currentMoment.text,
+      playbackIsTyping: currentMoment.shouldTypeText
     });
-    this.revealPlaybackChrome();
-    if (!currentMoment.text) {
+    if (!isSameRecordAsPrevious) {
+      this.revealPlaybackChrome();
+    }
+    if (!currentMoment.shouldTypeText) {
       this.schedulePlaybackAdvance(sessionToken, currentMoment);
       return;
     }

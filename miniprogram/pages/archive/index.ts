@@ -52,6 +52,7 @@ type ArchiveTimelineRecord = {
 
 type PlaybackMoment = {
   id: string;
+  recordId: string;
   dateLabel: string;
   tagLabel: string;
   title: string;
@@ -59,6 +60,8 @@ type PlaybackMoment = {
   childLabel: string;
   photoUrl: string;
   frameLabel: string;
+  shouldTypeText: boolean;
+  advanceDelayMs: number;
 };
 
 const playbackChromeAutoHideMs = 1600;
@@ -445,6 +448,14 @@ function getPlaybackDwellMs(text: string, hasPhoto: boolean) {
   return 4600;
 }
 
+function getPlaybackPhotoFrameDwellMs(photoCount: number) {
+  if (photoCount >= 4) {
+    return 1100;
+  }
+
+  return 1400;
+}
+
 function buildPlaybackMoments(records: ArchiveTimelineRecord[]) {
   return sortRecordsAscending(
     records.filter((record) => record.itemKind !== "report")
@@ -465,20 +476,29 @@ function buildPlaybackMoments(records: ArchiveTimelineRecord[]) {
       moments.push({
         ...baseMoment,
         id: record.id,
+        recordId: record.id,
         text,
         photoUrl: "",
-        frameLabel: ""
+        frameLabel: "",
+        shouldTypeText: Boolean(text),
+        advanceDelayMs: getPlaybackDwellMs(text, false)
       });
       return moments;
     }
 
     photoUrls.forEach((photoUrl, photoIndex) => {
+      const isFirstPhoto = photoIndex === 0;
       moments.push({
         ...baseMoment,
         id: `${record.id}-${photoIndex + 1}`,
-        text: photoIndex === 0 ? text : "",
+        recordId: record.id,
+        text,
         photoUrl,
-        frameLabel: photoUrls.length > 1 ? `${photoIndex + 1} / ${photoUrls.length}` : ""
+        frameLabel: photoUrls.length > 1 ? `${photoIndex + 1} / ${photoUrls.length}` : "",
+        shouldTypeText: isFirstPhoto && Boolean(text),
+        advanceDelayMs: isFirstPhoto
+          ? getPlaybackDwellMs(text, true)
+          : getPlaybackPhotoFrameDwellMs(photoUrls.length)
       });
     });
     return moments;
@@ -897,7 +917,7 @@ Page({
   schedulePlaybackAdvance(sessionToken: number, moment: PlaybackMoment) {
     playbackAdvanceTimer = setTimeout(() => {
       this.advancePlayback(sessionToken);
-    }, getPlaybackDwellMs(moment.text, Boolean(moment.photoUrl))) as unknown as number;
+    }, moment.advanceDelayMs) as unknown as number;
   },
   startPlayback() {
     const playbackMoments = buildPlaybackMoments(
@@ -983,10 +1003,13 @@ Page({
 
     const playbackMoments = this.data.playbackMoments as PlaybackMoment[];
     const currentMoment = playbackMoments[index];
+    const previousMoment = index > 0 ? playbackMoments[index - 1] : null;
     if (!currentMoment) {
       this.closePlayback();
       return;
     }
+
+    const isSameRecordAsPrevious = previousMoment?.recordId === currentMoment.recordId;
 
     clearPlaybackTimers();
     this.setData({
@@ -999,12 +1022,15 @@ Page({
       playbackCurrentChildLabel: currentMoment.childLabel,
       playbackCurrentFrameLabel: currentMoment.frameLabel,
       playbackCurrentPhotoUrl: currentMoment.photoUrl,
-      playbackTypedText: "",
-      playbackIsTyping: Boolean(currentMoment.text)
+      playbackTypedText: currentMoment.shouldTypeText ? "" : currentMoment.text,
+      playbackIsTyping: currentMoment.shouldTypeText
     });
-    this.revealPlaybackChrome();
 
-    if (!currentMoment.text) {
+    if (!isSameRecordAsPrevious) {
+      this.revealPlaybackChrome();
+    }
+
+    if (!currentMoment.shouldTypeText) {
       this.schedulePlaybackAdvance(sessionToken, currentMoment);
       return;
     }
