@@ -14,9 +14,10 @@ const courseOutcomeLabels = {
   cancelled: "取消",
   rescheduled: "改期"
 };
-const playbackPauseMs = 2e3;
+const playbackChromeAutoHideMs = 1600;
 let playbackTypeTimer = null;
 let playbackAdvanceTimer = null;
+let playbackChromeTimer = null;
 let playbackSessionToken = 0;
 function todayString() {
   const now = /* @__PURE__ */ new Date();
@@ -245,6 +246,10 @@ function clearPlaybackTimers() {
     clearTimeout(playbackAdvanceTimer);
     playbackAdvanceTimer = null;
   }
+  if (playbackChromeTimer) {
+    clearTimeout(playbackChromeTimer);
+    playbackChromeTimer = null;
+  }
 }
 function getPlaybackTypingInterval(text) {
   const length = Array.from(text).length;
@@ -256,18 +261,55 @@ function getPlaybackTypingInterval(text) {
   }
   return 48;
 }
+function getPlaybackDwellMs(text, hasPhoto) {
+  const length = Array.from((text || "").trim()).length;
+  if (!length) {
+    return hasPhoto ? 1600 : 2200;
+  }
+  if (length <= 24) {
+    return 2200;
+  }
+  if (length <= 56) {
+    return 3e3;
+  }
+  if (length <= 96) {
+    return 3800;
+  }
+  return 4600;
+}
 function buildPlaybackMoments(records) {
   return sortRecordsAscending(
     records.filter((record) => record.itemKind !== "report")
-  ).map((record) => ({
-    id: record.id,
-    dateLabel: record.dateTimeLabel || record.date,
-    tagLabel: record.itemKind === "course" ? "课程记录" : record.primaryTag || record.title || "成长瞬间",
-    title: record.itemKind === "course" ? record.title || "课程记录" : "",
-    text: (record.text || "").trim(),
-    childLabel: record.childLabel || "",
-    photoUrl: (record.photoUrls == null ? void 0 : record.photoUrls[0]) || ""
-  }));
+  ).reduce((moments, record) => {
+    const photoUrls = (record.photoUrls || []).filter(Boolean);
+    const baseMoment = {
+      dateLabel: record.dateTimeLabel || record.date,
+      tagLabel: record.itemKind === "course" ? "课程记录" : record.primaryTag || record.title || "成长瞬间",
+      title: record.itemKind === "course" ? record.title || "课程记录" : "",
+      childLabel: record.childLabel || ""
+    };
+    const text = (record.text || "").trim();
+    if (!photoUrls.length) {
+      moments.push({
+        ...baseMoment,
+        id: record.id,
+        text,
+        photoUrl: "",
+        frameLabel: ""
+      });
+      return moments;
+    }
+    photoUrls.forEach((photoUrl, photoIndex) => {
+      moments.push({
+        ...baseMoment,
+        id: `${record.id}-${photoIndex + 1}`,
+        text: photoIndex === 0 ? text : "",
+        photoUrl,
+        frameLabel: photoUrls.length > 1 ? `${photoIndex + 1} / ${photoUrls.length}` : ""
+      });
+    });
+    return moments;
+  }, []);
 }
 function mergeCachedMedia(nextRecords, currentRecords) {
   const currentById = new Map(currentRecords.map((record) => [record.id, record]));
@@ -348,9 +390,11 @@ Page({
     playbackCurrentTag: "",
     playbackCurrentTitle: "",
     playbackCurrentChildLabel: "",
+    playbackCurrentFrameLabel: "",
     playbackCurrentPhotoUrl: "",
     playbackTypedText: "",
     playbackIsTyping: false,
+    playbackChromeVisible: true,
     allRecords: [],
     courseRecords: [],
     records: []
@@ -517,6 +561,47 @@ Page({
       records: this.getFilteredRecords()
     });
   },
+  setPlaybackChromeVisible(visible, autoHide = false) {
+    if (!this.data.isPlaybackOpen && visible) {
+      return;
+    }
+    if (playbackChromeTimer) {
+      clearTimeout(playbackChromeTimer);
+      playbackChromeTimer = null;
+    }
+    if (this.data.playbackChromeVisible !== visible) {
+      this.setData({ playbackChromeVisible: visible });
+    }
+    if (!visible || !autoHide) {
+      return;
+    }
+    const sessionToken = playbackSessionToken;
+    playbackChromeTimer = setTimeout(() => {
+      if (sessionToken !== playbackSessionToken || !this.data.isPlaybackOpen) {
+        return;
+      }
+      this.setData({ playbackChromeVisible: false });
+      playbackChromeTimer = null;
+    }, playbackChromeAutoHideMs);
+  },
+  revealPlaybackChrome() {
+    this.setPlaybackChromeVisible(true, true);
+  },
+  onPlaybackStageTap() {
+    if (!this.data.isPlaybackOpen) {
+      return;
+    }
+    if (this.data.playbackChromeVisible) {
+      this.setPlaybackChromeVisible(false);
+      return;
+    }
+    this.revealPlaybackChrome();
+  },
+  schedulePlaybackAdvance(sessionToken, moment) {
+    playbackAdvanceTimer = setTimeout(() => {
+      this.advancePlayback(sessionToken);
+    }, getPlaybackDwellMs(moment.text, Boolean(moment.photoUrl)));
+  },
   startPlayback() {
     const playbackMoments = buildPlaybackMoments(this.data.records);
     if (!playbackMoments.length) {
@@ -535,9 +620,11 @@ Page({
       playbackCurrentTag: "",
       playbackCurrentTitle: "",
       playbackCurrentChildLabel: "",
+      playbackCurrentFrameLabel: "",
       playbackCurrentPhotoUrl: "",
       playbackTypedText: "",
-      playbackIsTyping: false
+      playbackIsTyping: false,
+      playbackChromeVisible: true
     });
     this.renderPlaybackMoment(0, playbackSessionToken);
   },
@@ -554,9 +641,11 @@ Page({
       playbackCurrentTag: "",
       playbackCurrentTitle: "",
       playbackCurrentChildLabel: "",
+      playbackCurrentFrameLabel: "",
       playbackCurrentPhotoUrl: "",
       playbackTypedText: "",
-      playbackIsTyping: false
+      playbackIsTyping: false,
+      playbackChromeVisible: true
     });
   },
   skipPlaybackStep() {
@@ -575,12 +664,11 @@ Page({
         playbackTypedText: currentMoment.text,
         playbackIsTyping: false
       });
-      const sessionToken = playbackSessionToken;
-      playbackAdvanceTimer = setTimeout(() => {
-        this.advancePlayback(sessionToken);
-      }, playbackPauseMs);
+      this.revealPlaybackChrome();
+      this.schedulePlaybackAdvance(playbackSessionToken, currentMoment);
       return;
     }
+    this.revealPlaybackChrome();
     this.advancePlayback(playbackSessionToken);
   },
   renderPlaybackMoment(index, sessionToken) {
@@ -602,14 +690,14 @@ Page({
       playbackCurrentTag: currentMoment.tagLabel,
       playbackCurrentTitle: currentMoment.title,
       playbackCurrentChildLabel: currentMoment.childLabel,
+      playbackCurrentFrameLabel: currentMoment.frameLabel,
       playbackCurrentPhotoUrl: currentMoment.photoUrl,
       playbackTypedText: "",
       playbackIsTyping: Boolean(currentMoment.text)
     });
+    this.revealPlaybackChrome();
     if (!currentMoment.text) {
-      playbackAdvanceTimer = setTimeout(() => {
-        this.advancePlayback(sessionToken);
-      }, playbackPauseMs);
+      this.schedulePlaybackAdvance(sessionToken, currentMoment);
       return;
     }
     const characters = Array.from(currentMoment.text);
@@ -630,9 +718,7 @@ Page({
         }, typingInterval);
         return;
       }
-      playbackAdvanceTimer = setTimeout(() => {
-        this.advancePlayback(sessionToken);
-      }, playbackPauseMs);
+      this.schedulePlaybackAdvance(sessionToken, currentMoment);
     };
     playbackTypeTimer = setTimeout(() => {
       typeNextCharacter(1);

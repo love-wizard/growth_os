@@ -1547,6 +1547,7 @@ page {
 }
 
 .playback-overlay {
+  background: #0d100f;
   bottom: 0;
   left: 0;
   position: fixed;
@@ -1558,16 +1559,17 @@ page {
 .playback-background-image {
   height: 100%;
   left: 0;
-  opacity: 0.24;
+  opacity: 0.16;
   position: absolute;
   top: 0;
+  transform: scale(1.06);
   width: 100%;
 }
 
 .playback-background-mask {
   background:
-    radial-gradient(circle at top, rgba(90, 130, 116, 0.3), rgba(17, 19, 18, 0) 34%),
-    linear-gradient(180deg, rgba(17, 21, 20, 0.92) 0%, rgba(14, 16, 15, 0.96) 100%);
+    radial-gradient(circle at top, rgba(108, 150, 132, 0.24), rgba(17, 19, 18, 0) 30%),
+    linear-gradient(180deg, rgba(12, 15, 14, 0.88) 0%, rgba(10, 12, 11, 0.96) 44%, rgba(7, 8, 8, 1) 100%);
   bottom: 0;
   left: 0;
   position: absolute;
@@ -1579,10 +1581,39 @@ page {
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  gap: 18rpx;
   height: 100%;
-  padding: calc(44rpx + env(safe-area-inset-top)) 30rpx calc(34rpx + env(safe-area-inset-bottom));
+  padding: calc(30rpx + env(safe-area-inset-top)) 26rpx calc(26rpx + env(safe-area-inset-bottom));
   position: relative;
+}
+
+.playback-chrome {
+  opacity: 1;
+  transition: opacity 220ms ease, transform 220ms ease;
+  visibility: visible;
+}
+
+.playback-chrome-top {
+  display: flex;
+  flex-direction: column;
+  gap: 18rpx;
+}
+
+.playback-chrome-bottom {
+  transform: translateY(0);
+}
+
+.playback-chrome-hidden {
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.playback-chrome-top.playback-chrome-hidden {
+  transform: translateY(-12rpx);
+}
+
+.playback-chrome-bottom.playback-chrome-hidden {
+  transform: translateY(18rpx);
 }
 
 .playback-topbar {
@@ -1643,44 +1674,76 @@ page {
   display: flex;
   flex: 1;
   flex-direction: column;
-  justify-content: center;
+  justify-content: stretch;
+  margin: 24rpx 0;
   min-height: 0;
+  position: relative;
 }
 
 .playback-stage-with-photo {
-  gap: 22rpx;
+  justify-content: center;
 }
 
 .playback-stage-text-only {
   justify-content: flex-end;
-  padding-bottom: 18rpx;
 }
 
 .playback-photo-stage {
-  align-items: center;
+  background:
+    radial-gradient(circle at top, rgba(67, 84, 76, 0.32), rgba(18, 23, 21, 0) 46%),
+    rgba(16, 18, 18, 0.98);
+  border-radius: 36rpx;
+  box-shadow: 0 32rpx 84rpx rgba(0, 0, 0, 0.28);
   display: flex;
   flex: 1;
-  justify-content: center;
   min-height: 0;
+  overflow: hidden;
+  position: relative;
 }
 
 .playback-photo {
-  border-radius: 28rpx;
-  box-shadow: 0 28rpx 72rpx rgba(0, 0, 0, 0.24);
   height: 100%;
-  max-height: 740rpx;
   width: 100%;
 }
 
-.playback-copy-card {
-  background: rgba(255, 255, 255, 0.12);
-  border: 1rpx solid rgba(255, 255, 255, 0.16);
-  border-radius: 30rpx;
-  box-shadow: 0 18rpx 44rpx rgba(0, 0, 0, 0.18);
+.playback-photo-scrim {
+  background:
+    linear-gradient(180deg, rgba(6, 7, 7, 0.08) 0%, rgba(6, 7, 7, 0.12) 48%, rgba(5, 6, 6, 0.88) 100%);
+  bottom: 0;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.playback-text-stage {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 0;
+}
+
+.playback-copy-overlay {
+  bottom: 0;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   gap: 16rpx;
-  padding: 28rpx;
+  left: 0;
+  padding: 34rpx 30rpx 32rpx;
+  position: absolute;
+  right: 0;
+}
+
+.playback-copy-overlay-text-only {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.14) 100%);
+  border: 1rpx solid rgba(255, 255, 255, 0.14);
+  border-radius: 32rpx;
+  box-shadow: 0 22rpx 52rpx rgba(0, 0, 0, 0.18);
+  margin-top: auto;
+  padding: 34rpx 30rpx;
+  position: relative;
 }
 
 .playback-chip {
@@ -1704,17 +1767,17 @@ page {
 
 .playback-title {
   color: #ffffff;
-  font-size: 34rpx;
+  font-size: 32rpx;
   font-weight: 700;
-  line-height: 46rpx;
+  line-height: 44rpx;
 }
 
 .playback-text {
   color: #ffffff;
-  font-size: 36rpx;
-  font-weight: 600;
-  line-height: 54rpx;
-  min-height: 108rpx;
+  font-size: 34rpx;
+  font-weight: 500;
+  line-height: 52rpx;
+  min-height: 104rpx;
   word-break: break-word;
 }
 
@@ -1734,11 +1797,12 @@ page {
 .playback-actions {
   display: flex;
   justify-content: flex-end;
+  padding-bottom: 4rpx;
 }
 
 .playback-action-button {
-  background: rgba(255, 255, 255, 0.14);
-  border-color: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.16);
   color: #ffffff;
 }
 

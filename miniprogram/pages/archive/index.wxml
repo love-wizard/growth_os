@@ -71,7 +71,7 @@
           disabled="{{records.length === 0}}"
           bindtap="startPlayback"
         >
-          全屏播放
+          播放
         </button>
         <picker mode="selector" range="{{recordScopeOptions}}" value="{{selectedRecordScopeIndex}}" bindchange="onRecordScopeChange">
           <view class="button-secondary compact-button">{{recordScopeOptions[selectedRecordScopeIndex]}}</view>
@@ -203,43 +203,80 @@
     />
     <view class="playback-background-mask"></view>
     <view class="playback-shell">
-      <view class="playback-topbar">
-        <view>
-          <view class="playback-counter">{{playbackCounterText}}</view>
-          <view class="playback-date">{{playbackCurrentDate}}</view>
+      <view class="playback-chrome playback-chrome-top {{playbackChromeVisible ? '' : 'playback-chrome-hidden'}}">
+        <view class="playback-topbar">
+          <view>
+            <view class="playback-counter">{{playbackCounterText}}</view>
+            <view class="playback-date">{{playbackCurrentDate}}</view>
+          </view>
+          <button class="playback-close-button" catchtap="closePlayback">关闭</button>
         </view>
-        <button class="playback-close-button" bindtap="closePlayback">关闭</button>
-      </view>
-      <view class="playback-progress-track">
-        <view class="playback-progress-fill" style="{{playbackProgressStyle}}"></view>
+        <view class="playback-progress-track">
+          <view class="playback-progress-fill" style="{{playbackProgressStyle}}"></view>
+        </view>
       </view>
 
-      <view class="playback-stage {{playbackCurrentPhotoUrl ? 'playback-stage-with-photo' : 'playback-stage-text-only'}}">
+      <view
+        class="playback-stage {{playbackCurrentPhotoUrl ? 'playback-stage-with-photo' : 'playback-stage-text-only'}}"
+        bindtap="onPlaybackStageTap"
+      >
         <view wx:if="{{playbackCurrentPhotoUrl}}" class="playback-photo-stage">
           <image class="playback-photo" src="{{playbackCurrentPhotoUrl}}" mode="aspectFit" />
+          <view class="playback-photo-scrim"></view>
+          <view class="playback-copy-overlay">
+            <view
+              wx:if="{{playbackCurrentTag || playbackCurrentChildLabel || playbackCurrentFrameLabel}}"
+              class="chip-row"
+            >
+              <view wx:if="{{playbackCurrentTag}}" class="playback-chip playback-chip-primary">
+                {{playbackCurrentTag}}
+              </view>
+              <view wx:if="{{playbackCurrentChildLabel}}" class="playback-chip">
+                {{playbackCurrentChildLabel}}
+              </view>
+              <view wx:if="{{playbackCurrentFrameLabel}}" class="playback-chip">
+                {{playbackCurrentFrameLabel}}
+              </view>
+            </view>
+            <view wx:if="{{playbackCurrentTitle}}" class="playback-title">{{playbackCurrentTitle}}</view>
+            <view wx:if="{{playbackTypedText}}" class="playback-text">
+              {{playbackTypedText}}<text wx:if="{{playbackIsTyping}}" class="playback-cursor">|</text>
+            </view>
+            <view wx:elif="{{!playbackIsTyping}}" class="playback-text playback-text-muted">
+              这个瞬间没有补充文字。
+            </view>
+          </view>
         </view>
 
-        <view class="playback-copy-card">
-          <view wx:if="{{playbackCurrentTag || playbackCurrentChildLabel}}" class="chip-row">
-            <view wx:if="{{playbackCurrentTag}}" class="playback-chip playback-chip-primary">
-              {{playbackCurrentTag}}
+        <view wx:else class="playback-text-stage">
+          <view class="playback-copy-overlay playback-copy-overlay-text-only">
+            <view
+              wx:if="{{playbackCurrentTag || playbackCurrentChildLabel || playbackCurrentFrameLabel}}"
+              class="chip-row"
+            >
+              <view wx:if="{{playbackCurrentTag}}" class="playback-chip playback-chip-primary">
+                {{playbackCurrentTag}}
+              </view>
+              <view wx:if="{{playbackCurrentChildLabel}}" class="playback-chip">
+                {{playbackCurrentChildLabel}}
+              </view>
+              <view wx:if="{{playbackCurrentFrameLabel}}" class="playback-chip">
+                {{playbackCurrentFrameLabel}}
+              </view>
             </view>
-            <view wx:if="{{playbackCurrentChildLabel}}" class="playback-chip">
-              {{playbackCurrentChildLabel}}
+            <view wx:if="{{playbackCurrentTitle}}" class="playback-title">{{playbackCurrentTitle}}</view>
+            <view wx:if="{{playbackTypedText}}" class="playback-text">
+              {{playbackTypedText}}<text wx:if="{{playbackIsTyping}}" class="playback-cursor">|</text>
             </view>
-          </view>
-          <view wx:if="{{playbackCurrentTitle}}" class="playback-title">{{playbackCurrentTitle}}</view>
-          <view wx:if="{{playbackTypedText}}" class="playback-text">
-            {{playbackTypedText}}<text wx:if="{{playbackIsTyping}}" class="playback-cursor">|</text>
-          </view>
-          <view wx:elif="{{!playbackIsTyping}}" class="playback-text playback-text-muted">
-            这个瞬间没有补充文字。
+            <view wx:elif="{{!playbackIsTyping}}" class="playback-text playback-text-muted">
+              这个瞬间没有补充文字。
+            </view>
           </view>
         </view>
       </view>
 
-      <view class="playback-actions">
-        <button class="button-secondary compact-button playback-action-button" bindtap="skipPlaybackStep">
+      <view class="playback-actions playback-chrome playback-chrome-bottom {{playbackChromeVisible ? '' : 'playback-chrome-hidden'}}">
+        <button class="button-secondary compact-button playback-action-button" catchtap="skipPlaybackStep">
           {{playbackIsTyping ? '显示全文' : '下一个'}}
         </button>
       </view>

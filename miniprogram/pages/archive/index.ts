@@ -58,11 +58,13 @@ type PlaybackMoment = {
   text: string;
   childLabel: string;
   photoUrl: string;
+  frameLabel: string;
 };
 
-const playbackPauseMs = 2000;
+const playbackChromeAutoHideMs = 1600;
 let playbackTypeTimer: number | null = null;
 let playbackAdvanceTimer: number | null = null;
+let playbackChromeTimer: number | null = null;
 let playbackSessionToken = 0;
 
 function todayString() {
@@ -402,6 +404,11 @@ function clearPlaybackTimers() {
     clearTimeout(playbackAdvanceTimer);
     playbackAdvanceTimer = null;
   }
+
+  if (playbackChromeTimer) {
+    clearTimeout(playbackChromeTimer);
+    playbackChromeTimer = null;
+  }
 }
 
 function getPlaybackTypingInterval(text: string) {
@@ -417,21 +424,65 @@ function getPlaybackTypingInterval(text: string) {
   return 48;
 }
 
+function getPlaybackDwellMs(text: string, hasPhoto: boolean) {
+  const length = Array.from((text || "").trim()).length;
+  if (!length) {
+    return hasPhoto ? 1600 : 2200;
+  }
+
+  if (length <= 24) {
+    return 2200;
+  }
+
+  if (length <= 56) {
+    return 3000;
+  }
+
+  if (length <= 96) {
+    return 3800;
+  }
+
+  return 4600;
+}
+
 function buildPlaybackMoments(records: ArchiveTimelineRecord[]) {
   return sortRecordsAscending(
     records.filter((record) => record.itemKind !== "report")
-  ).map((record) => ({
-    id: record.id,
-    dateLabel: record.dateTimeLabel || record.date,
-    tagLabel:
-      record.itemKind === "course"
-        ? "课程记录"
-        : record.primaryTag || record.title || "成长瞬间",
-    title: record.itemKind === "course" ? record.title || "课程记录" : "",
-    text: (record.text || "").trim(),
-    childLabel: record.childLabel || "",
-    photoUrl: record.photoUrls?.[0] || ""
-  }));
+  ).reduce<PlaybackMoment[]>((moments, record) => {
+    const photoUrls = (record.photoUrls || []).filter(Boolean);
+    const baseMoment = {
+      dateLabel: record.dateTimeLabel || record.date,
+      tagLabel:
+        record.itemKind === "course"
+          ? "课程记录"
+          : record.primaryTag || record.title || "成长瞬间",
+      title: record.itemKind === "course" ? record.title || "课程记录" : "",
+      childLabel: record.childLabel || ""
+    };
+    const text = (record.text || "").trim();
+
+    if (!photoUrls.length) {
+      moments.push({
+        ...baseMoment,
+        id: record.id,
+        text,
+        photoUrl: "",
+        frameLabel: ""
+      });
+      return moments;
+    }
+
+    photoUrls.forEach((photoUrl, photoIndex) => {
+      moments.push({
+        ...baseMoment,
+        id: `${record.id}-${photoIndex + 1}`,
+        text: photoIndex === 0 ? text : "",
+        photoUrl,
+        frameLabel: photoUrls.length > 1 ? `${photoIndex + 1} / ${photoUrls.length}` : ""
+      });
+    });
+    return moments;
+  }, []);
 }
 
 function mergeCachedMedia(
@@ -580,9 +631,11 @@ Page({
     playbackCurrentTag: "",
     playbackCurrentTitle: "",
     playbackCurrentChildLabel: "",
+    playbackCurrentFrameLabel: "",
     playbackCurrentPhotoUrl: "",
     playbackTypedText: "",
     playbackIsTyping: false,
+    playbackChromeVisible: true,
     allRecords: [] as unknown[],
     courseRecords: [] as unknown[],
     records: []
@@ -798,6 +851,54 @@ Page({
       records: this.getFilteredRecords()
     });
   },
+  setPlaybackChromeVisible(visible: boolean, autoHide = false) {
+    if (!this.data.isPlaybackOpen && visible) {
+      return;
+    }
+
+    if (playbackChromeTimer) {
+      clearTimeout(playbackChromeTimer);
+      playbackChromeTimer = null;
+    }
+
+    if ((this.data.playbackChromeVisible as boolean) !== visible) {
+      this.setData({ playbackChromeVisible: visible });
+    }
+
+    if (!visible || !autoHide) {
+      return;
+    }
+
+    const sessionToken = playbackSessionToken;
+    playbackChromeTimer = setTimeout(() => {
+      if (sessionToken !== playbackSessionToken || !this.data.isPlaybackOpen) {
+        return;
+      }
+
+      this.setData({ playbackChromeVisible: false });
+      playbackChromeTimer = null;
+    }, playbackChromeAutoHideMs) as unknown as number;
+  },
+  revealPlaybackChrome() {
+    this.setPlaybackChromeVisible(true, true);
+  },
+  onPlaybackStageTap() {
+    if (!this.data.isPlaybackOpen) {
+      return;
+    }
+
+    if (this.data.playbackChromeVisible) {
+      this.setPlaybackChromeVisible(false);
+      return;
+    }
+
+    this.revealPlaybackChrome();
+  },
+  schedulePlaybackAdvance(sessionToken: number, moment: PlaybackMoment) {
+    playbackAdvanceTimer = setTimeout(() => {
+      this.advancePlayback(sessionToken);
+    }, getPlaybackDwellMs(moment.text, Boolean(moment.photoUrl))) as unknown as number;
+  },
   startPlayback() {
     const playbackMoments = buildPlaybackMoments(
       this.data.records as ArchiveTimelineRecord[]
@@ -820,9 +921,11 @@ Page({
       playbackCurrentTag: "",
       playbackCurrentTitle: "",
       playbackCurrentChildLabel: "",
+      playbackCurrentFrameLabel: "",
       playbackCurrentPhotoUrl: "",
       playbackTypedText: "",
-      playbackIsTyping: false
+      playbackIsTyping: false,
+      playbackChromeVisible: true
     });
 
     this.renderPlaybackMoment(0, playbackSessionToken);
@@ -840,9 +943,11 @@ Page({
       playbackCurrentTag: "",
       playbackCurrentTitle: "",
       playbackCurrentChildLabel: "",
+      playbackCurrentFrameLabel: "",
       playbackCurrentPhotoUrl: "",
       playbackTypedText: "",
-      playbackIsTyping: false
+      playbackIsTyping: false,
+      playbackChromeVisible: true
     });
   },
   skipPlaybackStep() {
@@ -863,13 +968,12 @@ Page({
         playbackTypedText: currentMoment.text,
         playbackIsTyping: false
       });
-      const sessionToken = playbackSessionToken;
-      playbackAdvanceTimer = setTimeout(() => {
-        this.advancePlayback(sessionToken);
-      }, playbackPauseMs) as unknown as number;
+      this.revealPlaybackChrome();
+      this.schedulePlaybackAdvance(playbackSessionToken, currentMoment);
       return;
     }
 
+    this.revealPlaybackChrome();
     this.advancePlayback(playbackSessionToken);
   },
   renderPlaybackMoment(index: number, sessionToken: number) {
@@ -893,15 +997,15 @@ Page({
       playbackCurrentTag: currentMoment.tagLabel,
       playbackCurrentTitle: currentMoment.title,
       playbackCurrentChildLabel: currentMoment.childLabel,
+      playbackCurrentFrameLabel: currentMoment.frameLabel,
       playbackCurrentPhotoUrl: currentMoment.photoUrl,
       playbackTypedText: "",
       playbackIsTyping: Boolean(currentMoment.text)
     });
+    this.revealPlaybackChrome();
 
     if (!currentMoment.text) {
-      playbackAdvanceTimer = setTimeout(() => {
-        this.advancePlayback(sessionToken);
-      }, playbackPauseMs) as unknown as number;
+      this.schedulePlaybackAdvance(sessionToken, currentMoment);
       return;
     }
 
@@ -927,9 +1031,7 @@ Page({
         return;
       }
 
-      playbackAdvanceTimer = setTimeout(() => {
-        this.advancePlayback(sessionToken);
-      }, playbackPauseMs) as unknown as number;
+      this.schedulePlaybackAdvance(sessionToken, currentMoment);
     };
 
     playbackTypeTimer = setTimeout(() => {
