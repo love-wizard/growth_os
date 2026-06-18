@@ -214,7 +214,7 @@
 
       <view
         class="playback-stage {{playbackCurrentPhotoUrl ? 'playback-stage-with-photo' : 'playback-stage-text-only'}}"
-        bindtap="onPlaybackStageTap"
+        catchtap="noop"
       >
         <view wx:if="{{playbackCurrentPhotoUrl}}" class="playback-photo-stage">
           <image class="playback-photo" src="{{playbackCurrentPhotoUrl}}" mode="aspectFit" />
@@ -275,7 +275,7 @@
         </view>
       </view>
 
-      <view class="playback-actions playback-chrome playback-chrome-bottom {{playbackChromeVisible ? '' : 'playback-chrome-hidden'}}">
+      <view class="playback-actions">
         <button class="button-secondary compact-button playback-action-button" catchtap="skipPlaybackStep">
           {{playbackIsTyping ? '显示全文' : '下一个'}}
         </button>

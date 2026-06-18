@@ -577,40 +577,14 @@ Page({
     });
   },
   setPlaybackChromeVisible(visible, autoHide = false) {
-    if (!this.data.isPlaybackOpen && visible) {
-      return;
-    }
-    if (playbackChromeTimer) {
-      clearTimeout(playbackChromeTimer);
-      playbackChromeTimer = null;
-    }
-    if (this.data.playbackChromeVisible !== visible) {
-      this.setData({ playbackChromeVisible: visible });
-    }
-    if (!visible || !autoHide) {
-      return;
-    }
-    const sessionToken = playbackSessionToken;
-    playbackChromeTimer = setTimeout(() => {
-      if (sessionToken !== playbackSessionToken || !this.data.isPlaybackOpen) {
-        return;
-      }
-      this.setData({ playbackChromeVisible: false });
-      playbackChromeTimer = null;
-    }, playbackChromeAutoHideMs);
+    void visible;
+    void autoHide;
   },
   revealPlaybackChrome() {
-    this.setPlaybackChromeVisible(true, true);
+    return;
   },
   onPlaybackStageTap() {
-    if (!this.data.isPlaybackOpen) {
-      return;
-    }
-    if (this.data.playbackChromeVisible) {
-      this.setPlaybackChromeVisible(false);
-      return;
-    }
-    this.revealPlaybackChrome();
+    return;
   },
   schedulePlaybackAdvance(sessionToken, moment) {
     playbackAdvanceTimer = setTimeout(() => {
