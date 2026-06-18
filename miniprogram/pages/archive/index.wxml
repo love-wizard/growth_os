@@ -211,9 +211,6 @@
           <view class="playback-counter">{{playbackCounterText}}</view>
           <button class="playback-close-button" catchtap="closePlayback">关闭</button>
         </view>
-        <view class="playback-progress-track">
-          <view class="playback-progress-fill" style="{{playbackProgressStyle}}"></view>
-        </view>
       </view>
 
       <view

@@ -1664,20 +1664,6 @@ page {
   border: 0;
 }
 
-.playback-progress-track {
-  background: rgba(255, 255, 255, 0.14);
-  border-radius: 999rpx;
-  height: 8rpx;
-  overflow: hidden;
-}
-
-.playback-progress-fill {
-  background: linear-gradient(90deg, #8bd6b2 0%, #f4dfb1 100%);
-  border-radius: 999rpx;
-  height: 100%;
-  transition: width 240ms ease;
-}
-
 .playback-stage {
   display: flex;
   flex: 1;
