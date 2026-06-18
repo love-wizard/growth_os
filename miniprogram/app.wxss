@@ -1636,7 +1636,7 @@ page {
   align-items: flex-start;
   display: flex;
   gap: 20rpx;
-  justify-content: space-between;
+  justify-content: flex-start;
 }
 
 .playback-counter {
